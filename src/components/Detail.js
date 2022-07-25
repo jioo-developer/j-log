@@ -13,11 +13,6 @@ function Detail({ user, navigate, db, storageService }) {
   let clientWidths;
   let naturalWidths;
   const time = new Date();
-  const timeData = {
-    year: time.getFullYear(),
-    month: time.getMonth() + 1,
-    day: time.getDate(),
-  };
 
   useEffect(() => {
     if (URLID === undefined) {

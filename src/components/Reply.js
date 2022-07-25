@@ -5,7 +5,7 @@ function Reply({ db, URLID, user, ReplyGet }) {
   const [commentChange, setCommentChange] = useState(false);
   const [comment, setcomment] = UseInput([]);
   const [reply, setReply] = useState([]);
-
+  const [loadComment, setLoadComment] = useState("");
   useEffect(() => {
     db.collection("post")
       .doc(URLID)
@@ -41,10 +41,31 @@ function Reply({ db, URLID, user, ReplyGet }) {
     [comment]
   );
 
-  function edit_reply() {
-    setCommentChange(!commentChange);
+  function edit_reply(e) {
+    setCommentChange(true);
+    const btn = e.target.getAttribute("data-index");
+    const replys = Array.from(document.querySelectorAll(".reply_text"));
+    replys.forEach((item) => {
+      var indexData = item.getAttribute("data-index");
+      if (btn === indexData) {
+        let copyState = [...reply];
+        copyState[indexData].boolean = true;
+        setReply(copyState);
+        setLoadComment(copyState[indexData].comment);
+      }
+    });
   }
-  function edit_end() {}
+
+  function edit_Post(e) {
+    setCommentChange(false);
+    const target = e.target.getAttribute("data-id");
+    db.collection("post")
+      .doc(URLID)
+      .collection("reply")
+      .doc(target)
+      .update({ comment: loadComment });
+  }
+
   function reply_delete(e) {
     const target = e.target.getAttribute("data-id");
     const ok = window.confirm("정말삭제하시겠습니까?");
@@ -60,6 +81,7 @@ function Reply({ db, URLID, user, ReplyGet }) {
       date: `${timeData.year}년${timeData.month}월${timeData.day}일`,
       profile: user.photoURL,
       uid: user.uid,
+      boolean: false,
     };
     if (comment === "") {
       window.alert("댓글을 입력해주세요");
@@ -69,6 +91,13 @@ function Reply({ db, URLID, user, ReplyGet }) {
       document.querySelector(".comment_input").value = "";
     }
   }
+
+  const newComment = useCallback(
+    (e) => {
+      setLoadComment(e.target.value);
+    },
+    [loadComment]
+  );
 
   return (
     <>
@@ -85,23 +114,32 @@ function Reply({ db, URLID, user, ReplyGet }) {
                 {user.uid === com.uid ? (
                   <>
                     <div className="edit_comment">
-                      {commentChange === false ? (
-                        <>
-                          <div
-                            className="edit btns"
-                            data-index={index}
-                            onClick={edit_reply}
-                          >
-                            수정
-                          </div>
-                        </>
+                      {commentChange === false && com.boolean === false ? (
+                        <div
+                          className="edit btns"
+                          data-index={index}
+                          data-id={com.id}
+                          onClick={(e) => edit_reply(e)}
+                        >
+                          수정
+                        </div>
+                      ) : commentChange === true && com.boolean === true ? (
+                        <div
+                          className="edit btns"
+                          data-index={index}
+                          data-id={com.id}
+                          onClick={(e) => edit_Post(e)}
+                        >
+                          완료
+                        </div>
                       ) : (
                         <div
                           className="edit btns"
                           data-index={index}
-                          onClick={edit_end}
+                          onClick={(e) => edit_reply(e)}
+                          data-id={com.id}
                         >
-                          완료
+                          수정
                         </div>
                       )}
                       <div
@@ -115,16 +153,23 @@ function Reply({ db, URLID, user, ReplyGet }) {
                   </>
                 ) : null}
               </div>
-              {commentChange === false ? (
-                <p className={`reply_text`}>{com.comment}</p>
-              ) : (
+              {commentChange === false && com.boolean === false ? (
+                <p className={`reply_text`} data-index={index}>
+                  {com.comment}
+                </p>
+              ) : commentChange === true && com.boolean === true ? (
                 <input
                   type="text"
                   className={`reply_input  form-control`}
                   placeholder={com.comment}
                   data-index={index}
-                  onChange={onchageComment}
+                  value={loadComment}
+                  onChange={(e) => newComment(e)}
                 />
+              ) : (
+                <p className={`reply_text`} data-index={index}>
+                  {com.comment}
+                </p>
               )}
             </div>
           </>

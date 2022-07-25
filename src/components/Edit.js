@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from "react";
 import "../asset/upload.scss";
-import { useHistory } from "react-router-dom";
 import { db, storageService } from "../Firebase";
 import { connect } from "react-redux";
 import TextareaAutosize from "react-textarea-autosize";
