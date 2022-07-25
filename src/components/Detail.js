@@ -7,10 +7,7 @@ import TextareaAutosize from "react-textarea-autosize";
 import UseInput from "./hook/UseInput";
 function Detail({ user, navigate, dispatch, db, storageService }) {
   const location = useLocation();
-  const URLID =
-    location.state.pageId === null
-      ? new URLSearchParams(window.location.search)
-      : location.state.pageId;
+  let URLID = location.state.pageId;
   const [pageData, setPageData] = useState([]);
   const [favoriteBtn, setFavoriteBtn] = useState(false);
   const [reply, setReply] = useState([]);
@@ -21,7 +18,6 @@ function Detail({ user, navigate, dispatch, db, storageService }) {
   const [imgLazy, setImageLazy] = useState(false);
   let clientWidths;
   let naturalWidths;
-
   const time = new Date();
 
   const timeData = {
@@ -31,6 +27,9 @@ function Detail({ user, navigate, dispatch, db, storageService }) {
   };
 
   useEffect(() => {
+    if (URLID === undefined) {
+      URLID = location.state;
+    }
     db.collection("post")
       .doc(URLID)
       .onSnapshot((snapshot) => {
@@ -65,24 +64,22 @@ function Detail({ user, navigate, dispatch, db, storageService }) {
     )}; expires =${time.toUTCString()};`;
   }
 
-  async function onDelete(e) {
+  function onDelete(e) {
     e.preventDefault();
     const ok = window.confirm("정말 삭제 하시겠습니까?");
     let locate = db.collection("post").doc(URLID);
     let storageRef = storageService.ref();
     if (ok) {
-      reply.map(function (a, i) {
-        locate.collection("reply").doc(reply[i].id).delete();
-      });
-      await locate.delete().then(() => {
-        navigate("/");
-      });
       if (fileNamed !== "") {
         fileNamed.map(function (a, i) {
           let imagesRef = storageRef.child(`${pageData.user}/${fileNamed[i]}`);
           imagesRef.delete();
         });
       }
+      reply.map(function (a, i) {
+        locate.collection("reply").doc(reply[i].id).delete();
+      });
+      locate.delete();
     }
   }
 
@@ -149,11 +146,7 @@ function Detail({ user, navigate, dispatch, db, storageService }) {
         </section>
         <section className="content_wrap">
           <pre className="text">{pageData.text}</pre>
-          <div className="grid">
-            {pageData.map((value, index) => {
-              return <img src={value} className="att" alt="" key={index} />;
-            })}
-          </div>
+          <div className="grid"></div>
           <div className="comment">
             <div className="favorite_wrap">
               <p className="com_title">게시글에 대한 댓글을 달아주세요.</p>

@@ -27,7 +27,7 @@ function Home({ user }) {
                 >
                   <div className="post">
                     <figure className="thumbnail">
-                      {post.url === "" ? (
+                      {post.url.length === 0 ? (
                         <img src="./img/no-image.jpg" alt="" height="200px" />
                       ) : (
                         <img src={post.url[0]} alt="" />

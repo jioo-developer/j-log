@@ -74,7 +74,7 @@ function Upload({ db, storageService, user, navigate }) {
         user: user.displayName,
         writer: user.uid,
         date: `${timeData.year}년 ${timeData.month}월 ${timeData.day}일`,
-        url: imageArray.length === 0 ? "" : imageArray,
+        url: imageArray.length === 0 ? [] : imageArray,
         favorite: 0,
         pageId: pageId,
         profile: user.photoURL,
@@ -94,7 +94,7 @@ function Upload({ db, storageService, user, navigate }) {
         .then(() => {
           window.alert("포스트가 업로드 되었습니다.");
           const redirect = `/detail?id=${pageId}`;
-          navigate(redirect);
+          navigate(redirect, { state: pageId });
         });
     } else {
       window.alert("제목과 내용을 다 입력하셨는지 확인해주세요");
