@@ -130,7 +130,6 @@
     .att {
       width: 100%;
       margin: 5px 0;
-      visibility: hidden;
     }
 
     .comment {
@@ -227,7 +226,6 @@
           @include input-text();
           width: 100%;
           margin-bottom: 0;
-          display: none;
           margin-top: 10px;
 
           &::placeholder {
@@ -238,6 +236,7 @@
         .btn {
           font-size: 14px;
           padding: 0 10px;
+          cursor: pointer;
         }
 
         .none {
@@ -275,24 +274,18 @@
       }
     }
   }
-  .natural-size{
+  .natural-size {
     width: auto !important;
     align-self: flex-start;
-    visibility: visible !important;
-  }
-  .full-size{
-   visibility: visible !important;
   }
 
-  .grids{
+  .grids {
     display: grid;
     grid-template-columns: 1fr 1fr;
     column-gap: 10px;
-    
-    .att{
+
+    .att {
       width: 100% !important;
     }
   }
-
-
 }
