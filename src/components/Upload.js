@@ -2,9 +2,9 @@ import React, { useCallback, useEffect, useState } from "react";
 import "../asset/upload.scss";
 import TextareaAutosize from "react-textarea-autosize";
 import { useSelector } from "react-redux";
-function Upload({ db, storageService, user, navigate, UseInput }) {
-  const [title, setTitle] = UseInput("");
-  const [textarea, setTextarea] = UseInput("");
+function Upload({ db, storageService, user, navigate, useInput }) {
+  const [title, setTitle] = useInput("");
+  const [textarea, setTextarea] = useInput("");
   const [fileData, setFileData] = useState("");
   const [preview, setPreview] = useState([]);
   const [pageId, setPageId] = useState("");
@@ -36,19 +36,19 @@ function Upload({ db, storageService, user, navigate, UseInput }) {
 
   function onFileChange(e) {
     const files = Array.from(e.target.files);
-    if (files.length !== 0) {
-      setFileData(files);
-      let SaveArray = [];
-      for (var i = 0; i < files.length; i++) {
-        const reader = new FileReader();
-        reader.readAsDataURL(files[i]);
-        reader.onload = (e) => {
-          SaveArray.push(e.target.result);
-          let copyPreview = [...preview];
-          copyPreview.push(...SaveArray);
-          setPreview(copyPreview);
-        };
-      }
+    let copyArray = [...fileData];
+    copyArray.push(...files);
+    setFileData(copyArray);
+    let SaveArray = [];
+    for (var i = 0; i < files.length; i++) {
+      const reader = new FileReader();
+      reader.readAsDataURL(files[i]);
+      reader.onload = (e) => {
+        SaveArray.push(e.target.result);
+        let copyPreview = [...preview];
+        copyPreview.push(...SaveArray);
+        setPreview(copyPreview);
+      };
     }
   }
 
@@ -168,9 +168,6 @@ function Upload({ db, storageService, user, navigate, UseInput }) {
         <label htmlFor="image" className="Attachment image-att">
           이미지를 담아주세요
         </label>
-        <p className="warnning">
-          ※ 이미지를 한번에 업로드 해주세요. (하나씩 업로드하면 오류납니다)
-        </p>
         <div className="bottom_wrap">
           <div
             className="exit"

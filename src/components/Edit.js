@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import TextareaAutosize from "react-textarea-autosize";
 import { useLocation, Link } from "react-router-dom";
 import "../asset/upload.scss";
@@ -6,34 +6,70 @@ function Edit({ user, navigate, db, storageService }) {
   const location = useLocation();
   const correction = location.state.pageData;
   const [pageInfor, setpageInfor] = useState(correction);
-  const [fileData, setFileData] = useState("");
-  const [title, setTitle] = "";
-  const [text, setText] = useState("");
+  const [title, setTitle] = useState(pageInfor.title);
+  const [text, setText] = useState(pageInfor.text);
   const [prevImage, setPrevImage] = useState([]);
 
-  function onFileChange(e) {
+  useEffect(() => {
     setPrevImage(pageInfor.url);
+  }, []);
+
+  useEffect(() => {
+    console.log(pageInfor);
+  }, [pageInfor]);
+
+  function onFileChange(e) {
     const files = Array.from(e.target.files);
-    if (files.length !== 0) {
-      setFileData(files);
-      let SaveArray = [];
-      for (var i = 0; i < files.length; i++) {
-        const reader = new FileReader();
-        reader.readAsDataURL(files[i]);
-        reader.onload = (e) => {
-          SaveArray.push(e.target.result);
-          let copyState = { ...pageInfor };
-          copyState.url = SaveArray;
-          setpageInfor(copyState);
-        };
-      }
+    let saveArray = [];
+    let newArray = [];
+    for (var i = 0; i < files.length; i++) {
+      const reader = new FileReader();
+      let fileRef = storageService
+        .ref()
+        .child(`${pageInfor.displayName}/${files[i].name}`);
+      reader.readAsDataURL(files[i]);
+      reader.onload = (e) => {
+        saveArray.push(e.target.result);
+        connectHandler(saveArray, fileRef, newArray);
+      };
     }
   }
+
+  async function connectHandler(SaveArray, fileRef, newArray) {
+    for (const value of SaveArray) {
+      const response = await fileRef.putString(value, "data_url");
+      newArray.push(await response.ref.getDownloadURL());
+      let copyState = { ...pageInfor };
+      copyState.url = newArray;
+      setpageInfor(copyState);
+    }
+  }
+
+  const onchangeTitle = useCallback(
+    (e) => {
+      setTitle(e.target.value);
+    },
+    [title]
+  );
+
+  const onchangeText = useCallback(
+    (e) => {
+      setText(e.target.value);
+    },
+    [text]
+  );
 
   async function post(e) {
     e.preventDefault(e);
     //이미지 부분
+    let copyState = { ...pageInfor };
+    copyState.title = title;
+    copyState.text = text;
+    setpageInfor(copyState);
 
+    if (prevImage !== pageInfor.url) {
+      for (var i = 0; i < pageInfor.url.length; i++) {}
+    }
     await db
       .doc(correction.pageId)
       .update(pageInfor)
@@ -52,16 +88,23 @@ function Edit({ user, navigate, db, storageService }) {
           type="text"
           className="form-control titlearea"
           id="title"
-          value={pageInfor.title}
+          value={title}
           maxLength={120}
+          onChange={onchangeTitle}
         />
         <div className="textarea">
           <TextareaAutosize
             cacheMeasurements
             onHeightChange={(height) => {}}
             className="text"
-            value={pageInfor.text}
+            value={text}
+            onchangeText={onchangeText}
           />
+          <figure>
+            {pageInfor.url.map((value, index) => {
+              return <img src={value} alt="" className="att" key={index}></img>;
+            })}
+          </figure>
         </div>
         <input
           type="file"
