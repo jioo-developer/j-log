@@ -11,7 +11,7 @@ function Edit({ user, navigate, db, storageService }) {
   const [prevImage, setPrevImage] = useState([]);
 
   useEffect(() => {
-    setPrevImage(pageInfor.url);
+    setPrevImage(pageInfor.fileName);
   }, []);
 
   useEffect(() => {
@@ -21,7 +21,6 @@ function Edit({ user, navigate, db, storageService }) {
   function onFileChange(e) {
     const files = Array.from(e.target.files);
     let saveArray = [];
-    let newArray = [];
     for (var i = 0; i < files.length; i++) {
       const reader = new FileReader();
       let fileRef = storageService
@@ -30,17 +29,21 @@ function Edit({ user, navigate, db, storageService }) {
       reader.readAsDataURL(files[i]);
       reader.onload = (e) => {
         saveArray.push(e.target.result);
-        connectHandler(saveArray, fileRef, newArray);
+        connectHandler(saveArray, fileRef, files);
       };
     }
   }
 
-  async function connectHandler(SaveArray, fileRef, newArray) {
-    for (const value of SaveArray) {
+  async function connectHandler(SaveArray, fileRef, files) {
+    let newArray = [];
+    let nameArray = [];
+    for (let [index, value] of SaveArray.entries()) {
       const response = await fileRef.putString(value, "data_url");
       newArray.push(await response.ref.getDownloadURL());
+      nameArray.push(files[index].name);
       let copyState = { ...pageInfor };
       copyState.url = newArray;
+      copyState.fileName = nameArray;
       setpageInfor(copyState);
     }
   }
@@ -67,14 +70,15 @@ function Edit({ user, navigate, db, storageService }) {
     copyState.text = text;
     setpageInfor(copyState);
 
-    if (prevImage !== pageInfor.url) {
-      for (var i = 0; i < pageInfor.url.length; i++) {}
-    }
     await db
       .doc(correction.pageId)
       .update(pageInfor)
       .then(() => {
-        let imagesRef = storageService.ref();
+        const storageRef = storageService.ref();
+        prevImage.fileName.forEach((value) => {
+          const imagesRef = storageRef.child(`${pageInfor.user}/${value}`);
+          imagesRef.delete();
+        });
         window.alert("수정이 완료 되었습니다.");
         const redirect = `/detail?id=${correction.pageId}`;
         navigate(redirect, { state: correction.pageId });
