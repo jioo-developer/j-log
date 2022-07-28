@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from "react";
 import Header from "./Header";
 import "../asset/detail.scss";
-import { useLocation } from "react-router-dom";
+import { useLocation, Link } from "react-router-dom";
 import Reply from "./Reply";
-function Detail({ user, navigate, db, storageService }) {
+function Detail({ user, navigate, db, storageService, useInput }) {
   const location = useLocation();
   let URLID = location.state.pageId;
   const [pageData, setPageData] = useState([]);
@@ -85,18 +85,19 @@ function Detail({ user, navigate, db, storageService }) {
   useEffect(() => {
     if (pageData.length !== 0) {
       setFileNamed(pageData.fileName);
-    }
-    let imgTarget = Array.from(document.getElementsByClassName("att"));
-    let grid = document.getElementsByClassName("grid");
-    imgTarget.map(function (a, i) {
-      naturalWidths = document.getElementsByClassName("att")[i].naturalWidth;
-      clientWidths = document.getElementsByClassName("att")[i].offsetWidth;
-      if (naturalWidths < clientWidths) {
-        imgTarget[i].classList.add("natural-size");
+
+      let imgTarget = Array.from(document.getElementsByClassName("att"));
+      let grid = document.getElementsByClassName("grid");
+      imgTarget.map(function (a, i) {
+        naturalWidths = document.getElementsByClassName("att")[i].naturalWidth;
+        clientWidths = document.getElementsByClassName("att")[i].offsetWidth;
+        if (naturalWidths < clientWidths) {
+          imgTarget[i].classList.add("natural-size");
+        }
+      });
+      if (imgTarget.length > 1) {
+        grid[0].classList.add("grids");
       }
-    });
-    if (imgTarget.length > 1) {
-      grid[0].classList.add("grids");
     }
   }, [pageData]);
 
@@ -116,7 +117,9 @@ function Detail({ user, navigate, db, storageService }) {
             user.uid === "Lon5eQWCvHP8ZbwYZ4KHQYanV442" ? (
               <>
                 <div className="right_wrap">
-                  <button className="edit">수정</button>
+                  <Link to={"/edit"} state={{ pageData: pageData }}>
+                    <button className="edit">수정</button>
+                  </Link>
                   <button className="delete" onClick={onDelete}>
                     삭제
                   </button>
@@ -156,7 +159,13 @@ function Detail({ user, navigate, db, storageService }) {
                 </div>
               )}
             </div>
-            <Reply db={db} URLID={URLID} user={user} ReplyGet={ReplyGet} />
+            <Reply
+              db={db}
+              URLID={URLID}
+              user={user}
+              ReplyGet={ReplyGet}
+              useInput={useInput}
+            />
           </div>
         </section>
       </div>

@@ -14,7 +14,7 @@ function Header({ user }) {
   useEffect(() => {
     setTimeout(() => {
       setlazy(true);
-    }, 100);
+    }, 800);
   }, []);
 
   return (

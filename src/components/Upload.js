@@ -1,9 +1,8 @@
 import React, { useCallback, useEffect, useState } from "react";
 import "../asset/upload.scss";
 import TextareaAutosize from "react-textarea-autosize";
-import UseInput from "./hook/UseInput";
 import { useSelector } from "react-redux";
-function Upload({ db, storageService, user, navigate }) {
+function Upload({ db, storageService, user, navigate, UseInput }) {
   const [title, setTitle] = UseInput("");
   const [textarea, setTextarea] = UseInput("");
   const [fileData, setFileData] = useState("");

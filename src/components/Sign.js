@@ -1,12 +1,11 @@
 import React, { useCallback, useState } from "react";
 import { Link } from "react-router-dom";
 import "../asset/Sign.scss";
-import useinput from "./hook/UseInput";
 import FindData from "./FindData";
 import SocialSign from "./SocialSign";
-function Sign({ authService }) {
-  const [id, setId] = useinput("");
-  const [password, setPassword] = useinput("");
+function Sign({ authService, useInput }) {
+  const [id, setId] = useInput("");
+  const [password, setPassword] = useInput("");
   const [findToggle, setFIndToggle] = useState(false);
 
   const onchangeId = useCallback(
@@ -106,6 +105,7 @@ function Sign({ authService }) {
           findToggle={findToggle}
           findAction={findAction}
           authService={authService}
+          useInput={useInput}
         />
       ) : null}
     </>

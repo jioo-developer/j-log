@@ -1,9 +1,8 @@
 import React, { useCallback, useEffect, useState } from "react";
 import TextareaAutosize from "react-textarea-autosize";
-import UseInput from "./hook/UseInput";
 function Reply({ db, URLID, user, ReplyGet }) {
   const [commentChange, setCommentChange] = useState(false);
-  const [comment, setcomment] = UseInput([]);
+  const [comment, setcomment] = useState([]);
   const [reply, setReply] = useState([]);
   const [loadComment, setLoadComment] = useState("");
   useEffect(() => {
@@ -36,7 +35,7 @@ function Reply({ db, URLID, user, ReplyGet }) {
 
   const onchageComment = useCallback(
     (e) => {
-      setcomment(e);
+      setcomment(e.target.value);
     },
     [comment]
   );

@@ -1,11 +1,10 @@
 import React, { useEffect, useState } from "react";
 import "../asset/auth.scss";
 import { Link } from "react-router-dom";
-import UseInput from "./hook/UseInput";
 
-function Auth({ navigate, authService, db }) {
-  const [email, setEmail] = UseInput("");
-  const [password, setPassword] = UseInput("");
+function Auth({ navigate, authService, db, useInput }) {
+  const [email, setEmail] = useInput("");
+  const [password, setPassword] = useInput("");
   const [nickname, setNickname] = useState("");
   const [nickFilter, setFilter] = useState([]);
   const [check, setCheck] = useState(false);
