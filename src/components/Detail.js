@@ -18,19 +18,23 @@ function Detail({ user, navigate, db, storageService, useInput }) {
     if (URLID === undefined) {
       URLID = location.state;
     }
-    db.collection("post")
-      .doc(URLID)
-      .onSnapshot((snapshot) => {
-        const postArray = { ...snapshot.data() };
-        setPageData(postArray);
-      });
-    let cookieCheck = document.cookie;
-    if (cookieCheck === "Cookie=done") {
-      setFavoriteBtn(true);
-    } else {
-      setFavoriteBtn(false);
+    async function init() {
+      await db
+        .collection("post")
+        .doc(URLID)
+        .onSnapshot((snapshot) => {
+          const postArray = { ...snapshot.data() };
+          setPageData(postArray);
+        });
+      let cookieCheck = document.cookie;
+      if (cookieCheck === "Cookie=done") {
+        setFavoriteBtn(true);
+      } else {
+        setFavoriteBtn(false);
+      }
     }
-    //본문
+
+    init();
   }, []);
 
   function setCookie(name, value, expiredays) {
@@ -40,7 +44,7 @@ function Detail({ user, navigate, db, storageService, useInput }) {
     )}; expires =${time.toUTCString()};`;
   }
 
-  function onDelete(e) {
+  async function onDelete(e) {
     e.preventDefault();
     const ok = window.confirm("정말 삭제 하시겠습니까?");
     const locate = db.collection("post").doc(URLID);

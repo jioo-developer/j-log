@@ -11,6 +11,7 @@ function Profile({ user, navigate, db, authService, storageService }) {
   const [file, setFile] = useState("");
   const [title, setTitle] = useState("");
   const commonObject = {};
+  console.log(user.displayName);
 
   useEffect(() => {
     setTitle(user.displayName);
@@ -26,6 +27,9 @@ function Profile({ user, navigate, db, authService, storageService }) {
     );
     userDelete.reauthenticateWithCredential(credential).then(() => {
       userDelete.delete().then(() => {
+        const storageRef = storageService.ref();
+        const imagesRef = storageRef.child(`${title}/`);
+        imagesRef.delete();
         window.alert("회원탈퇴 되었습니다.");
         authService.signOut();
         navigate("/");

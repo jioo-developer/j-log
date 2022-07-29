@@ -23,7 +23,7 @@ function Edit({ user, navigate, db, storageService }) {
       const reader = new FileReader();
       let fileRef = storageService
         .ref()
-        .child(`${pageInfor.displayName}/${files[i].name}`);
+        .child(`${pageInfor.user}/${files[i].name}`);
       reader.readAsDataURL(files[i]);
       reader.onload = (e) => {
         saveArray.push(e.target.result);
@@ -46,12 +46,19 @@ function Edit({ user, navigate, db, storageService }) {
     }
   }
 
-  function onchangeTitle(e) {
-    setTitle(e.target.value);
-  }
-  function onchangeText(e) {
-    setText(e.target.value);
-  }
+  const onchangeTitle = useCallback(
+    (e) => {
+      setTitle(e.target.value);
+    },
+    [title]
+  );
+
+  const onchangeText = useCallback(
+    (e) => {
+      setText(e.target.value);
+    },
+    [text]
+  );
 
   async function post(e) {
     e.preventDefault(e);
