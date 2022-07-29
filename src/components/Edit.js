@@ -6,17 +6,15 @@ function Edit({ user, navigate, db, storageService }) {
   const location = useLocation();
   const correction = location.state.pageData;
   const [pageInfor, setpageInfor] = useState(correction);
-  const [title, setTitle] = useState(pageInfor.title);
-  const [text, setText] = useState(pageInfor.text);
+  const [title, setTitle] = useState("");
+  const [text, setText] = useState("");
   const [prevImage, setPrevImage] = useState([]);
 
   useEffect(() => {
     setPrevImage(pageInfor.fileName);
+    setTitle(pageInfor.title);
+    setText(pageInfor.text);
   }, []);
-
-  useEffect(() => {
-    console.log(pageInfor);
-  }, [pageInfor]);
 
   function onFileChange(e) {
     const files = Array.from(e.target.files);
@@ -48,34 +46,25 @@ function Edit({ user, navigate, db, storageService }) {
     }
   }
 
-  const onchangeTitle = useCallback(
-    (e) => {
-      setTitle(e.target.value);
-    },
-    [title]
-  );
-
-  const onchangeText = useCallback(
-    (e) => {
-      setText(e.target.value);
-    },
-    [text]
-  );
+  function onchangeTitle(e) {
+    setTitle(e.target.value);
+  }
+  function onchangeText(e) {
+    setText(e.target.value);
+  }
 
   async function post(e) {
     e.preventDefault(e);
-    //이미지 부분
-    let copyState = { ...pageInfor };
-    copyState.title = title;
-    copyState.text = text;
-    setpageInfor(copyState);
-
+    let resultState = { ...pageInfor };
+    resultState.title = title;
+    resultState.text = text;
     await db
+      .collection("post")
       .doc(correction.pageId)
-      .update(pageInfor)
+      .update(resultState)
       .then(() => {
         const storageRef = storageService.ref();
-        prevImage.fileName.forEach((value) => {
+        prevImage.forEach((value) => {
           const imagesRef = storageRef.child(`${pageInfor.user}/${value}`);
           imagesRef.delete();
         });
@@ -98,11 +87,10 @@ function Edit({ user, navigate, db, storageService }) {
         />
         <div className="textarea">
           <TextareaAutosize
-            cacheMeasurements
             onHeightChange={(height) => {}}
             className="text"
             value={text}
-            onchangeText={onchangeText}
+            onChange={onchangeText}
           />
           <figure>
             {pageInfor.url.map((value, index) => {
