@@ -64,10 +64,12 @@ function Edit({ user, navigate, db, storageService }) {
       .update(resultState)
       .then(() => {
         const storageRef = storageService.ref();
-        prevImage.forEach((value) => {
-          const imagesRef = storageRef.child(`${pageInfor.user}/${value}`);
-          imagesRef.delete();
-        });
+        if (prevImage.length !== 0) {
+          prevImage.forEach((value) => {
+            const imagesRef = storageRef.child(`${pageInfor.user}/${value}`);
+            imagesRef.delete();
+          });
+        }
         window.alert("수정이 완료 되었습니다.");
         const redirect = `/detail?id=${correction.pageId}`;
         navigate(redirect, { state: correction.pageId });

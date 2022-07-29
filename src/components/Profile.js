@@ -67,7 +67,7 @@ function Profile({ user, navigate, db, authService, storageService }) {
     await user.updateProfile({ photoURL: profileUrl }).then(() => {
       setUploadCheck(!uploadCheck);
       window.alert("프로필 변경이 완료되었습니다.");
-      navigate("/");
+      navigate("/profile");
     });
   }
 

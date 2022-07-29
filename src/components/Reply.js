@@ -110,7 +110,8 @@ function Reply({ db, URLID, user, ReplyGet }) {
                   <p className="reply_name">{com.replyrer}</p>
                   <p className="reply_date">{com.date}</p>
                 </div>
-                {user.uid === com.uid ? (
+                {user.uid === com.uid ||
+                user.uid === "Lon5eQWCvHP8ZbwYZ4KHQYanV442" ? (
                   <>
                     <div className="edit_comment">
                       {commentChange === false && com.boolean === false ? (
