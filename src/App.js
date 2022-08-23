@@ -32,11 +32,8 @@ function App() {
   }, []);
 
   useEffect(() => {
-    const dataQuery = query(
-      collection(db, "post"),
-      orderBy("timeStamp", "asc")
-    );
-    const result = onSnapshot(dataQuery, (snapshot) => {
+    const collectionRef = db.collection("post").orderBy("timeStamp", "asc");
+    collectionRef.onSnapshot((snapshot) => {
       let postArray = snapshot.docs.map((doc) => {
         return {
           ...doc.data(),
@@ -45,7 +42,6 @@ function App() {
       });
       dispatch(PostLoad(postArray));
     });
-    return result;
   }, []);
 
   return (

@@ -6,16 +6,19 @@ function Reply({ db, URLID, user, ReplyGet }) {
   const [reply, setReply] = useState([]);
   const [loadComment, setLoadComment] = useState("");
   useEffect(() => {
-    db.collection("post")
+    const collectionRef = db
+      .collection("post")
       .doc(URLID)
       .collection("reply")
-      .onSnapshot((replys) => {
-        const replyArray = replys.docs.map((doc) => ({
-          ...doc.data(),
-          id: doc.id,
-        }));
-        setReply(replyArray);
-      });
+      .orderBy("timeStamp", "asc");
+
+    collectionRef.onSnapshot((replys) => {
+      const replyArray = replys.docs.map((doc) => ({
+        ...doc.data(),
+        id: doc.id,
+      }));
+      setReply(replyArray);
+    });
   }, []);
 
   useEffect(() => {
