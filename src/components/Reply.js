@@ -1,5 +1,6 @@
 import React, { useCallback, useEffect, useState } from "react";
 import TextareaAutosize from "react-textarea-autosize";
+import { serverTimestamp } from "firebase/firestore";
 function Reply({ db, URLID, user, ReplyGet }) {
   const [commentChange, setCommentChange] = useState(false);
   const [comment, setcomment] = useState([]);
@@ -23,6 +24,7 @@ function Reply({ db, URLID, user, ReplyGet }) {
 
   useEffect(() => {
     ReplyPost();
+    console.log(reply);
   }, [reply]);
 
   function ReplyPost() {
@@ -84,6 +86,7 @@ function Reply({ db, URLID, user, ReplyGet }) {
       profile: user.photoURL,
       uid: user.uid,
       boolean: false,
+      timeStamp: serverTimestamp(),
     };
     if (comment === "") {
       window.alert("댓글을 입력해주세요");

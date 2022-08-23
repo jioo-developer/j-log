@@ -2,6 +2,7 @@ import React, { useCallback, useEffect, useState } from "react";
 import "../asset/upload.scss";
 import TextareaAutosize from "react-textarea-autosize";
 import { useSelector } from "react-redux";
+import { serverTimestamp } from "firebase/firestore";
 function Upload({ db, storageService, user, navigate, useInput }) {
   const [title, setTitle] = useInput("");
   const [textarea, setTextarea] = useInput("");
@@ -77,13 +78,13 @@ function Upload({ db, storageService, user, navigate, useInput }) {
         favorite: 0,
         pageId: pageId,
         profile: user.photoURL,
+        timeStamp: serverTimestamp(),
         fileName:
           fileData.length === 0
             ? ""
             : fileData.map((value, index) => {
                 return fileData[index].name;
               }),
-        order: maxPost - posts.length - 1,
       };
 
       await db
