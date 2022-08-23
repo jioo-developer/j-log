@@ -175,7 +175,7 @@ function Reply({ db, URLID, user, ReplyGet }) {
           </>
         );
       })}
-      <form onSubmit={commentUpload}>
+      <form onSubmit={commentUpload} style={{ order: 0 }}>
         <TextareaAutosize
           cacheMeasurements
           onHeightChange={(height) => ""}

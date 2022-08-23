@@ -12,6 +12,7 @@ import useInput from "./hook/UseInput";
 import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { PostLoad } from "./index";
+import { collection, onSnapshot, orderBy, query } from "firebase/firestore";
 function App() {
   const [init, setInit] = useState(false);
   const [Login, setLogin] = useState(false);
@@ -31,13 +32,20 @@ function App() {
   }, []);
 
   useEffect(() => {
-    db.collection("post").onSnapshot((snapshot) => {
-      let postArray = snapshot.docs.map((doc) => ({
-        ...doc.data(),
-        id: doc.id,
-      }));
+    const dataQuery = query(
+      collection(db, "post"),
+      orderBy("timeStamp", "asc")
+    );
+    const result = onSnapshot(dataQuery, (snapshot) => {
+      let postArray = snapshot.docs.map((doc) => {
+        return {
+          ...doc.data(),
+          id: doc.id,
+        };
+      });
       dispatch(PostLoad(postArray));
     });
+    return result;
   }, []);
 
   return (
