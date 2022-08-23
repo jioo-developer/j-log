@@ -42,15 +42,15 @@ function Reply({ db, URLID, user, ReplyGet }) {
 
   function edit_reply(e) {
     setCommentChange(true);
-    const btn = e.target.getAttribute("data-index");
+    const btn = e.target.getAttribute("data-id");
     const replys = Array.from(document.querySelectorAll(".reply_text"));
-    replys.forEach((item) => {
-      var indexData = item.getAttribute("data-index");
+    replys.map((item, index) => {
+      var indexData = item.getAttribute("data-id");
       if (btn === indexData) {
         let copyState = [...reply];
-        copyState[indexData].boolean = true;
+        copyState[index].boolean = true;
         setReply(copyState);
-        setLoadComment(copyState[indexData].comment);
+        setLoadComment(copyState[index].comment);
       }
     });
   }
@@ -154,7 +154,7 @@ function Reply({ db, URLID, user, ReplyGet }) {
                 ) : null}
               </div>
               {commentChange === false && com.boolean === false ? (
-                <p className={`reply_text`} data-index={index}>
+                <p className={`reply_text`} data-id={com.id}>
                   {com.comment}
                 </p>
               ) : commentChange === true && com.boolean === true ? (
@@ -167,7 +167,7 @@ function Reply({ db, URLID, user, ReplyGet }) {
                   onChange={(e) => newComment(e)}
                 />
               ) : (
-                <p className={`reply_text`} data-index={index}>
+                <p className={`reply_text`} data-id={com.id}>
                   {com.comment}
                 </p>
               )}
