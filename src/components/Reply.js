@@ -24,7 +24,6 @@ function Reply({ db, URLID, user, ReplyGet }) {
 
   useEffect(() => {
     ReplyPost();
-    console.log(reply);
   }, [reply]);
 
   function ReplyPost() {

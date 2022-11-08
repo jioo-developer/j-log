@@ -19,8 +19,6 @@ function Upload({ db, storageService, user, navigate, useInput }) {
     day: time.getDate(),
   };
 
-  const maxPost = 10000;
-
   const TitleHandler = useCallback(
     (e) => {
       setTitle(e);
