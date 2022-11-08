@@ -11,17 +11,16 @@ function Profile({ user, navigate, db, authService, storageService }) {
   const [file, setFile] = useState("");
   const [title, setTitle] = useState("");
   const commonObject = {};
-  console.log(user.displayName);
 
   useEffect(() => {
     setTitle(user.displayName);
   }, []);
 
-  function deleteUser() {
+  async function deleteUser() {
     let pw = window.prompt("비밀번호를 입력해주세요");
     let password = pw;
     db.collection("delete").doc(`${user.displayName}`).set({ 상태: "탈퇴" });
-    const credential = firebaseInstance.auth.EmailAuthProvider.credential(
+    const credential = await firebaseInstance.auth.EmailAuthProvider.credential(
       user.email,
       password
     );
@@ -37,6 +36,8 @@ function Profile({ user, navigate, db, authService, storageService }) {
     });
   }
 
+  //프로필 이미지 변경 함수
+
   function onFileChange(e) {
     const theFile = e.target.files[0];
     setUploadCheck(!uploadCheck);
@@ -51,14 +52,10 @@ function Profile({ user, navigate, db, authService, storageService }) {
         copyObject.file = theFile;
         res(copyObject);
       };
-    })
-      .then((result) => {
-        setFile(result.image);
-        return result;
-      })
-      .then((result) => {
-        ImgUpload(result);
-      });
+    }).then((result) => {
+      setFile(result.image);
+      ImgUpload(result);
+    });
   }
 
   async function ImgUpload(parmas) {
@@ -99,11 +96,12 @@ function Profile({ user, navigate, db, authService, storageService }) {
               onChange={onFileChange}
             />
             <figure className="profileImg">
-              {uploadCheck ? (
-                <img src={file} width="130px" height="135px" alt="" />
-              ) : (
-                <img src={user.photoURL} width="130px" height="135px" alt="" />
-              )}
+              <img
+                src={uploadCheck ? file : user.photoURL}
+                width="130px"
+                height="135px"
+                alt=""
+              />
             </figure>
             <label htmlFor="img_check" className="uploads btn">
               이미지 업로드
@@ -120,15 +118,9 @@ function Profile({ user, navigate, db, authService, storageService }) {
             ) : (
               <b className="nickname">{user.displayName}</b>
             )}
-            {NameEdit ? (
-              <button className="btn comment_btn" onClick={NickNameChange}>
-                수정완료
-              </button>
-            ) : (
-              <button className="btn comment_btn" onClick={NickNameChange}>
-                닉네임 수정
-              </button>
-            )}
+            <button className="btn comment_btn" onClick={NickNameChange}>
+              {NameEdit ? "수정완료" : "닉네임 수정"}
+            </button>
           </div>
         </div>
         <div className="suggest">

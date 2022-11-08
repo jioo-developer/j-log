@@ -12,7 +12,6 @@ import useInput from "./hook/UseInput";
 import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { PostLoad } from "./index";
-import { collection, onSnapshot, orderBy, query } from "firebase/firestore";
 function App() {
   const [init, setInit] = useState(false);
   const [Login, setLogin] = useState(false);

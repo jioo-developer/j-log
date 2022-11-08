@@ -4,14 +4,14 @@ function SocialSign({ authService }) {
   let provider;
   let facebookData = {};
   async function onGoogle() {
-    provider = new firebaseInstance.auth.GoogleAuthProvider();
+    provider = await new firebaseInstance.auth.GoogleAuthProvider();
     //데이터 받기
     await authService.signInWithPopup(provider);
     // await 후 authService에서 받은 데이터 조회
   }
 
   async function onFacebook() {
-    provider = new firebaseInstance.auth.FacebookAuthProvider();
+    provider = await new firebaseInstance.auth.FacebookAuthProvider();
     //데이터 받기
     await authService.signInWithPopup(provider).then((result) => {
       facebookData.displayName = result.user.displayName;

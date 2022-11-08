@@ -3,6 +3,7 @@
 .Auth_wrap {
   @include reset();
   @include media();
+  width: 98%;
 
   .title_area {
     @include textarea();

@@ -118,7 +118,7 @@ function Auth({ navigate, authService, db, useInput }) {
     const IsChecked = Array.from(
       document.querySelectorAll("input[type='checkbox']")
     );
-    IsChecked.map((value, index) => {
+    IsChecked.map((value) => {
       const target = value.nextElementSibling;
       if (value.checked) {
         target.style.backgroundImage = "url('./img/checked.svg')";
@@ -202,28 +202,26 @@ function Auth({ navigate, authService, db, useInput }) {
                     onChange={(e) => checkHanlder(e)}
                   />
                   <label htmlFor={`${data.id}_check`} className="check"></label>
-                  {data.important === true ? (
-                    <p className="check_text">
-                      <span style={{ color: "#ff0000d9" }}>*</span>&nbsp;
-                      {data.text}
-                    </p>
-                  ) : (
-                    <p className="check_text">{data.text}</p>
-                  )}
+                  <p
+                    className="check_text"
+                    style={data.important === false ? { marginLeft: 17 } : null}
+                  >
+                    {data.important === true ? (
+                      <span style={{ color: "#ff0000d9" }}>*</span>
+                    ) : null}
+                    &nbsp; {data.text}
+                  </p>
                 </li>
               );
             })}
           </ul>
         </section>
-        {check ? (
-          <button className="btn" onClick={(e) => joinHelper(e)}>
-            회원가입
-          </button>
-        ) : (
-          <div className="un_btn" onClick={(e) => joinHelper(e)}>
-            회원가입
-          </div>
-        )}
+        <button
+          className={check ? "btn" : "un_btn"}
+          onClick={(e) => joinHelper(e)}
+        >
+          회원가입
+        </button>
       </form>
     </div>
   );
