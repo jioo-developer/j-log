@@ -1,59 +1,64 @@
 @font-face {
-    font-family: "Spoqa-Hans";
-    font-weight: 300;
-    src: url("../src/fonts/SpoqaHanSansNeo-Light.woff2") format("woff2"),
+  font-family: "Spoqa-Hans";
+  font-weight: 300;
+  src: url("../src/fonts/SpoqaHanSansNeo-Light.woff2") format("woff2"),
     url("../src/fonts/SpoqaHanSansNeo-Light.woff") format("woff"),
-    url("../src/fonts/SpoqaHanSansNeo-Light.eot") format("eot")
+    url("../src/fonts/SpoqaHanSansNeo-Light.eot") format("eot");
 }
 
 @font-face {
-    font-family: "Spoqa-Hans";
-    font-weight: 400;
-    src: url("../src/fonts/SpoqaHanSansNeo-Regular.woff2") format("woff2"),
+  font-family: "Spoqa-Hans";
+  font-weight: 400;
+  src: url("../src/fonts/SpoqaHanSansNeo-Regular.woff2") format("woff2"),
     url("../src/fonts/SpoqaHanSansNeo-Regular.woff") format("woff"),
-    url("../src/fonts/SpoqaHanSansNeo-Regular.eot") format("eot")
+    url("../src/fonts/SpoqaHanSansNeo-Regular.eot") format("eot");
 }
 
 @font-face {
-    font-family: "Spoqa-Hans";
-    font-weight: 500;
-    src: url("../src/fonts/SpoqaHanSansNeo-Medium.woff2") format("woff2"),
+  font-family: "Spoqa-Hans";
+  font-weight: 500;
+  src: url("../src/fonts/SpoqaHanSansNeo-Medium.woff2") format("woff2"),
     url("../src/fonts/SpoqaHanSansNeo-Medium.woff") format("woff"),
-    url("../src/fonts/SpoqaHanSansNeo-Medium.eot") format("eot")
+    url("../src/fonts/SpoqaHanSansNeo-Medium.eot") format("eot");
 }
 
 @font-face {
-    font-family: "Spoqa-Hans";
-    font-weight: 600;
-    src: url("../src/fonts/SpoqaHanSansNeo-Bold.woff2") format("woff2"),
+  font-family: "Spoqa-Hans";
+  font-weight: 600;
+  src: url("../src/fonts/SpoqaHanSansNeo-Bold.woff2") format("woff2"),
     url("../src/fonts/SpoqaHanSansNeo-Bold.woff") format("woff"),
-    url("../src/fonts/SpoqaHanSansNeo-Bold.eot") format("eot")
+    url("../src/fonts/SpoqaHanSansNeo-Bold.eot") format("eot");
 }
-
 
 * {
-    margin: 0;
-    padding: 0;
-    font-family: "Spoqa-Hans";
-    word-break: keep-all;
+  margin: 0;
+  padding: 0;
+  font-family: "Spoqa-Hans";
+  word-break: keep-all;
 }
 
 ul,
 li {
-    list-style: none;
+  list-style: none;
 }
 
 img {
-    display: block;
-    float: left;
+  display: block;
+  float: left;
 }
 
 a {
-    text-decoration: none;
-    color: #333333;
+  text-decoration: none;
+  color: #333333;
 }
 
-header,section,footer{
-    width: 100%;
-    height: auto;
+header,
+section,
+footer {
+  width: 100%;
+  height: auto;
+}
+
+iframe {
+  display: none;
 }

@@ -165,7 +165,6 @@ function Detail({ user, navigate, db, storageService, useInput }) {
             </div>
             <Reply
               db={db}
-              URLID={URLID}
               user={user}
               ReplyGet={ReplyGet}
               useInput={useInput}

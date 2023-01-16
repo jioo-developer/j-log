@@ -6,7 +6,6 @@ function Header({ user }) {
   const [navToggle, setNavToggle] = useState(false);
   const [lazyloading, setlazy] = useState(false);
   const navigate = useNavigate();
-  console.log(user);
   function logout() {
     authService.signOut();
     navigate("/");
@@ -36,7 +35,7 @@ function Header({ user }) {
                 src={user.photoURL}
                 alt=""
                 className="profile"
-                referrerpolicy="no-referrer"
+                referrerPolicy="no-referrer"
               />
               <img src="./img/arrow.svg" alt="" className="arrow" />
             </div>
