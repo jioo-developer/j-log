@@ -10,6 +10,9 @@ function Reply({ db, user, ReplyGet }) {
   const [reply, setReply] = useState([]);
   const [loadComment, setLoadComment] = useState("");
   useEffect(() => {
+    if (URLID === undefined) {
+      URLID = location.state;
+    }
     const collectionRef = db
       .collection("post")
       .doc(URLID)
