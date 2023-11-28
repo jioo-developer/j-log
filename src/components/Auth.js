@@ -5,10 +5,9 @@ import { Link } from "react-router-dom";
 function Auth({ navigate, authService, db, useInput }) {
   const [email, setEmail] = useInput("");
   const [password, setPassword] = useInput("");
-  const [nickname, setNickname] = useState("");
+  const [nickname, setNickname] = useInput("");
   const [nickFilter, setFilter] = useState([]);
-  const [check, setCheck] = useState(false);
-  const [helper, setHelper] = useState(false);
+  const [checkArr, setCheck] = useState([]);
   const authData = [
     { id: "auth", text: "회원가입및 운영약관 동의", important: true },
     { id: "data", text: "개인정보 수집 및 동의", important: true },
@@ -16,50 +15,35 @@ function Auth({ navigate, authService, db, useInput }) {
   ];
 
   useEffect(() => {
-    db.collection("nickname").onSnapshot((snapshot) => {
-      let NIckData = snapshot.docs.map((doc) => ({
-        ...doc.data(),
-        id: doc.id,
-      }));
-      setFilter(NIckData);
-    });
-  }, []);
-
-  function joinHelper(e) {
-    e.preventDefault();
-    join();
-  }
-
-  function join() {
     if (nickname !== "") {
-      let result = nickFilter.some((item) => {
-        return item.id === nickname;
+      db.collection("nickname").onSnapshot((snapshot) => {
+        let NIckData = snapshot.docs.map((doc) => ({
+          ...doc.data(),
+          id: doc.id,
+        }));
+        setFilter(NIckData);
       });
-      const loading = new Promise(function (resolve, reject) {
-        if (result === true) {
-          setNickname("");
-          const nickError = "이미 사용중인 닉네임 입니다 ";
-          reject({ message: nickError });
-        } else {
-          setNickname(nickname);
-          resolve();
-        }
-      });
-      loading
-        .then(() => {
-          authService
-            .createUserWithEmailAndPassword(email, password)
-            .then((result) => {
-              db.collection("nickname")
-                .doc(nickname)
-                .set({ nickname: nickname });
-              window.alert("회원가입을 환영합니다.");
-              navigate("/");
-              result.user.updateProfile({
-                displayName: nickname,
-                photoURL: "./img/default.svg",
-              });
-            });
+    }
+  }, [nickname]);
+
+  function signHelper(e) {
+    e.preventDefault();
+    if (nickname !== "" && email !== "" && password !== "") {
+      const overlapFilter = nickFilter.some((item) => item.id === nickname);
+      if (overlapFilter) {
+        setNickname("");
+        window.alert("이미 사용중인 닉네임 입니다.");
+      }
+      authService
+        .createUserWithEmailAndPassword(email, password)
+        .then((result) => {
+          db.collection("nickname").doc(nickname).set({ nickname: nickname });
+          window.alert("회원가입을 환영합니다.");
+          navigate("/");
+          result.user.updateProfile({
+            displayName: nickname,
+            photoURL: "./img/default.svg",
+          });
         })
         .catch((error) => {
           if (error.message === "The email address is badly formatted.") {
@@ -81,60 +65,33 @@ function Auth({ navigate, authService, db, useInput }) {
   }
 
   function checkHanlder(e) {
-    setHelper(!helper);
     if (e.target.id === "all_check") {
-      const checkboxs = document.getElementsByName("sub_check");
-      checkboxs.forEach((item) => {
-        item.checked = e.target.checked;
-      });
+      if (e.target.checked) {
+        const allcheck = authData.map((item) => item.id);
+        const checkboxs = document.querySelectorAll(".eachCheckbox");
+        checkboxs.forEach((item) => (item.checked = true));
+        setCheck(allcheck);
+      } else {
+        setCheck([]);
+      }
+    } else {
+      if (e.target.checked) {
+        const copyArr = [...checkArr];
+        copyArr.push(e.target.id);
+        setCheck(copyArr);
+      } else {
+        const copyArr = [...checkArr];
+        const result = copyArr.filter((item) => item !== e.target.id);
+        setCheck(result);
+      }
     }
-    const checkPromise = new Promise(function (resolve, reject) {
-      const trueCheck = document.querySelectorAll(
-        "input[type='checkbox']:checked:not(#all_check)"
-      );
-      if (trueCheck.length >= 2) {
-        resolve(trueCheck.length);
-      } else {
-        reject(trueCheck.length);
-      }
-
-      if (trueCheck.length === 3) {
-        document.getElementById("all_check").checked = true;
-      } else {
-        document.getElementById("all_check").checked = false;
-      }
-    });
-
-    checkPromise
-      .then(() => {
-        setCheck(true);
-      })
-      .catch(() => {
-        setCheck(false);
-      });
   }
-
-  useEffect(() => {
-    const IsChecked = Array.from(
-      document.querySelectorAll("input[type='checkbox']")
-    );
-    IsChecked.map((value) => {
-      const target = value.nextElementSibling;
-      if (value.checked) {
-        target.style.backgroundImage = "url('./img/checked.svg')";
-        target.style.border = 0;
-      } else {
-        target.style.backgroundImage = "";
-        target.style.border = "1px solid #eee";
-      }
-    });
-  }, [helper]);
 
   return (
     <div className="Auth_wrap">
       <div className="title_area">
         <Link to="/">
-          <img src="./img/close-24px.svg" className="close" alt="" />
+          <img src="./img/backbtn.svg" className="close" alt="" />
         </Link>
         <p>회원가입</p>
       </div>
@@ -168,7 +125,7 @@ function Auth({ navigate, authService, db, useInput }) {
           onChange={setPassword}
         />
         <p className="id_title">
-          활동명 &nbsp;<span>*</span>
+          닉네임 &nbsp;<span>*</span>
         </p>
         <input
           type="text"
@@ -188,28 +145,50 @@ function Auth({ navigate, authService, db, useInput }) {
               id="all_check"
               onChange={(e) => checkHanlder(e)}
             />
-            <label htmlFor="all_check" className="check"></label>
+            <label
+              htmlFor="all_check"
+              className="check"
+              style={
+                checkArr.length === authData.length
+                  ? { border: 0 }
+                  : { border: "1px solid #eee" }
+              }
+            >
+              {checkArr.length === authData.length ? (
+                <img src="./img/checked.svg" />
+              ) : null}
+            </label>
             <p className="check_text">전체 약관 동의</p>
           </div>
           <ul className="check_wrap">
-            {authData.map(function (data, i) {
+            {authData.map(function (data, index) {
               return (
-                <li key={i}>
+                <li key={index}>
                   <input
                     type="checkbox"
-                    id={`${data.id}_check`}
+                    class="eachCheckbox"
+                    id={data.id}
                     name="sub_check"
                     onChange={(e) => checkHanlder(e)}
                   />
-                  <label htmlFor={`${data.id}_check`} className="check"></label>
-                  <p
-                    className="check_text"
-                    style={data.important === false ? { marginLeft: 17 } : null}
+                  <label
+                    htmlFor={data.id}
+                    className="check"
+                    style={
+                      checkArr.includes(data.id)
+                        ? { border: 0 }
+                        : { border: "1px solid #eee" }
+                    }
                   >
-                    {data.important === true ? (
-                      <span style={{ color: "#ff0000d9" }}>*</span>
+                    {checkArr.includes(data.id) ? (
+                      <img src="./img/checked.svg" />
                     ) : null}
-                    &nbsp; {data.text}
+                  </label>
+                  <p className="check_text">
+                    {data.important ? (
+                      <span style={{ color: "#ff0000d9" }}>*&nbsp;</span>
+                    ) : null}
+                    {data.text}
                   </p>
                 </li>
               );
@@ -217,8 +196,8 @@ function Auth({ navigate, authService, db, useInput }) {
           </ul>
         </section>
         <button
-          className={check ? "btn" : "un_btn"}
-          onClick={(e) => joinHelper(e)}
+          className={checkArr.length > 1 ? "btn" : "un_btn"}
+          onClick={checkArr.length > 1 ? (e) => signHelper(e) : null}
         >
           회원가입
         </button>

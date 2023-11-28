@@ -11,21 +11,19 @@ function Home({ user }) {
       <div className="in_wrap">
         <Header user={user} />
         <section className="post_section">
-          {posts.map(function (post, i) {
+          {posts.map(function (post, index) {
             return (
               <>
                 <Link
                   to={`/detail?id=${post.pageId}`}
                   state={{ pageId: post.pageId }}
-                  key={i}
+                  key={index}
                 >
                   <div className="post">
                     <figure className="thumbnail">
                       <img
                         src={
-                          post.url.length === 0
-                            ? "./img/no-image.jpg"
-                            : post.url[0]
+                          post.url.length ? "./img/no-image.jpg" : post.url[0]
                         }
                         alt=""
                       />

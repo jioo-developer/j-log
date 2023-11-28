@@ -24,23 +24,30 @@ function App() {
         setLogin(true);
         setUserObj(user);
       } else {
-        setLogin(false);
+        setLogin((prev) => prev);
       }
       setInit(true);
     });
   }, []);
 
   useEffect(() => {
-    const collectionRef = db.collection("post").orderBy("timeStamp", "asc");
-    collectionRef.onSnapshot((snapshot) => {
-      let postArray = snapshot.docs.map((doc) => {
-        return {
-          ...doc.data(),
-          id: doc.id,
-        };
+    if (Login) {
+      const collectionRef = db.collection("post").orderBy("timeStamp", "asc");
+      collectionRef.onSnapshot((snapshot) => {
+        if (snapshot.docs.length) {
+          const postArray = snapshot.docs.map((doc) => {
+            return {
+              ...doc.data(),
+              id: doc.id,
+            };
+          });
+          dispatch(PostLoad(postArray));
+        } else {
+          console.log("DB내 데이터가 없습니다.");
+          console.log("------------------------");
+        }
       });
-      dispatch(PostLoad(postArray));
-    });
+    }
   }, []);
 
   return (
@@ -119,9 +126,7 @@ function App() {
               />
             </>
           )
-        ) : (
-          ""
-        )}
+        ) : null}
       </Routes>
     </div>
   );
