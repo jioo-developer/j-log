@@ -20,15 +20,15 @@ function App() {
   const navigate = useNavigate();
   useEffect(() => {
     authService.onAuthStateChanged((user) => {
-      if (user) {
-        setLogin(true);
-        setUserObj(user);
-      } else {
-        setLogin((prev) => prev);
-      }
-      setInit(true);
+      if (user) setUserObj(user);
     });
   }, []);
+
+  useEffect(() => {
+    if (userObj !== null && !Login) {
+      setLogin(true);
+    }
+  }, [userObj]);
 
   useEffect(() => {
     if (Login) {
@@ -48,7 +48,7 @@ function App() {
         }
       });
     }
-  }, []);
+  }, [Login]);
 
   function LoginHalper(value) {
     setLogin(value);
@@ -57,83 +57,81 @@ function App() {
   return (
     <div className="App">
       <Routes>
-        {init ? (
-          Login ? (
-            <>
-              <Route
-                path="/"
-                element={<Home user={userObj} LoginHalper={LoginHalper} />}
-              />
-              <Route
-                path="/upload"
-                element={
-                  <Upload
-                    user={userObj}
-                    navigate={navigate}
-                    db={db}
-                    storageService={storageService}
-                    useInput={useInput}
-                  />
-                }
-              />
+        {Login ? (
+          <>
+            <Route
+              path="/"
+              element={<Home user={userObj} LoginHalper={LoginHalper} />}
+            />
+            <Route
+              path="/upload"
+              element={
+                <Upload
+                  user={userObj}
+                  navigate={navigate}
+                  db={db}
+                  storageService={storageService}
+                  useInput={useInput}
+                />
+              }
+            />
 
-              <Route
-                path="/detail"
-                element={
-                  <Detail
-                    user={userObj}
-                    navigate={navigate}
-                    dispatch={dispatch}
-                    db={db}
-                    storageService={storageService}
-                    useInput={useInput}
-                  />
-                }
-              />
-              <Route
-                path="/profile"
-                element={
-                  <Profile
-                    user={userObj}
-                    navigate={navigate}
-                    db={db}
-                    authService={authService}
-                    storageService={storageService}
-                  />
-                }
-              />
-              <Route
-                path="/edit"
-                element={
-                  <Edit
-                    user={userObj}
-                    navigate={navigate}
-                    db={db}
-                    storageService={storageService}
-                  />
-                }
-              />
-            </>
-          ) : (
-            <>
-              <Route
-                path="/"
-                element={<Sign authService={authService} useInput={useInput} />}
-              />
-              <Route
-                path="/Auth"
-                element={
-                  <Auth
-                    navigate={navigate}
-                    authService={authService}
-                    db={db}
-                    useInput={useInput}
-                  />
-                }
-              />
-            </>
-          )
-        ) : null}
+            <Route
+              path="/detail"
+              element={
+                <Detail
+                  user={userObj}
+                  navigate={navigate}
+                  dispatch={dispatch}
+                  db={db}
+                  storageService={storageService}
+                  useInput={useInput}
+                />
+              }
+            />
+            <Route
+              path="/profile"
+              element={
+                <Profile
+                  user={userObj}
+                  navigate={navigate}
+                  db={db}
+                  authService={authService}
+                  storageService={storageService}
+                />
+              }
+            />
+            <Route
+              path="/edit"
+              element={
+                <Edit
+                  user={userObj}
+                  navigate={navigate}
+                  db={db}
+                  storageService={storageService}
+                />
+              }
+            />
+          </>
+        ) : (
+          <>
+            <Route
+              path="/"
+              element={<Sign authService={authService} useInput={useInput} />}
+            />
+            <Route
+              path="/Auth"
+              element={
+                <Auth
+                  navigate={navigate}
+                  authService={authService}
+                  db={db}
+                  useInput={useInput}
+                />
+              }
+            />
+          </>
+        )}
       </Routes>
     </div>
   );
