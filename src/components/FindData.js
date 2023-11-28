@@ -33,7 +33,7 @@ function FindData({ findToggle, findAction, authService, useInput }) {
             placeholder="이메일을 입력하세요."
             required
             value={findPw}
-            onChange={setFindPw(e)}
+            onChange={(e) => setFindPw(e)}
           />
           <div className="btn_wrap">
             <div

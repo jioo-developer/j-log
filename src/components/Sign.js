@@ -58,7 +58,7 @@ function Sign({ authService, useInput }) {
             placeholder="아이디"
             required
             value={id}
-            onChange={setId(e)}
+            onChange={(e) => setId(e)}
           />
           <input
             type="password"
@@ -67,7 +67,7 @@ function Sign({ authService, useInput }) {
             placeholder="비밀번호"
             required
             value={password}
-            onChange={setPassword(e)}
+            onChange={(e) => setPassword(e)}
           />
           <button className="btn">로그인</button>
         </form>
