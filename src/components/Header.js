@@ -2,13 +2,18 @@ import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { authService } from "../Firebase";
 import { useNavigate } from "react-router-dom";
-function Header({ user }) {
+function Header({ user, LoginHalper }) {
   const [navToggle, setNavToggle] = useState(false);
   const [lazyloading, setlazy] = useState(false);
   const navigate = useNavigate();
   function logout() {
     authService.signOut();
     navigate("/");
+    logoutRedirect();
+  }
+
+  function logoutRedirect() {
+    LoginHalper(false);
   }
 
   useEffect(() => {

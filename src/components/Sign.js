@@ -1,4 +1,4 @@
-import React, { useCallback, useState } from "react";
+import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import "../asset/Sign.scss";
 import FindData from "./FindData";
@@ -8,27 +8,10 @@ function Sign({ authService, useInput }) {
   const [password, setPassword] = useInput("");
   const [findToggle, setFIndToggle] = useState(false);
 
-  const onchangeId = useCallback(
-    (e) => {
-      setId(e);
-    },
-    [setId]
-  );
-
-  const onchangePw = useCallback(
-    (e) => {
-      setPassword(e);
-    },
-    [setPassword]
-  );
-
-  //리액트의 on 구분은 event 파라미터를 안넣줘도 자동적으로 붙음
-
   async function LoginLogic(e) {
     e.preventDefault();
     try {
       await authService.signInWithEmailAndPassword(id, password);
-      //관습
     } catch (error) {
       if (
         error.message ===
@@ -53,8 +36,8 @@ function Sign({ authService, useInput }) {
     }
   }
 
-  function findAction(findToggle) {
-    setFIndToggle(findToggle);
+  function findAction(value) {
+    setFIndToggle(value);
   }
 
   return (
@@ -64,7 +47,10 @@ function Sign({ authService, useInput }) {
           <img src="./img/logo.svg" alt="" />
           <figcaption className="logo_title">J.log</figcaption>
         </h1>
-        <form onSubmit={LoginLogic} className="sign-form">
+        <form
+          onSubmit={id !== "" && password !== "" ? LoginLogic : null}
+          className="sign-form"
+        >
           <input
             type="text"
             className="form-control"
@@ -72,7 +58,7 @@ function Sign({ authService, useInput }) {
             placeholder="아이디"
             required
             value={id}
-            onChange={onchangeId}
+            onChange={setId(e)}
           />
           <input
             type="password"
@@ -81,7 +67,7 @@ function Sign({ authService, useInput }) {
             placeholder="비밀번호"
             required
             value={password}
-            onChange={onchangePw}
+            onChange={setPassword(e)}
           />
           <button className="btn">로그인</button>
         </form>

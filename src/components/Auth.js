@@ -17,7 +17,7 @@ function Auth({ navigate, authService, db, useInput }) {
   useEffect(() => {
     if (nickname !== "") {
       db.collection("nickname").onSnapshot((snapshot) => {
-        let NIckData = snapshot.docs.map((doc) => ({
+        const NIckData = snapshot.docs.map((doc) => ({
           ...doc.data(),
           id: doc.id,
         }));

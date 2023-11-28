@@ -1,13 +1,6 @@
-import React, { useCallback } from "react";
+import React from "react";
 function FindData({ findToggle, findAction, authService, useInput }) {
   let [findPw, setFindPw] = useInput("");
-
-  const findPassword = useCallback(
-    (e) => {
-      setFindPw(e);
-    },
-    [setFindPw]
-  );
 
   async function resetpw(e) {
     e.preventDefault();
@@ -40,7 +33,7 @@ function FindData({ findToggle, findAction, authService, useInput }) {
             placeholder="이메일을 입력하세요."
             required
             value={findPw}
-            onChange={findPassword}
+            onChange={setFindPw(e)}
           />
           <div className="btn_wrap">
             <div

@@ -4,12 +4,12 @@ import "../asset/home.scss";
 import "../asset/header.scss";
 import Header from "./Header";
 import { useSelector } from "react-redux";
-function Home({ user }) {
+function Home({ user, LoginHalper }) {
   const posts = useSelector((state) => state.posts);
   return (
     <div className="main">
       <div className="in_wrap">
-        <Header user={user} />
+        <Header user={user} LoginHalper={LoginHalper} />
         <section className="post_section">
           {posts.map(function (post, index) {
             return (

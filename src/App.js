@@ -50,13 +50,20 @@ function App() {
     }
   }, []);
 
+  function LoginHalper(value) {
+    setLogin(value);
+  }
+
   return (
     <div className="App">
       <Routes>
         {init ? (
           Login ? (
             <>
-              <Route path="/" element={<Home user={userObj} />} />
+              <Route
+                path="/"
+                element={<Home user={userObj} LoginHalper={LoginHalper} />}
+              />
               <Route
                 path="/upload"
                 element={
