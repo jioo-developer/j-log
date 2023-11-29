@@ -12,12 +12,14 @@ import useInput from "./hook/UseInput";
 import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { PostLoad } from "./index";
+import Header from "./components/Header";
 function App() {
-  const [init, setInit] = useState(false);
   const [Login, setLogin] = useState(false);
   const [userObj, setUserObj] = useState(null);
   const dispatch = useDispatch();
   const navigate = useNavigate();
+  const location = window.location.pathname;
+  console.log(location);
   useEffect(() => {
     authService.onAuthStateChanged((user) => {
       if (user) setUserObj(user);
@@ -56,24 +58,15 @@ function App() {
 
   return (
     <div className="App">
+      {location === "/" || location === "/profile" || location === "/detail" ? (
+        <Header user={userObj} LoginHalper={LoginHalper} />
+      ) : null}
       <Routes>
         {Login ? (
           <>
             <Route
               path="/"
               element={<Home user={userObj} LoginHalper={LoginHalper} />}
-            />
-            <Route
-              path="/upload"
-              element={
-                <Upload
-                  user={userObj}
-                  navigate={navigate}
-                  db={db}
-                  storageService={storageService}
-                  useInput={useInput}
-                />
-              }
             />
 
             <Route
@@ -98,6 +91,18 @@ function App() {
                   db={db}
                   authService={authService}
                   storageService={storageService}
+                />
+              }
+            />
+            <Route
+              path="/upload"
+              element={
+                <Upload
+                  user={userObj}
+                  navigate={navigate}
+                  db={db}
+                  storageService={storageService}
+                  useInput={useInput}
                 />
               }
             />

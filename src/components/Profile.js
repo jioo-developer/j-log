@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from "react";
 import "../asset/profile.scss";
 import { firebaseInstance } from "../Firebase";
-import Header from "./Header";
 import "../asset/header.scss";
 
 function Profile({ user, navigate, db, authService, storageService }) {
@@ -85,7 +84,6 @@ function Profile({ user, navigate, db, authService, storageService }) {
 
   return (
     <div className="profile_wrap">
-      <Header user={user} />
       <section className="content">
         <div className="profile_area">
           <div className="img_wrap">

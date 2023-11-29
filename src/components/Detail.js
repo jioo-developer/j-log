@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from "react";
-import Header from "./Header";
 import "../asset/detail.scss";
 import { useLocation, Link } from "react-router-dom";
 import Reply from "./Reply";
@@ -107,7 +106,6 @@ function Detail({ user, navigate, db, storageService, useInput }) {
 
   return (
     <div className="detail_wrap">
-      <Header user={user} />
       <div className="in_wrap">
         <section className="sub_header">
           <h1>{pageData.title}</h1>

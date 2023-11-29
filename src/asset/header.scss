@@ -5,7 +5,8 @@ header {
   width: 90%;
   height: 40px;
   justify-content: space-between;
-  margin-top: 20px;
+  padding-top: 20px;
+  margin: 0 auto;
 
   .title {
     font-size: 24px;
@@ -47,8 +48,8 @@ header {
   height: auto;
   flex-direction: column;
   position: absolute;
-  right: 0;
-  top: 70px;
+  right: 68px;
+  top: 65px;
   background: #fff;
   box-shadow: 0 4px 16px 0 $hoverRgb;
   z-index: 1000;

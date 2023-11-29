@@ -2,14 +2,12 @@ import React from "react";
 import { Link } from "react-router-dom";
 import "../asset/home.scss";
 import "../asset/header.scss";
-import Header from "./Header";
 import { useSelector } from "react-redux";
-function Home({ user, LoginHalper }) {
+function Home() {
   const posts = useSelector((state) => state.posts);
   return (
     <div className="main">
       <div className="in_wrap">
-        <Header user={user} LoginHalper={LoginHalper} />
         <section className="post_section">
           {posts.map(function (post, index) {
             return (
@@ -22,9 +20,7 @@ function Home({ user, LoginHalper }) {
                   <div className="post">
                     <figure className="thumbnail">
                       <img
-                        src={
-                          post.url.length ? "./img/no-image.jpg" : post.url[0]
-                        }
+                        src={post.url ? "./img/no-image.jpg" : post.url[0]}
                         alt=""
                       />
                     </figure>
