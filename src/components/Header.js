@@ -1,22 +1,23 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import { authService } from "../Firebase";
 import { useNavigate } from "react-router-dom";
-function Header({ user }) {
+import { useSelector } from "react-redux";
+import { LoginAction } from "..";
+function Header({ user, dispatch, logoutHanlder }) {
   const [navToggle, setNavToggle] = useState(false);
   const navigate = useNavigate();
+  const loginState = useSelector((state) => state.login);
   function logout() {
     authService.signOut();
-    navigate("/");
+    dispatch(LoginAction());
+    setNavToggle(!navToggle);
+    logoutHanlder(null);
   }
-
-  useEffect(() => {
-    console.log(user);
-  }, []);
 
   return (
     <header>
-      {user ? (
+      {user && loginState ? (
         <>
           <p className="title">
             <Link to="/">{user.displayName}.log</Link>
@@ -37,7 +38,9 @@ function Header({ user }) {
           </div>
         </>
       ) : (
-        <button className="loginBtn">로그인</button>
+        <button className="loginBtn" onClick={() => navigate("/sign")}>
+          로그인
+        </button>
       )}
       {navToggle ? (
         <ul className="sub_menu">

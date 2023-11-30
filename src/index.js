@@ -10,13 +10,20 @@ import logger from "redux-logger";
 
 const initialState = {
   posts: [],
+  login: false,
 };
 
 const POSTDATA = "POSTDATA";
 
+const LOGIN = "LOGIN";
+
 export const PostLoad = (data) => ({
   type: POSTDATA,
   data,
+});
+
+export const LoginAction = () => ({
+  type: LOGIN,
 });
 
 function reducer(state = initialState, action) {
@@ -25,6 +32,11 @@ function reducer(state = initialState, action) {
       return {
         ...state,
         posts: action.data,
+      };
+    case LOGIN:
+      return {
+        ...state,
+        login: !state.login,
       };
     default:
       return state;

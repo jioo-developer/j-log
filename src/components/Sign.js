@@ -1,17 +1,23 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import "../asset/Sign.scss";
 import FindData from "./FindData";
 import SocialSign from "./SocialSign";
-function Sign({ authService, useInput }) {
+import { LoginAction } from "..";
+function Sign({ authService, useInput, user, navigate, dispatch }) {
   const [id, setId] = useInput("");
   const [password, setPassword] = useInput("");
   const [findToggle, setFIndToggle] = useState(false);
+
+  useEffect(() => {
+    if (user) navigate("/");
+  }, [user]);
 
   async function LoginLogic(e) {
     e.preventDefault();
     try {
       await authService.signInWithEmailAndPassword(id, password);
+      dispatch(LoginAction());
     } catch (error) {
       if (
         error.message ===

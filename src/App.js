@@ -9,15 +9,16 @@ import Detail from "./components/Detail";
 import Profile from "./components/Profile";
 import Edit from "./components/Edit";
 import useInput from "./hook/UseInput";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
-import { PostLoad } from "./index";
+import { LoginAction, PostLoad } from "./index";
 import Header from "./components/Header";
 function App() {
   const [userObj, setUserObj] = useState(null);
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const location = window.location.pathname;
+  const loginState = useSelector((state) => state.login);
   useEffect(() => {
     authService.onAuthStateChanged(async (user) => {
       if (user) {
@@ -25,6 +26,12 @@ function App() {
       }
     });
   }, []);
+
+  useEffect(() => {
+    if (userObj && !loginState) {
+      dispatch(LoginAction());
+    }
+  }, [userObj]);
 
   useEffect(() => {
     const collectionRef = db.collection("post").orderBy("timeStamp", "asc");
@@ -44,13 +51,21 @@ function App() {
     });
   }, [userObj]);
 
+  function logoutHanlder(value) {
+    setUserObj(value);
+  }
+
   return (
     <div className="App">
       {location === "/" || location === "/profile" || location === "/detail" ? (
-        <Header user={userObj} />
+        <Header
+          user={userObj}
+          dispatch={dispatch}
+          logoutHanlder={logoutHanlder}
+        />
       ) : null}
       <Routes>
-        <Route path="/" element={<Home user={userObj} />} />
+        <Route path="/" element={<Home user={userObj} navigate={navigate} />} />
         <Route
           path="/detail"
           element={
@@ -101,7 +116,15 @@ function App() {
         />
         <Route
           path="/sign"
-          element={<Sign authService={authService} useInput={useInput} />}
+          element={
+            <Sign
+              authService={authService}
+              useInput={useInput}
+              user={userObj}
+              dispatch={dispatch}
+              navigate={navigate}
+            />
+          }
         />
         <Route
           path="/Auth"
