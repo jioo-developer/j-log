@@ -2,14 +2,14 @@ import React from "react";
 function FindData({ findToggle, findAction, authService, useInput }) {
   let [findPw, setFindPw] = useInput("");
 
-  async function resetpw(e) {
+  function resetpw(e) {
     e.preventDefault();
     if (findPw !== "") {
-      await authService
+      authService
         .sendPasswordResetEmail(findPw)
         .then(() => {
           window.alert("입력하신 메일로 비밀번호 안내드렸습니다.");
-          findAction(!findToggle);
+          findAction((prev) => !prev);
         })
         .catch((error) => {
           if (
@@ -36,7 +36,7 @@ function FindData({ findToggle, findAction, authService, useInput }) {
             onChange={(e) => setFindPw(e)}
           />
           <div className="btn_wrap">
-            <div className="btn" onClick={() => findAction(!findToggle)}>
+            <div className="btn" onClick={() => findAction((prev) => !prev)}>
               취소
             </div>
             <button className="btn">완료</button>

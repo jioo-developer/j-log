@@ -6,18 +6,12 @@ import "../asset/header.scss";
 function Profile({ user, navigate, db, authService, storageService }) {
   const userDelete = authService.currentUser;
   const [NameEdit, setNameEdit] = useState(false);
-  const [uploadCheck, setUploadCheck] = useState(false);
-  const [file, setFile] = useState("");
   const [title, setTitle] = useState("");
-  const commonObject = {};
 
-  useEffect(() => {
-    setTitle(user.displayName);
-  }, []);
+  useEffect(() => setTitle(user.displayName), []);
 
   async function deleteUser() {
-    let pw = window.prompt("비밀번호를 입력해주세요");
-    let password = pw;
+    const password = window.prompt("비밀번호를 입력해주세요");
     db.collection("delete").doc(`${user.displayName}`).set({ 상태: "탈퇴" });
     const credential = await firebaseInstance.auth.EmailAuthProvider.credential(
       user.email,
@@ -31,6 +25,7 @@ function Profile({ user, navigate, db, authService, storageService }) {
         window.alert("회원탈퇴 되었습니다.");
         authService.signOut();
         navigate("/");
+        window.location.reload();
       });
     });
   }
@@ -39,44 +34,30 @@ function Profile({ user, navigate, db, authService, storageService }) {
 
   function onFileChange(e) {
     const theFile = e.target.files[0];
-    setUploadCheck(!uploadCheck);
     const reader = new FileReader();
-    if (theFile) {
-      reader.readAsDataURL(theFile);
-    }
-    return new Promise(function (res) {
-      reader.onloadend = (e) => {
-        let copyObject = { ...commonObject };
-        copyObject.image = e.target.result;
-        copyObject.file = theFile;
-        res(copyObject);
-      };
-    }).then((result) => {
-      setFile(result.image);
-      ImgUpload(result);
-    });
+    if (theFile) reader.readAsDataURL(theFile);
+    reader.onloadend = (e) => ImgUpload(e.target.result, theFile);
   }
 
-  async function ImgUpload(parmas) {
+  async function ImgUpload(imageurl, uploadfile) {
     const fileRef = storageService
       .ref()
-      .child(`${title}-profile/${parmas.file.name}`);
-    const response = await fileRef.putString(parmas.image, "data_url");
+      .child(`${title}-profile/${uploadfile.name}`);
+    const response = await fileRef.putString(imageurl, "data_url");
     const profileUrl = await response.ref.getDownloadURL();
 
     await user.updateProfile({ photoURL: profileUrl }).then(() => {
-      setUploadCheck(!uploadCheck);
       window.alert("프로필 변경이 완료되었습니다.");
       navigate("/profile");
     });
   }
 
   async function NickNameChange() {
-    if (NameEdit === false) {
-      setNameEdit(!NameEdit);
+    if (!NameEdit) {
+      setNameEdit((prev) => !prev);
     } else {
       await user.updateProfile({ displayName: title }).then(() => {
-        setNameEdit(!NameEdit);
+        setNameEdit((prev) => !prev);
         window.alert("닉네임이 변경되었습니다");
       });
     }
@@ -94,12 +75,7 @@ function Profile({ user, navigate, db, authService, storageService }) {
               onChange={onFileChange}
             />
             <figure className="profileImg">
-              <img
-                src={uploadCheck ? file : user.photoURL}
-                width="130px"
-                height="135px"
-                alt=""
-              />
+              <img src={user.photoURL} width="130px" height="135px" alt="" />
             </figure>
             <label htmlFor="img_check" className="uploads btn">
               이미지 업로드

@@ -168,12 +168,7 @@ function Upload({ db, storageService, user, navigate, useInput }) {
           이미지를 담아주세요
         </label>
         <div className="bottom_wrap">
-          <div
-            className="exit"
-            onClick={() => {
-              navigate("/");
-            }}
-          >
+          <div className="exit" onClick={() => navigate("/")}>
             ← &nbsp;나가기
           </div>
           <button type="submit" className="post">

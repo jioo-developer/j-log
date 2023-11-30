@@ -10,7 +10,7 @@ function Header({ user, logoutHanlder, dispatch }) {
   const navigate = useNavigate();
   function logout() {
     authService.signOut();
-    setNavToggle(!navToggle);
+    setNavToggle((prev) => !prev);
     logoutHanlder(null);
     dispatch(PostLoad([]));
   }
@@ -30,7 +30,7 @@ function Header({ user, logoutHanlder, dispatch }) {
               <Link to="/">{user.displayName}.log</Link>
             </p>
 
-            <div className="menu" onClick={() => setNavToggle(!navToggle)}>
+            <div className="menu" onClick={() => setNavToggle((prev) => !prev)}>
               <img
                 src={user.photoURL}
                 alt=""
@@ -52,7 +52,7 @@ function Header({ user, logoutHanlder, dispatch }) {
 
       {navToggle ? (
         <ul className="sub_menu">
-          <li>
+          <li onClick={() => setNavToggle((prev) => !prev)}>
             <Link to="/profile">설정</Link>
           </li>
           <li onClick={logout}>로그아웃</li>

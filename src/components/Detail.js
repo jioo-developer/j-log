@@ -4,8 +4,7 @@ import { useLocation, Link } from "react-router-dom";
 import Reply from "./Reply";
 function Detail({ user, navigate, db, storageService, useInput }) {
   const location = useLocation();
-  console.log(location);
-  let URLID;
+  let URLID = location.state.pageId;
   const [pageData, setPageData] = useState([]);
   const [favoriteBtn, setFavoriteBtn] = useState(false);
   const [fileNamed, setFileNamed] = useState();
@@ -16,7 +15,7 @@ function Detail({ user, navigate, db, storageService, useInput }) {
 
   useEffect(() => {
     if (URLID === undefined) {
-      // URLID = location.state;
+      URLID = location.state;
     }
     async function init() {
       await db
