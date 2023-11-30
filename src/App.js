@@ -14,129 +14,106 @@ import { useNavigate } from "react-router-dom";
 import { PostLoad } from "./index";
 import Header from "./components/Header";
 function App() {
-  const [Login, setLogin] = useState(false);
   const [userObj, setUserObj] = useState(null);
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const location = window.location.pathname;
-  console.log(location);
   useEffect(() => {
-    authService.onAuthStateChanged((user) => {
-      if (user) setUserObj(user);
+    authService.onAuthStateChanged(async (user) => {
+      if (user) {
+        await setUserObj(user);
+      }
     });
   }, []);
 
   useEffect(() => {
-    if (userObj !== null && !Login) {
-      setLogin(true);
-    }
+    const collectionRef = db.collection("post").orderBy("timeStamp", "asc");
+    collectionRef.onSnapshot((snapshot) => {
+      if (snapshot.docs.length) {
+        const postArray = snapshot.docs.map((doc) => {
+          return {
+            ...doc.data(),
+            id: doc.id,
+          };
+        });
+        dispatch(PostLoad(postArray));
+      } else {
+        console.log("DB내 데이터가 없습니다.");
+        console.log("------------------------");
+      }
+    });
   }, [userObj]);
-
-  useEffect(() => {
-    if (Login) {
-      const collectionRef = db.collection("post").orderBy("timeStamp", "asc");
-      collectionRef.onSnapshot((snapshot) => {
-        if (snapshot.docs.length) {
-          const postArray = snapshot.docs.map((doc) => {
-            return {
-              ...doc.data(),
-              id: doc.id,
-            };
-          });
-          dispatch(PostLoad(postArray));
-        } else {
-          console.log("DB내 데이터가 없습니다.");
-          console.log("------------------------");
-        }
-      });
-    }
-  }, [Login]);
-
-  function LoginHalper(value) {
-    setLogin(value);
-  }
 
   return (
     <div className="App">
       {location === "/" || location === "/profile" || location === "/detail" ? (
-        <Header user={userObj} LoginHalper={LoginHalper} />
+        <Header user={userObj} />
       ) : null}
       <Routes>
-        {Login ? (
-          <>
-            <Route
-              path="/"
-              element={<Home user={userObj} LoginHalper={LoginHalper} />}
+        <Route path="/" element={<Home user={userObj} />} />
+        <Route
+          path="/detail"
+          element={
+            <Detail
+              user={userObj}
+              navigate={navigate}
+              dispatch={dispatch}
+              db={db}
+              storageService={storageService}
+              useInput={useInput}
             />
-
-            <Route
-              path="/detail"
-              element={
-                <Detail
-                  user={userObj}
-                  navigate={navigate}
-                  dispatch={dispatch}
-                  db={db}
-                  storageService={storageService}
-                  useInput={useInput}
-                />
-              }
+          }
+        />
+        <Route
+          path="/profile"
+          element={
+            <Profile
+              user={userObj}
+              navigate={navigate}
+              db={db}
+              authService={authService}
+              storageService={storageService}
             />
-            <Route
-              path="/profile"
-              element={
-                <Profile
-                  user={userObj}
-                  navigate={navigate}
-                  db={db}
-                  authService={authService}
-                  storageService={storageService}
-                />
-              }
+          }
+        />
+        <Route
+          path="/upload"
+          element={
+            <Upload
+              user={userObj}
+              navigate={navigate}
+              db={db}
+              storageService={storageService}
+              useInput={useInput}
             />
-            <Route
-              path="/upload"
-              element={
-                <Upload
-                  user={userObj}
-                  navigate={navigate}
-                  db={db}
-                  storageService={storageService}
-                  useInput={useInput}
-                />
-              }
+          }
+        />
+        <Route
+          path="/edit"
+          element={
+            <Edit
+              user={userObj}
+              navigate={navigate}
+              db={db}
+              storageService={storageService}
             />
-            <Route
-              path="/edit"
-              element={
-                <Edit
-                  user={userObj}
-                  navigate={navigate}
-                  db={db}
-                  storageService={storageService}
-                />
-              }
+          }
+        />
+        <Route
+          path="/sign"
+          element={<Sign authService={authService} useInput={useInput} />}
+        />
+        <Route
+          path="/Auth"
+          element={
+            <Auth
+              navigate={navigate}
+              authService={authService}
+              db={db}
+              useInput={useInput}
             />
-          </>
-        ) : (
-          <>
-            <Route
-              path="/"
-              element={<Sign authService={authService} useInput={useInput} />}
-            />
-            <Route
-              path="/Auth"
-              element={
-                <Auth
-                  navigate={navigate}
-                  authService={authService}
-                  db={db}
-                  useInput={useInput}
-                />
-              }
-            />
-          </>
-        )}
+          }
+        />
       </Routes>
     </div>
   );
