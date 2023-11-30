@@ -3,7 +3,8 @@ import { Link } from "react-router-dom";
 import { authService } from "../Firebase";
 import { useNavigate } from "react-router-dom";
 import { useEffect } from "react";
-function Header({ user, logoutHanlder }) {
+import { PostLoad } from "../index";
+function Header({ user, logoutHanlder, dispatch }) {
   const [navToggle, setNavToggle] = useState(false);
   const [loginAwait, setAwait] = useState(false);
   const navigate = useNavigate();
@@ -11,6 +12,7 @@ function Header({ user, logoutHanlder }) {
     authService.signOut();
     setNavToggle(!navToggle);
     logoutHanlder(null);
+    dispatch(PostLoad([]));
   }
 
   useEffect(() => {

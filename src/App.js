@@ -54,7 +54,11 @@ function App() {
   return (
     <div className="App">
       {location === "/" || location === "/profile" || location === "/detail" ? (
-        <Header user={userObj} logoutHanlder={logoutHanlder} />
+        <Header
+          user={userObj}
+          logoutHanlder={logoutHanlder}
+          dispatch={dispatch}
+        />
       ) : null}
       <Routes>
         <Route path="/" element={<Home user={userObj} navigate={navigate} />} />
