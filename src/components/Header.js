@@ -29,6 +29,7 @@ function Header({ user, logoutHanlder, dispatch }) {
             <p className="title">
               <Link to="/">{user.displayName}.log</Link>
             </p>
+
             <div className="menu" onClick={() => setNavToggle(!navToggle)}>
               <img
                 src={user.photoURL}
@@ -40,9 +41,12 @@ function Header({ user, logoutHanlder, dispatch }) {
             </div>
           </>
         ) : (
-          <button className="loginBtn" onClick={() => navigate("/sign")}>
-            로그인
-          </button>
+          <>
+            <p className="not-login-logo">J-LOG</p>
+            <button className="loginBtn" onClick={() => navigate("/sign")}>
+              로그인
+            </button>
+          </>
         )
       ) : null}
 
