@@ -3,8 +3,7 @@ import { Link } from "react-router-dom";
 import "../asset/Sign.scss";
 import FindData from "./FindData";
 import SocialSign from "./SocialSign";
-import { LoginAction } from "..";
-function Sign({ authService, useInput, user, navigate, dispatch }) {
+function Sign({ authService, useInput, user, navigate }) {
   const [id, setId] = useInput("");
   const [password, setPassword] = useInput("");
   const [findToggle, setFIndToggle] = useState(false);
@@ -17,7 +16,6 @@ function Sign({ authService, useInput, user, navigate, dispatch }) {
     e.preventDefault();
     try {
       await authService.signInWithEmailAndPassword(id, password);
-      dispatch(LoginAction());
     } catch (error) {
       if (
         error.message ===
