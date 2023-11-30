@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 import "../asset/home.scss";
 import "../asset/header.scss";
 import { useSelector } from "react-redux";
-function Home() {
+function Home({ user }) {
   const posts = useSelector((state) => state.posts);
 
   return (
@@ -41,11 +41,13 @@ function Home() {
             );
           })}
         </section>
-        <button className="new-post">
-          <Link to="/upload">
-            <img src="./img/add.svg" alt="" />
-          </Link>
-        </button>
+        {user ? (
+          <button className="new-post">
+            <Link to="/upload">
+              <img src="./img/add.svg" alt="" />
+            </Link>
+          </button>
+        ) : null}
       </div>
     </div>
   );
