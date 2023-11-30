@@ -134,9 +134,7 @@ function Auth({ navigate, authService, db, useInput }) {
           placeholder="활동명을 입력하세요."
           required
           value={nickname}
-          onChange={(e) => {
-            setNickname(e.target.value);
-          }}
+          onChange={(e) => setNickname(e.target.value)}
         />
         <section className="terms">
           <div className="all_check">

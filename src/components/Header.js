@@ -27,12 +27,7 @@ function Header({ user, logoutHanlder }) {
             <p className="title">
               <Link to="/">{user.displayName}.log</Link>
             </p>
-            <div
-              className="menu"
-              onClick={() => {
-                setNavToggle(!navToggle);
-              }}
-            >
+            <div className="menu" onClick={() => setNavToggle(!navToggle)}>
               <img
                 src={user.photoURL}
                 alt=""

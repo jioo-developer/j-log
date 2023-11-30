@@ -36,12 +36,7 @@ function FindData({ findToggle, findAction, authService, useInput }) {
             onChange={(e) => setFindPw(e)}
           />
           <div className="btn_wrap">
-            <div
-              className="btn"
-              onClick={() => {
-                findAction(!findToggle);
-              }}
-            >
+            <div className="btn" onClick={() => findAction(!findToggle)}>
               취소
             </div>
             <button className="btn">완료</button>

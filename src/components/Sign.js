@@ -79,9 +79,7 @@ function Sign({ authService, useInput, user, navigate }) {
         <div className="assistance">
           <button
             className="pw_reset ass_btn"
-            onClick={() => {
-              setFIndToggle(!findToggle);
-            }}
+            onClick={() => setFIndToggle((prev) => !prev)}
           >
             비밀번호 변경&amp;찾기
           </button>

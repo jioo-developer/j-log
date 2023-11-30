@@ -20,9 +20,11 @@ function App() {
   const location = window.location.pathname;
 
   useEffect(() => {
-    authService.onAuthStateChanged(async (user) => {
-      if (user) await setUserObj(user);
-    });
+    if (!userObj) {
+      authService.onAuthStateChanged(async (user) => {
+        if (user) await setUserObj(user);
+      });
+    }
   }, []);
 
   useEffect(() => {
