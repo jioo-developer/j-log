@@ -71,11 +71,13 @@ function Profile({ user, navigate, db, authService, storageService }) {
     });
   }
 
-  async function NickNameChange() {
+  function nickToggleFunc() {
     setNameEdit((prev) => !prev);
+  }
+
+  async function NickNameChange() {
     // db.collection("nickname").doc(nickname).set({ nickname: nickname });
     await user.updateProfile({ displayName: title }).then(() => {
-      setNameEdit((prev) => !prev);
       window.alert("닉네임이 변경되었습니다");
       window.location.reload();
     });
@@ -100,19 +102,27 @@ function Profile({ user, navigate, db, authService, storageService }) {
             </label>
           </div>
           <div className="name_area">
-            {NameEdit ? (
-              <input
-                type="text"
-                value={title}
-                className="form-control"
-                onChange={(e) => setTitle(e.target.value)}
-              />
+            {!NameEdit ? (
+              <>
+                <b className="nickname">{user.displayName}</b>
+                <button className="btn comment_btn" onClick={nickToggleFunc}>
+                  닉네임 수정
+                </button>
+              </>
             ) : (
-              <b className="nickname"> {user.displayName}</b>
+              <>
+                <input
+                  type="text"
+                  value={title}
+                  className="form-control"
+                  onChange={(e) => setTitle(e.target.value)}
+                />
+
+                <button className="btn comment_btn" onClick={NickNameChange}>
+                  수정완료
+                </button>
+              </>
             )}
-            <button className="btn comment_btn" onClick={NickNameChange}>
-              {NameEdit ? "수정완료" : "닉네임 수정"}
-            </button>
           </div>
         </div>
         <div className="suggest">
