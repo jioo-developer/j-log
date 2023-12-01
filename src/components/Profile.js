@@ -35,32 +35,34 @@ function Profile({ user, navigate, db, authService, storageService }) {
       password = window.prompt("비밀번호를 입력해주세요.");
     }
     localStorage.removeItem("authCookie");
-    db.collection("delete").doc(`${user.uid}`).set({ 상태: "탈퇴" });
-    db.collection("nickname").doc(user.displayName).delete(); //try & catch
+    // db.collection("delete").doc(`${user.uid}`).set({ 상태: "탈퇴" });
+    // db.collection("nickname").doc(user.displayName).delete(); //try & catch
     const storageRef = storageService.ref();
     const ProfileimagesRef = storageRef.child(`${user.uid}-profile/`);
-    const imagesRef = storageRef.child(`${user.uid}/`); //try & catch
-    ProfileimagesRef.delete()
-      .then(() => {
-        console.log("성공");
-      })
-      .catch((e) => {
-        console.log(e);
-      });
-    imagesRef
-      .delete()
-      .then(() => {
-        console.log("성공");
-      })
-      .catch((e) => {
-        console.log(e);
-      });
+    const imagesRef = storageRef.child(`${user.uid}/`);
+    console.log(ProfileimagesRef);
+    console.log(imagesRef);
+    // ProfileimagesRef.delete()
+    //   .then(() => {
+    //     console.log("성공");
+    //   })
+    //   .catch((e) => {
+    //     console.log(e);
+    //   });
+    // imagesRef
+    //   .delete()
+    //   .then(() => {
+    //     console.log("성공");
+    //   })
+    //   .catch((e) => {
+    //     console.log(e);
+    //   });
 
-    const credential = await firebaseInstance.auth.EmailAuthProvider.credential(
-      user.email,
-      password
-    );
-    const userDelete = authService.currentUser;
+    // const credential = await firebaseInstance.auth.EmailAuthProvider.credential(
+    //   user.email,
+    //   password
+    // );
+    // const userDelete = authService.currentUser;
     // userDelete
     //   .reauthenticateWithCredential(credential)
     //   .then(() => {
