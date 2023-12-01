@@ -117,6 +117,7 @@ function App() {
               authService={authService}
               useInput={useInput}
               user={userObj}
+              db={db}
               dispatch={dispatch}
               navigate={navigate}
             />

@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 import "../asset/Sign.scss";
 import FindData from "./FindData";
 import SocialSign from "./SocialSign";
-function Sign({ authService, useInput, user, navigate }) {
+function Sign({ authService, useInput, user, navigate, db }) {
   const [id, setId] = useInput("");
   const [password, setPassword] = useInput("");
   const [findToggle, setFIndToggle] = useState(false);
@@ -75,7 +75,7 @@ function Sign({ authService, useInput, user, navigate }) {
           />
           <button className="btn">로그인</button>
         </form>
-        <SocialSign authService={authService} />
+        <SocialSign authService={authService} db={db} />
         <div className="assistance">
           <button
             className="pw_reset ass_btn"
