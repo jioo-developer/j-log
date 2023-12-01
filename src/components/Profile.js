@@ -76,11 +76,16 @@ function Profile({ user, navigate, db, authService, storageService }) {
   }
 
   async function NickNameChange() {
-    // db.collection("nickname").doc(nickname).set({ nickname: nickname });
-    await user.updateProfile({ displayName: title }).then(() => {
-      window.alert("닉네임이 변경되었습니다");
-      window.location.reload();
-    });
+    const overlapFilter = filter.some((item) => item.id === title);
+    if (overlapFilter) {
+      window.alert("이미 사용중인 닉네임 입니다.");
+    } else {
+      db.collection("nickname").doc(title).set({ nickname: title });
+      await user.updateProfile({ displayName: title }).then(() => {
+        window.alert("닉네임이 변경되었습니다");
+        window.location.reload();
+      });
+    }
   }
 
   return LoginAwait ? (
