@@ -48,19 +48,19 @@ function Profile({ user, navigate, db, authService, storageService }) {
       password
     );
     const userDelete = authService.currentUser;
-    userDelete
-      .reauthenticateWithCredential(credential)
-      .then(() => {
-        userDelete.delete().then(() => {
-          window.alert("회원탈퇴 되었습니다.");
-          authService.signOut();
-          navigate("/");
-          window.location.reload();
-        });
-      })
-      .catch((e) => {
-        window.alert("암호가 잘못되었거나 사용자에게 암호가 없습니다.");
-      });
+    // userDelete
+    //   .reauthenticateWithCredential(credential)
+    //   .then(() => {
+    //     userDelete.delete().then(() => {
+    //       window.alert("회원탈퇴 되었습니다.");
+    //       authService.signOut();
+    //       navigate("/");
+    //       window.location.reload();
+    //     });
+    //   })
+    //   .catch(() => {
+    //     window.alert("암호가 잘못되었거나 사용자에게 암호가 없습니다.");
+    //   });
   }
 
   //프로필 이미지 변경 함수
@@ -81,6 +81,7 @@ function Profile({ user, navigate, db, authService, storageService }) {
 
     await user.updateProfile({ photoURL: profileUrl }).then(() => {
       window.alert("프로필 변경이 완료되었습니다.");
+      window.location.reload();
     });
   }
 
@@ -93,6 +94,7 @@ function Profile({ user, navigate, db, authService, storageService }) {
     if (overlapFilter) {
       window.alert("이미 사용중인 닉네임 입니다.");
     } else {
+      db.collection("nickname").doc(user.displayName).delete();
       db.collection("nickname").doc(title).set({ nickname: title });
       await user.updateProfile({ displayName: title }).then(() => {
         window.alert("닉네임이 변경되었습니다");
