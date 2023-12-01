@@ -34,7 +34,7 @@ function Profile({ user, navigate, db, authService, storageService }) {
     } else {
       password = window.prompt("비밀번호를 입력해주세요.");
     }
-
+    localStorage.removeItemItem("authCookie");
     db.collection("delete").doc(`${user.uid}`).set({ 상태: "탈퇴" });
     db.collection("nickname").doc(user.displayName).delete();
     const storageRef = storageService.ref();
