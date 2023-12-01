@@ -6,8 +6,15 @@ function SocialSign({ authService, db }) {
     provider = await new firebaseInstance.auth.GoogleAuthProvider();
     //데이터 받기
     await authService.signInWithPopup(provider).then((result) => {
+      const newPassword = window.prompt(
+        "소셜로그인에선 2차비밀번호를 설정하셔야합니다."
+      );
+      result.user.updatePassword(newPassword);
       // goggleData.displayName = result.user.displayName;
       // goggleData.profile = result.additionalUserInfo.profile.picture.data.url;
+      // userData.updatePassword(newPassword).then(() => {
+      //   console.log("성공");
+      // });
       db.collection("nickname")
         .doc(result.user.displayName)
         .set({ nickname: result.user.displayName });

@@ -5,7 +5,6 @@ import "../asset/header.scss";
 import { useSelector } from "react-redux";
 function Home({ user }) {
   const posts = useSelector((state) => state.posts);
-
   return (
     <div className="main">
       <div className="in_wrap">

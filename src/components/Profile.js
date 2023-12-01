@@ -4,7 +4,6 @@ import { firebaseInstance } from "../Firebase";
 import "../asset/header.scss";
 
 function Profile({ user, navigate, db, authService, storageService }) {
-  const userDelete = authService.currentUser;
   const [NameEdit, setNameEdit] = useState(false);
   const [title, setTitle] = useState("");
   const [filter, setFilter] = useState([]);
@@ -28,26 +27,42 @@ function Profile({ user, navigate, db, authService, storageService }) {
   }, []);
 
   async function deleteUser() {
-    const password = window.prompt("비밀번호를 입력해주세요");
-    db.collection("delete").doc(`${user.displayName}`).set({ 상태: "탈퇴" });
+    let password;
+    const branch = window.confirm("소셜로그인을 사용하시나요?");
+    if (branch) {
+      password = window.prompt(
+        "계정 생성 하셨을 당시 2차 비밀번호를 입력해주세요."
+      );
+    } else {
+      password = window.prompt("비밀번호를 입력해주세요.");
+    }
+
+    db.collection("delete").doc(`${user.uid}`).set({ 상태: "탈퇴" });
     db.collection("nickname").doc(user.displayName).delete();
     const storageRef = storageService.ref();
     const ProfileimagesRef = storageRef.child(`${user.uid}-profile/`);
     const imagesRef = storageRef.child(`${user.uid}/`);
     ProfileimagesRef.delete();
     imagesRef.delete();
+
     const credential = await firebaseInstance.auth.EmailAuthProvider.credential(
       user.email,
       password
     );
-    userDelete.reauthenticateWithCredential(credential).then(() => {
-      userDelete.delete().then(() => {
-        window.alert("회원탈퇴 되었습니다.");
-        authService.signOut();
-        navigate("/");
-        window.location.reload();
+    const userDelete = authService.currentUser;
+    userDelete
+      .reauthenticateWithCredential(credential)
+      .then(() => {
+        userDelete.delete().then(() => {
+          window.alert("회원탈퇴 되었습니다.");
+          authService.signOut();
+          navigate("/");
+          window.location.reload();
+        });
+      })
+      .catch((e) => {
+        window.alert("암호가 잘못되었거나 사용자에게 암호가 없습니다.");
       });
-    });
   }
 
   //프로필 이미지 변경 함수
