@@ -73,6 +73,7 @@ function Profile({ user, navigate, db, authService, storageService }) {
 
   async function NickNameChange() {
     setNameEdit((prev) => !prev);
+    // db.collection("nickname").doc(nickname).set({ nickname: nickname });
     await user.updateProfile({ displayName: title }).then(() => {
       setNameEdit((prev) => !prev);
       window.alert("닉네임이 변경되었습니다");

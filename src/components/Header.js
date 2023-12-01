@@ -13,6 +13,7 @@ function Header({ user, logoutHanlder, dispatch }) {
     setNavToggle((prev) => !prev);
     logoutHanlder(null);
     dispatch(PostLoad([]));
+    navigate("/");
   }
 
   useEffect(() => {

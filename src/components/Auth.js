@@ -31,36 +31,37 @@ function Auth({ navigate, authService, db, useInput }) {
     if (nickname !== "" && email !== "" && password !== "") {
       const overlapFilter = nickFilter.some((item) => item.id === nickname);
       if (overlapFilter) {
-        setNickname([]);
         window.alert("이미 사용중인 닉네임 입니다.");
-      }
-      authService
-        .createUserWithEmailAndPassword(email, password)
-        .then((result) => {
-          db.collection("nickname").doc(nickname).set({ nickname: nickname });
-          window.alert("회원가입을 환영합니다.");
-          navigate("/");
-          result.user.updateProfile({
-            displayName: nickname,
-            photoURL: "./img/default.svg",
+      } else {
+        authService
+          .createUserWithEmailAndPassword(email, password)
+          .then((result) => {
+            db.collection("nickname").doc(nickname).set({ nickname: nickname });
+            window.alert("회원가입을 환영합니다.");
+
+            result.user.updateProfile({
+              displayName: nickname,
+              photoURL: "./img/default.svg",
+            });
+            navigate("/");
+          })
+          .catch((error) => {
+            if (error.message === "The email address is badly formatted.") {
+              window.alert("올바른 이메일 형식이 아닙니다.");
+            } else if (
+              error.message === "Password should be at least 6 characters"
+            ) {
+              window.alert("비밀번호가 너무짧습니다.");
+            } else if (
+              error.message ===
+              "The email address is already in use by another account."
+            ) {
+              window.alert("이미 사용중인 이메일입니다.");
+            } else {
+              window.alert(error.message);
+            }
           });
-        })
-        .catch((error) => {
-          if (error.message === "The email address is badly formatted.") {
-            window.alert("올바른 이메일 형식이 아닙니다.");
-          } else if (
-            error.message === "Password should be at least 6 characters"
-          ) {
-            window.alert("비밀번호가 너무짧습니다.");
-          } else if (
-            error.message ===
-            "The email address is already in use by another account."
-          ) {
-            window.alert("이미 사용중인 이메일입니다.");
-          } else {
-            window.alert(error.message);
-          }
-        });
+      }
     }
   }
 
@@ -134,7 +135,7 @@ function Auth({ navigate, authService, db, useInput }) {
           placeholder="활동명을 입력하세요."
           required
           value={nickname}
-          onChange={(e) => setNickname(e.target.value)}
+          onChange={(e) => setNickname(e)}
         />
         <section className="terms">
           <div className="all_check">
