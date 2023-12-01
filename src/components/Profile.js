@@ -34,12 +34,12 @@ function Profile({ user, navigate, db, authService, storageService }) {
     } else {
       password = window.prompt("비밀번호를 입력해주세요.");
     }
-    localStorage.removeItemItem("authCookie");
+    localStorage.removeItem("authCookie");
     db.collection("delete").doc(`${user.uid}`).set({ 상태: "탈퇴" });
-    db.collection("nickname").doc(user.displayName).delete();
+    db.collection("nickname").doc(user.displayName).delete(); //try & catch
     const storageRef = storageService.ref();
-    const ProfileimagesRef = storageRef.child(`${user.uid}-profile/`);
-    const imagesRef = storageRef.child(`${user.uid}/`);
+    const ProfileimagesRef = storageRef.child(`${user.uid}-profile/`); //try & catch
+    const imagesRef = storageRef.child(`${user.uid}/`); //try & catch
     ProfileimagesRef.delete();
     imagesRef.delete();
 
