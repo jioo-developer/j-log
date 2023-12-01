@@ -16,10 +16,8 @@ function Header({ user, logoutHanlder, dispatch }) {
   }
 
   useEffect(() => {
-    setTimeout(() => {
-      setAwait(true);
-    }, 500);
-  }, []);
+    if (user) setAwait(true);
+  }, [user]);
 
   return (
     <header>

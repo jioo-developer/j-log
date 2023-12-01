@@ -31,7 +31,7 @@ function Auth({ navigate, authService, db, useInput }) {
     if (nickname !== "" && email !== "" && password !== "") {
       const overlapFilter = nickFilter.some((item) => item.id === nickname);
       if (overlapFilter) {
-        setNickname("");
+        setNickname([]);
         window.alert("이미 사용중인 닉네임 입니다.");
       }
       authService

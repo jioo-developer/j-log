@@ -7,21 +7,41 @@ function Profile({ user, navigate, db, authService, storageService }) {
   const userDelete = authService.currentUser;
   const [NameEdit, setNameEdit] = useState(false);
   const [title, setTitle] = useState("");
+  const [filter, setFilter] = useState([]);
+  const [LoginAwait, setAwait] = useState(false);
 
-  useEffect(() => setTitle(user.displayName), []);
+  useEffect(() => {
+    if (user) {
+      setAwait(true);
+      setTitle(user.displayName);
+    }
+  }, [user]);
+
+  useEffect(() => {
+    db.collection("nickname").onSnapshot((snapshot) => {
+      const NIckData = snapshot.docs.map((doc) => ({
+        ...doc.data(),
+        id: doc.id,
+      }));
+      setFilter(NIckData);
+    });
+  }, []);
 
   async function deleteUser() {
     const password = window.prompt("비밀번호를 입력해주세요");
     db.collection("delete").doc(`${user.displayName}`).set({ 상태: "탈퇴" });
+    db.collection("nickname").doc(user.displayName).delete();
+    const storageRef = storageService.ref();
+    const ProfileimagesRef = storageRef.child(`${user.uid}-profile/`);
+    const imagesRef = storageRef.child(`${user.uid}/`);
+    ProfileimagesRef.delete();
+    imagesRef.delete();
     const credential = await firebaseInstance.auth.EmailAuthProvider.credential(
       user.email,
       password
     );
     userDelete.reauthenticateWithCredential(credential).then(() => {
       userDelete.delete().then(() => {
-        const storageRef = storageService.ref();
-        const imagesRef = storageRef.child(`${title}/`);
-        imagesRef.delete();
         window.alert("회원탈퇴 되었습니다.");
         authService.signOut();
         navigate("/");
@@ -42,28 +62,25 @@ function Profile({ user, navigate, db, authService, storageService }) {
   async function ImgUpload(imageurl, uploadfile) {
     const fileRef = storageService
       .ref()
-      .child(`${title}-profile/${uploadfile.name}`);
+      .child(`${user.uid}-profile/${uploadfile.name}`);
     const response = await fileRef.putString(imageurl, "data_url");
     const profileUrl = await response.ref.getDownloadURL();
 
     await user.updateProfile({ photoURL: profileUrl }).then(() => {
       window.alert("프로필 변경이 완료되었습니다.");
-      navigate("/profile");
     });
   }
 
   async function NickNameChange() {
-    if (!NameEdit) {
+    setNameEdit((prev) => !prev);
+    await user.updateProfile({ displayName: title }).then(() => {
       setNameEdit((prev) => !prev);
-    } else {
-      await user.updateProfile({ displayName: title }).then(() => {
-        setNameEdit((prev) => !prev);
-        window.alert("닉네임이 변경되었습니다");
-      });
-    }
+      window.alert("닉네임이 변경되었습니다");
+      window.location.reload();
+    });
   }
 
-  return (
+  return LoginAwait ? (
     <div className="profile_wrap">
       <section className="content">
         <div className="profile_area">
@@ -90,7 +107,7 @@ function Profile({ user, navigate, db, authService, storageService }) {
                 onChange={(e) => setTitle(e.target.value)}
               />
             ) : (
-              <b className="nickname">{user.displayName}</b>
+              <b className="nickname"> {user.displayName}</b>
             )}
             <button className="btn comment_btn" onClick={NickNameChange}>
               {NameEdit ? "수정완료" : "닉네임 수정"}
@@ -114,7 +131,7 @@ function Profile({ user, navigate, db, authService, storageService }) {
         </div>
       </section>
     </div>
-  );
+  ) : null;
 }
 
 export default Profile;

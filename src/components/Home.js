@@ -20,7 +20,9 @@ function Home({ user }) {
                 <div className="post" key={index}>
                   <figure className="thumbnail">
                     <img
-                      src={post.url ? "./img/no-image.jpg" : post.url[0]}
+                      src={
+                        !post.url.length ? "./img/no-image.jpg" : post.url[0]
+                      }
                       alt=""
                     />
                   </figure>

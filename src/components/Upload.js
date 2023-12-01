@@ -59,7 +59,7 @@ function Upload({ db, storageService, user, navigate, useInput }) {
         for (var i = 0; i < preview.length; i++) {
           const fileRef = storageService
             .ref()
-            .child(`${user.displayName}/${fileData[i].name}`);
+            .child(`${user.uid}/${fileData[i].name}`);
           const response = await fileRef.putString(preview[i], "data_url");
           const result = await response.ref.getDownloadURL();
           imageArray.push(result);

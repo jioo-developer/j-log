@@ -3,7 +3,7 @@
 .upload {
   @include reset();
   width: 50%;
-  margin-top: 10px;
+  padding-top: 10px;
 
   @media #{$breakpoint-mobile} {
     width: 90%;
@@ -26,6 +26,7 @@
       margin-bottom: 25px;
       box-sizing: border-box;
       outline: 0;
+      background: transparent;
 
       &::placeholder {
         color: rgb(177, 177, 177);
