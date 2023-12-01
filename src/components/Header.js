@@ -43,7 +43,9 @@ function Header({ user, logoutHanlder, dispatch }) {
           </>
         ) : (
           <>
-            <p className="not-login-logo">J-LOG</p>
+            <p className="not-login-logo">
+              <Link to="/">J-LOG</Link>
+            </p>
             <button className="loginBtn" onClick={() => navigate("/sign")}>
               로그인
             </button>

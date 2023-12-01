@@ -38,10 +38,23 @@ function Profile({ user, navigate, db, authService, storageService }) {
     db.collection("delete").doc(`${user.uid}`).set({ 상태: "탈퇴" });
     db.collection("nickname").doc(user.displayName).delete(); //try & catch
     const storageRef = storageService.ref();
-    const ProfileimagesRef = storageRef.child(`${user.uid}-profile/`); //try & catch
+    const ProfileimagesRef = storageRef.child(`${user.uid}-profile/`);
     const imagesRef = storageRef.child(`${user.uid}/`); //try & catch
-    ProfileimagesRef.delete();
-    imagesRef.delete();
+    ProfileimagesRef.delete()
+      .then(() => {
+        console.log("성공");
+      })
+      .catch((e) => {
+        console.log(e);
+      });
+    imagesRef
+      .delete()
+      .then(() => {
+        console.log("성공");
+      })
+      .catch((e) => {
+        console.log(e);
+      });
 
     const credential = await firebaseInstance.auth.EmailAuthProvider.credential(
       user.email,
