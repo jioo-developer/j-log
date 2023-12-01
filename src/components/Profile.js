@@ -30,9 +30,7 @@ function Profile({ user, navigate, db, authService, storageService }) {
     let password;
     const branch = window.confirm("소셜로그인을 사용하시나요?");
     if (branch) {
-      password = window.prompt(
-        "계정 생성 하셨을 당시 2차 비밀번호를 입력해주세요."
-      );
+      password = window.prompt("2차 비밀번호를 입력해주세요.");
     } else {
       password = window.prompt("비밀번호를 입력해주세요.");
     }
