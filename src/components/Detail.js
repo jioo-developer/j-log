@@ -14,9 +14,7 @@ function Detail({ user, navigate, db, storageService, useInput }) {
   const time = new Date();
 
   useEffect(() => {
-    if (URLID === undefined) {
-      URLID = location.state;
-    }
+    if (!URLID) URLID = location.state;
     async function init() {
       await db
         .collection("post")
@@ -26,7 +24,7 @@ function Detail({ user, navigate, db, storageService, useInput }) {
           setPageData(postArray);
         });
       let cookieCheck = document.cookie;
-      if (cookieCheck === "Cookie=done") {
+      if (cookieCheck === `${URLID}-Cookie=done`) {
         setFavoriteBtn(true);
       } else {
         setFavoriteBtn(false);
@@ -50,18 +48,13 @@ function Detail({ user, navigate, db, storageService, useInput }) {
     const storageRef = storageService.ref();
     if (ok) {
       if (fileNamed !== "") {
-        fileNamed.map(function (a, i) {
-          const imagesRef = storageRef.child(
-            `${pageData.user}/${fileNamed[i]}`
-          );
+        fileNamed.map(function (item) {
+          const imagesRef = storageRef.child(`${pageData.user}/${item}`);
           imagesRef.delete();
         });
       }
 
-      ReplyData.map(function (a, i) {
-        locate.collection("reply").doc(ReplyData[i].id).delete();
-      });
-
+      ReplyData.map((item) => locate.collection("reply").doc(item.id).delete());
       locate.delete();
       navigate("/");
     }
@@ -75,7 +68,7 @@ function Detail({ user, navigate, db, storageService, useInput }) {
           favorite: pageData.favorite + 1,
         })
         .then(() => {
-          setCookie("Cookie", "done", 1);
+          setCookie(`${URLID}-Cookie`, "done", 1);
           setFavoriteBtn(true);
         });
     }
@@ -86,7 +79,7 @@ function Detail({ user, navigate, db, storageService, useInput }) {
   }
 
   useEffect(() => {
-    if (pageData.length !== 0) {
+    if (pageData.length) {
       setFileNamed(pageData.fileName);
 
       let imgTarget = Array.from(document.getElementsByClassName("att"));
@@ -94,13 +87,10 @@ function Detail({ user, navigate, db, storageService, useInput }) {
       imgTarget.map(function (a, i) {
         naturalWidths = document.getElementsByClassName("att")[i].naturalWidth;
         clientWidths = document.getElementsByClassName("att")[i].offsetWidth;
-        if (naturalWidths < clientWidths) {
+        if (naturalWidths < clientWidths)
           imgTarget[i].classList.add("natural-size");
-        }
       });
-      if (imgTarget.length > 1) {
-        grid[0].classList.add("grids");
-      }
+      if (imgTarget.length > 1) grid[0].classList.add("grids");
     }
   }, [pageData]);
 
@@ -116,7 +106,7 @@ function Detail({ user, navigate, db, storageService, useInput }) {
               <p className="date">{pageData.date}</p>
             </div>
             {user.uid === pageData.writer ||
-            user.uid === "Lon5eQWCvHP8ZbwYZ4KHQYanV442" ? (
+            user.uid === "cylx7plFnrccO8Qv7wYXEAd1meG2" ? (
               <>
                 <div className="right_wrap">
                   <Link to={"/edit"} state={{ pageData: pageData }}>
@@ -145,9 +135,7 @@ function Detail({ user, navigate, db, storageService, useInput }) {
               <input
                 type="checkbox"
                 id="favorite_check"
-                onClick={(e) => {
-                  favoriteHandler(e);
-                }}
+                onClick={(e) => favoriteHandler(e)}
               />
               {favoriteBtn !== true ? (
                 <>

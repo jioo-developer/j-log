@@ -2,12 +2,13 @@ import React, { useCallback, useEffect, useState } from "react";
 import TextareaAutosize from "react-textarea-autosize";
 import { useLocation, Link } from "react-router-dom";
 import "../asset/upload.scss";
+import UseInput from "../hook/UseInput";
 function Edit({ user, navigate, db, storageService }) {
   const location = useLocation();
   const correction = location.state.pageData;
   const [pageInfor, setpageInfor] = useState(correction);
-  const [title, setTitle] = useState("");
-  const [text, setText] = useState("");
+  const [title, setTitle] = UseInput("");
+  const [text, setText] = UseInput("");
   const [prevImage, setPrevImage] = useState([]);
 
   useEffect(() => {
@@ -46,20 +47,6 @@ function Edit({ user, navigate, db, storageService }) {
     }
   }
 
-  const onchangeTitle = useCallback(
-    (e) => {
-      setTitle(e.target.value);
-    },
-    [title]
-  );
-
-  const onchangeText = useCallback(
-    (e) => {
-      setText(e.target.value);
-    },
-    [text]
-  );
-
   async function post(e) {
     e.preventDefault(e);
     let resultState = { ...pageInfor };
@@ -92,14 +79,14 @@ function Edit({ user, navigate, db, storageService }) {
           id="title"
           value={title}
           maxLength={120}
-          onChange={onchangeTitle}
+          onChange={(e) => setTitle(e)}
         />
         <div className="textarea">
           <TextareaAutosize
             onHeightChange={(height) => {}}
             className="text"
             value={text}
-            onChange={onchangeText}
+            onChange={(e) => setText(e)}
           />
           <figure>
             {pageInfor.url.map((value, index) => {

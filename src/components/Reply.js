@@ -55,9 +55,9 @@ function Reply({ db, user, ReplyGet }) {
     const btn = e.target.getAttribute("data-id");
     const replys = Array.from(document.querySelectorAll(".reply_text"));
     replys.map((item, index) => {
-      var indexData = item.getAttribute("data-id");
+      const indexData = item.getAttribute("data-id");
       if (btn === indexData) {
-        let copyState = [...reply];
+        const copyState = [...reply];
         copyState[index].boolean = true;
         setReply(copyState);
         setLoadComment(copyState[index].comment);
@@ -78,9 +78,8 @@ function Reply({ db, user, ReplyGet }) {
   function reply_delete(e) {
     const target = e.target.getAttribute("data-id");
     const ok = window.confirm("정말삭제하시겠습니까?");
-    if (ok) {
+    if (ok)
       db.collection("post").doc(URLID).collection("reply").doc(target).delete();
-    }
   }
   function commentUpload(e) {
     e.preventDefault();
@@ -122,7 +121,7 @@ function Reply({ db, user, ReplyGet }) {
                   <p className="reply_date">{com.date}</p>
                 </div>
                 {user.uid === com.uid ||
-                user.uid === "Lon5eQWCvHP8ZbwYZ4KHQYanV442" ? (
+                user.uid === "cylx7plFnrccO8Qv7wYXEAd1meG2" ? (
                   <>
                     <div className="edit_comment">
                       {commentChange === false && com.boolean === false ? (
