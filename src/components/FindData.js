@@ -1,5 +1,5 @@
 import React from "react";
-function FindData({ findToggle, findAction, authService, useInput }) {
+function FindData({ findAction, authService, useInput }) {
   let [findPw, setFindPw] = useInput("");
 
   function resetpw(e) {

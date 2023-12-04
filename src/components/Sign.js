@@ -90,7 +90,6 @@ function Sign({ authService, useInput, user, navigate, db }) {
       </div>
       {findToggle ? (
         <FindData
-          findToggle={findToggle}
           findAction={findAction}
           authService={authService}
           useInput={useInput}
