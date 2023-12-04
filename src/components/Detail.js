@@ -123,7 +123,7 @@ function Detail({ user, navigate, db, storageService, useInput }) {
         <section className="content_wrap">
           <pre className="text">{pageData.text}</pre>
           <div className="grid">
-            {pageData.url !== undefined
+            {pageData.url
               ? pageData.url.map((value, index) => {
                   return <img src={value} className="att" alt="" key={index} />;
                 })
