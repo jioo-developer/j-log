@@ -61,14 +61,13 @@ function App() {
         />
       ) : null}
       <Routes>
-        <Route path="/" element={<Home user={userObj} navigate={navigate} />} />
+        <Route path="/" element={<Home user={userObj} />} />
         <Route
           path="/detail"
           element={
             <Detail
               user={userObj}
               navigate={navigate}
-              dispatch={dispatch}
               db={db}
               storageService={storageService}
               useInput={useInput}
@@ -118,7 +117,6 @@ function App() {
               useInput={useInput}
               user={userObj}
               db={db}
-              dispatch={dispatch}
               navigate={navigate}
             />
           }
