@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import "../asset/upload.scss";
 import TextareaAutosize from "react-textarea-autosize";
 import { useSelector } from "react-redux";
@@ -19,43 +19,42 @@ function Upload({ db, storageService, user, navigate, useInput }) {
     day: time.getDate(),
   };
 
-  const TitleHandler = useCallback(
-    (e) => {
-      setTitle(e);
-    },
-    [setTitle]
-  );
-
-  const textHandler = useCallback(
-    (e) => {
-      setTextarea(e);
-    },
-    [setTextarea]
-  );
-
-  function onFileChange(e) {
+  async function onFileChange(e) {
     const files = Array.from(e.target.files);
-    let copyArray = [...fileData];
-    copyArray.push(...files);
-    setFileData(copyArray);
-    let SaveArray = [];
-    for (var i = 0; i < files.length; i++) {
-      const reader = new FileReader();
-      reader.readAsDataURL(files[i]);
-      reader.onload = (e) => {
-        SaveArray.push(e.target.result);
-        let copyPreview = [...preview];
-        copyPreview.push(...SaveArray);
-        setPreview(copyPreview);
-      };
+    const promiseArr = [];
+    for (let i = 0; i < files.length; i++) {
+      promiseArr.push(asyncLogic(files[i]));
     }
+    return await Promise.all(promiseArr);
+  }
+
+  function asyncLogic(file) {
+    const reader = new FileReader();
+    return new Promise((resolve, reject) => {
+      reader.onload = (e) => {
+        if (e.target.result) {
+          resolve(e.target.result);
+        } else {
+          reject(new Error("이미지 처리 결과가 없습니다."));
+        }
+      };
+      reader.readAsDataURL(file);
+    })
+      .then((result) => {
+        let copyPreview = [...preview];
+        copyPreview.push(result);
+        setPreview(copyPreview);
+      })
+      .catch((err) => {
+        console.log(err);
+      });
   }
 
   async function post(e) {
     e.preventDefault(e);
     let imageArray = [];
     if (title !== "" && textarea !== "") {
-      if (preview.length !== 0) {
+      if (preview.length) {
         for (var i = 0; i < preview.length; i++) {
           const fileRef = storageService
             .ref()
@@ -72,17 +71,12 @@ function Upload({ db, storageService, user, navigate, useInput }) {
         user: user.displayName,
         writer: user.uid,
         date: `${timeData.year}년 ${timeData.month}월 ${timeData.day}일`,
-        url: imageArray.length === 0 ? [] : imageArray,
+        url: imageArray.length ? imageArray : [],
         favorite: 0,
         pageId: pageId,
         profile: user.photoURL,
         timeStamp: serverTimestamp(),
-        fileName:
-          fileData.length === 0
-            ? ""
-            : fileData.map((value, index) => {
-                return fileData[index].name;
-              }),
+        fileName: fileData.length ? fileData.map((value) => value.name) : "",
       };
 
       await db
@@ -109,9 +103,7 @@ function Upload({ db, storageService, user, navigate, useInput }) {
   };
 
   function overlap(params) {
-    const result = posts.some((item) => {
-      return item.id === params;
-    });
+    const result = posts.some((item) => item.id === params);
     return result;
   }
 
@@ -135,7 +127,7 @@ function Upload({ db, storageService, user, navigate, useInput }) {
           id="title"
           placeholder="제목을 입력하세요."
           maxLength={120}
-          onChange={(e) => TitleHandler(e)}
+          onChange={(e) => setTitle(e)}
         />
         <div className="textarea">
           <TextareaAutosize
@@ -144,15 +136,13 @@ function Upload({ db, storageService, user, navigate, useInput }) {
             onHeightChange={(height) => {}}
             className="text"
             placeholder="당신의 이야기를 적어보세요."
-            onChange={(e) => textHandler(e)}
+            onChange={(e) => setTextarea(e)}
           />
           <figure>
             {preview.length !== 0
-              ? preview.map(function (url, i) {
-                  return (
-                    <img src={preview[i]} alt="" className="att" key={i} />
-                  );
-                })
+              ? preview.map((url, index) => (
+                  <img src={url} alt="" className="att" key={index} />
+                ))
               : null}
           </figure>
         </div>
