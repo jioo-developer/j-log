@@ -7,7 +7,7 @@ function Detail({ user, navigate, db, storageService, useInput }) {
   let URLID = location.state.pageId;
   const [pageData, setPageData] = useState([]);
   const [favoriteBtn, setFavoriteBtn] = useState(false);
-  const [fileNamed, setFileNamed] = useState();
+  const [fileNameArr, setFileNameArr] = useState([]);
   const [ReplyData, setReplyData] = useState([]);
   let clientWidths;
   let naturalWidths;
@@ -45,17 +45,16 @@ function Detail({ user, navigate, db, storageService, useInput }) {
     const ok = window.confirm("정말 삭제 하시겠습니까?");
     const locate = db.collection("post").doc(URLID);
     const storageRef = storageService.ref();
-    if (ok) {
-      if (fileNamed !== "") {
-        fileNamed.map(function (item) {
-          const imagesRef = storageRef.child(`${pageData.user}/${item}`);
-          imagesRef.delete();
-        });
-      }
+    if (ok && fileNameArr) {
+      fileNameArr.map(function (item) {
+        const imagesRef = storageRef.child(`${pageData.user}/${item}`);
+        imagesRef.delete();
+      });
 
       ReplyData.map((item) => locate.collection("reply").doc(item.id).delete());
       locate.delete();
       navigate("/");
+      window.location.reload();
     }
   }
 
@@ -78,9 +77,9 @@ function Detail({ user, navigate, db, storageService, useInput }) {
   }
 
   useEffect(() => {
-    if (pageData.length) {
-      setFileNamed(pageData.fileName);
-
+    if (pageData.length !== 0) {
+      console.log(pageData);
+      setFileNameArr(pageData.fileName);
       let imgTarget = Array.from(document.getElementsByClassName("att"));
       let grid = document.getElementsByClassName("grid");
       imgTarget.map(function (a, i) {
