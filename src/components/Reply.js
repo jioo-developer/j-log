@@ -108,7 +108,7 @@ function Reply({ db, user, ReplyGet }) {
     [loadComment]
   );
 
-  return (
+  return user ? (
     <>
       {reply.map(function (com, index) {
         return (
@@ -124,7 +124,7 @@ function Reply({ db, user, ReplyGet }) {
                 user.uid === "cylx7plFnrccO8Qv7wYXEAd1meG2" ? (
                   <>
                     <div className="edit_comment">
-                      {commentChange === false && com.boolean === false ? (
+                      {!commentChange && !com.boolean ? (
                         <div
                           className="edit btns"
                           data-index={index}
@@ -133,7 +133,7 @@ function Reply({ db, user, ReplyGet }) {
                         >
                           수정
                         </div>
-                      ) : commentChange === true && com.boolean === true ? (
+                      ) : commentChange && com.boolean ? (
                         <div
                           className="edit btns"
                           data-index={index}
@@ -163,11 +163,11 @@ function Reply({ db, user, ReplyGet }) {
                   </>
                 ) : null}
               </div>
-              {commentChange === false && com.boolean === false ? (
+              {!commentChange && !com.boolean ? (
                 <p className={`reply_text`} data-id={com.id}>
                   {com.comment}
                 </p>
-              ) : commentChange === true && com.boolean === true ? (
+              ) : commentChange && com.boolean ? (
                 <input
                   type="text"
                   className={`reply_input  form-control`}
@@ -196,7 +196,7 @@ function Reply({ db, user, ReplyGet }) {
         <button className="btn">댓글 작성</button>
       </form>
     </>
-  );
+  ) : null;
 }
 
 export default Reply;

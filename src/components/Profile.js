@@ -7,13 +7,9 @@ function Profile({ user, navigate, db, authService, storageService }) {
   const [NameEdit, setNameEdit] = useState(false);
   const [title, setTitle] = useState("");
   const [filter, setFilter] = useState([]);
-  const [LoginAwait, setAwait] = useState(false);
 
   useEffect(() => {
-    if (user) {
-      setAwait(true);
-      setTitle(user.displayName);
-    }
+    if (user) setTitle(user.displayName);
   }, [user]);
 
   useEffect(() => {
@@ -96,7 +92,7 @@ function Profile({ user, navigate, db, authService, storageService }) {
     }
   }
 
-  return LoginAwait ? (
+  return user ? (
     <div className="profile_wrap">
       <section className="content">
         <div className="profile_area">

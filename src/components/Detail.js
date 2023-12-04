@@ -12,7 +12,6 @@ function Detail({ user, navigate, db, storageService, useInput }) {
   let clientWidths;
   let naturalWidths;
   const time = new Date();
-
   useEffect(() => {
     if (!URLID) URLID = location.state;
     async function init() {
@@ -94,7 +93,7 @@ function Detail({ user, navigate, db, storageService, useInput }) {
     }
   }, [pageData]);
 
-  return (
+  return user ? (
     <div className="detail_wrap">
       <div className="in_wrap">
         <section className="sub_header">
@@ -159,7 +158,7 @@ function Detail({ user, navigate, db, storageService, useInput }) {
         </section>
       </div>
     </div>
-  );
+  ) : null;
 }
 
 export default Detail;

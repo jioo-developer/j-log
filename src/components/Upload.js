@@ -19,40 +19,27 @@ function Upload({ db, storageService, user, navigate, useInput }) {
     day: time.getDate(),
   };
 
-  async function onFileChange(e) {
+  function onFileChange(e) {
     const files = Array.from(e.target.files);
-    const promiseArr = [];
-    for (let i = 0; i < files.length; i++) {
-      promiseArr.push(asyncLogic(files[i]));
-    }
-    return await Promise.all(promiseArr);
-  }
-
-  function asyncLogic(file) {
-    const reader = new FileReader();
-    return new Promise((resolve, reject) => {
-      reader.onload = (e) => {
-        if (e.target.result) {
-          resolve(e.target.result);
-        } else {
-          reject(new Error("이미지 처리 결과가 없습니다."));
-        }
-      };
-      reader.readAsDataURL(file);
-    })
-      .then((result) => {
-        let copyPreview = [...preview];
-        copyPreview.push(result);
+    const copyArray = [...fileData];
+    copyArray.push(...files);
+    setFileData(copyArray);
+    const SaveArray = [];
+    for (var i = 0; i < files.length; i++) {
+      const reader = new FileReader();
+      reader.readAsDataURL(files[i]);
+      reader.onloadend = (e) => {
+        SaveArray.push(e.target.result);
+        const copyPreview = [...preview];
+        copyPreview.push(...SaveArray);
         setPreview(copyPreview);
-      })
-      .catch((err) => {
-        console.log(err);
-      });
+      };
+    }
   }
 
   async function post(e) {
     e.preventDefault(e);
-    let imageArray = [];
+    const imageArray = [];
     if (title !== "" && textarea !== "") {
       if (preview.length) {
         for (var i = 0; i < preview.length; i++) {
@@ -96,20 +83,17 @@ function Upload({ db, storageService, user, navigate, useInput }) {
   const generateRandomString = (num) => {
     const words = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
     let result = "";
-    for (var i = 0; i < num; i++) {
+    for (var i = 0; i < num; i++)
       result += words.charAt(Math.floor(Math.random() * words.length));
-    }
     return result;
   };
 
   function overlap(params) {
-    const result = posts.some((item) => item.id === params);
-    return result;
+    return posts.some((item) => item.id === params);
   }
 
   useEffect(() => {
     let randomStr = generateRandomString(20);
-    overlap(randomStr);
     if (overlap(randomStr)) {
       randomStr = generateRandomString(20);
       setPageId(randomStr);
@@ -139,7 +123,7 @@ function Upload({ db, storageService, user, navigate, useInput }) {
             onChange={(e) => setTextarea(e)}
           />
           <figure>
-            {preview.length !== 0
+            {preview.length
               ? preview.map((url, index) => (
                   <img src={url} alt="" className="att" key={index} />
                 ))
