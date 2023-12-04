@@ -137,7 +137,7 @@ function Detail({ user, navigate, db, storageService, useInput }) {
                 id="favorite_check"
                 onClick={(e) => favoriteHandler(e)}
               />
-              {favoriteBtn !== true ? (
+              {!favoriteBtn ? (
                 <>
                   <label htmlFor="favorite_check" className="favorite_btn">
                     <span>👍</span>추천&nbsp;{pageData.favorite}
