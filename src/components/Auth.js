@@ -37,12 +37,11 @@ function Auth({ navigate, authService, db, useInput }) {
           .createUserWithEmailAndPassword(email, password)
           .then((result) => {
             db.collection("nickname").doc(nickname).set({ nickname: nickname });
-            window.alert("회원가입을 환영합니다.");
-
             result.user.updateProfile({
               displayName: nickname,
               photoURL: "./img/default.svg",
             });
+            window.alert("회원가입을 환영합니다.");
             navigate("/");
           })
           .catch((error) => {
