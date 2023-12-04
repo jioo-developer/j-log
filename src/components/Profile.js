@@ -35,47 +35,27 @@ function Profile({ user, navigate, db, authService, storageService }) {
       password = window.prompt("비밀번호를 입력해주세요.");
     }
     localStorage.removeItem("authCookie");
-    // db.collection("delete").doc(`${user.uid}`).set({ 상태: "탈퇴" });
-    // db.collection("nickname").doc(user.displayName).delete(); //try & catch
-    const storageRef = storageService.ref();
-    const ProfileimagesRef = storageRef.child(`${user.uid}-profile/`);
-    const imagesRef = storageRef.child(`${user.uid}/`);
-    console.log(ProfileimagesRef);
-    console.log(imagesRef);
-    // ProfileimagesRef.delete()
-    //   .then(() => {
-    //     console.log("성공");
-    //   })
-    //   .catch((e) => {
-    //     console.log(e);
-    //   });
-    // imagesRef
-    //   .delete()
-    //   .then(() => {
-    //     console.log("성공");
-    //   })
-    //   .catch((e) => {
-    //     console.log(e);
-    //   });
+    db.collection("delete").doc(`${user.uid}`).set({ 상태: "탈퇴" });
+    db.collection("nickname").doc(user.displayName).delete();
 
-    // const credential = await firebaseInstance.auth.EmailAuthProvider.credential(
-    //   user.email,
-    //   password
-    // );
-    // const userDelete = authService.currentUser;
-    // userDelete
-    //   .reauthenticateWithCredential(credential)
-    //   .then(() => {
-    //     userDelete.delete().then(() => {
-    //       window.alert("회원탈퇴 되었습니다.");
-    //       authService.signOut();
-    //       navigate("/");
-    //       window.location.reload();
-    //     });
-    //   })
-    //   .catch(() => {
-    //     window.alert("암호가 잘못되었거나 사용자에게 암호가 없습니다.");
-    //   });
+    const credential = await firebaseInstance.auth.EmailAuthProvider.credential(
+      user.email,
+      password
+    );
+    const userDelete = authService.currentUser;
+    userDelete
+      .reauthenticateWithCredential(credential)
+      .then(() => {
+        userDelete.delete().then(() => {
+          window.alert("회원탈퇴 되었습니다.");
+          authService.signOut();
+          navigate("/");
+          window.location.reload();
+        });
+      })
+      .catch(() => {
+        window.alert("암호가 잘못되었거나 사용자에게 암호가 없습니다.");
+      });
   }
 
   //프로필 이미지 변경 함수
@@ -88,9 +68,7 @@ function Profile({ user, navigate, db, authService, storageService }) {
   }
 
   async function ImgUpload(imageurl, uploadfile) {
-    const fileRef = storageService
-      .ref()
-      .child(`${user.uid}-profile/${uploadfile.name}`);
+    const fileRef = storageService.ref().child(`profiles/${uploadfile.name}`);
     const response = await fileRef.putString(imageurl, "data_url");
     const profileUrl = await response.ref.getDownloadURL();
 
