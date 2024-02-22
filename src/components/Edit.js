@@ -2,13 +2,12 @@ import React, { useCallback, useEffect, useState } from "react";
 import TextareaAutosize from "react-textarea-autosize";
 import { useLocation, Link } from "react-router-dom";
 import "../asset/upload.scss";
-import UseInput from "../hook/UseInput";
 function Edit({ user, navigate, db, storageService }) {
   const location = useLocation();
   const correction = location.state.pageData;
   const [pageInfor, setpageInfor] = useState(correction);
-  const [title, setTitle] = UseInput("");
-  const [text, setText] = UseInput("");
+  const [title, setTitle] = useState("");
+  const [text, setText] = useState("");
   const [prevImage, setPrevImage] = useState([]);
 
   useEffect(() => {

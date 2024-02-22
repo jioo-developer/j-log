@@ -1,6 +1,6 @@
 import React from "react";
-function FindData({ findAction, authService, useInput }) {
-  let [findPw, setFindPw] = useInput("");
+function FindData({ findAction, authService, useState }) {
+  let [findPw, setFindPw] = useState("");
 
   function resetpw(e) {
     e.preventDefault();

@@ -4,41 +4,30 @@ import "./index.css";
 import App from "./App";
 import reportWebVitals from "./reportWebVitals";
 import { BrowserRouter } from "react-router-dom";
-import { Provider } from "react-redux";
 import { applyMiddleware, createStore } from "redux";
 import logger from "redux-logger";
+import { QueryClient, QueryClientProvider } from "react-query";
+import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 
-const initialState = {
-  posts: [],
-};
+const initialState = {};
 
-const POSTDATA = "POSTDATA";
-
-export const PostLoad = (data) => ({
-  type: POSTDATA,
-  data,
-});
-
-function reducer(state = initialState, action) {
+function reducer(state = initialState, action: any) {
   switch (action.type) {
-    case POSTDATA:
-      return {
-        ...state,
-        posts: action.data,
-      };
-
     default:
       return state;
   }
 }
 let store = createStore(reducer, applyMiddleware(logger));
 
+const queryClient = new QueryClient();
+
 ReactDOM.render(
   <React.StrictMode>
     <BrowserRouter>
-      <Provider store={store}>
+      <QueryClientProvider client={queryClient}>
         <App />
-      </Provider>
+        <ReactQueryDevtools />
+      </QueryClientProvider>
     </BrowserRouter>
   </React.StrictMode>,
   document.getElementById("root")

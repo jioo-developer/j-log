@@ -2,12 +2,13 @@ import React, { useEffect, useState } from "react";
 import "../asset/auth.scss";
 import { Link } from "react-router-dom";
 
-function Auth({ navigate, authService, db, useInput }) {
-  const [email, setEmail] = useInput("");
-  const [password, setPassword] = useInput("");
-  const [nickname, setNickname] = useInput("");
+function Auth({ navigate, authService, db, useState }) {
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [nickname, setNickname] = useState("");
   const [nickFilter, setFilter] = useState([]);
   const [checkArr, setCheck] = useState([]);
+  const testArr = [];
   const authData = [
     { id: "auth", text: "회원가입및 운영약관 동의", important: true },
     { id: "data", text: "개인정보 수집 및 동의", important: true },
@@ -21,6 +22,7 @@ function Auth({ navigate, authService, db, useInput }) {
           ...doc.data(),
           id: doc.id,
         }));
+        testArr.push(NIckData);
         setFilter(NIckData);
       });
     }

@@ -3,13 +3,13 @@ import "../asset/upload.scss";
 import TextareaAutosize from "react-textarea-autosize";
 import { useSelector } from "react-redux";
 import { serverTimestamp } from "firebase/firestore";
-function Upload({ db, storageService, user, navigate, useInput }) {
-  const [title, setTitle] = useInput("");
-  const [textarea, setTextarea] = useInput("");
+function Upload({ db, storageService, user, navigate, useState }) {
+  const [title, setTitle] = useState("");
+  const [textarea, setTextarea] = useState("");
   const [fileData, setFileData] = useState("");
   const [preview, setPreview] = useState([]);
   const [pageId, setPageId] = useState("");
-  const posts = useSelector((state) => state.posts);
+  const posts = [];
 
   const time = new Date();
 

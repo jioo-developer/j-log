@@ -3,9 +3,9 @@ import { Link } from "react-router-dom";
 import "../asset/Sign.scss";
 import FindData from "./FindData";
 import SocialSign from "./SocialSign";
-function Sign({ authService, useInput, user, navigate, db }) {
-  const [id, setId] = useInput("");
-  const [password, setPassword] = useInput("");
+function Sign({ authService, useState, user, navigate, db }) {
+  const [id, setId] = useState("");
+  const [password, setPassword] = useState("");
   const [findToggle, setFIndToggle] = useState(false);
 
   useEffect(() => {
@@ -92,7 +92,7 @@ function Sign({ authService, useInput, user, navigate, db }) {
         <FindData
           findAction={findAction}
           authService={authService}
-          useInput={useInput}
+          useState={useState}
         />
       ) : null}
     </>
