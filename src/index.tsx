@@ -1,5 +1,5 @@
 import React from "react";
-import ReactDOM from "react-dom";
+import ReactDOM from "react-dom"; // 이 줄을 추가
 import "./index.css";
 import App from "./App";
 import reportWebVitals from "./reportWebVitals";
@@ -7,7 +7,8 @@ import { BrowserRouter } from "react-router-dom";
 import { applyMiddleware, createStore } from "redux";
 import logger from "redux-logger";
 import { QueryClient, QueryClientProvider } from "react-query";
-import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
+import { ReactQueryDevtools } from "react-query/devtools";
+// import { QueryClient, QueryClientProvider } from "react-query";
 
 const initialState = {};
 
