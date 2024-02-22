@@ -29,5 +29,7 @@ export async function loadUser() {
       }
       unsubscribe();
     });
+  }).catch((error) => {
+    console.log(JSON.stringify(error));
   });
 }

@@ -3,14 +3,10 @@ import { Link } from "react-router-dom";
 import "../asset/Sign.scss";
 import FindData from "./FindData";
 import SocialSign from "./SocialSign";
-function Sign({ authService, useState, user, navigate, db }) {
+function Sign({ authService, user, navigate, db }) {
   const [id, setId] = useState("");
   const [password, setPassword] = useState("");
   const [findToggle, setFIndToggle] = useState(false);
-
-  useEffect(() => {
-    if (user) navigate("/");
-  }, [user]);
 
   async function LoginLogic(e) {
     e.preventDefault();

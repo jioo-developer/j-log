@@ -1,9 +1,7 @@
-import React from "react";
 import { Link } from "react-router-dom";
 import "../asset/home.scss";
 import "../asset/header.scss";
-import { useSelector } from "react-redux";
-function Home({ user }) {
+function Home() {
   const posts = [];
   return (
     <div className="main">

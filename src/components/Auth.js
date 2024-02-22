@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import "../asset/auth.scss";
 import { Link } from "react-router-dom";
 
-function Auth({ navigate, authService, db, useState }) {
+function Auth({ navigate, authService, db }) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [nickname, setNickname] = useState("");

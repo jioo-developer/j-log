@@ -1,8 +1,10 @@
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import { useMyContext } from "../module/MyContext";
+import { authService } from "../Firebase";
 function Header() {
-  const { navigate, authService, userData } = useMyContext();
+  const { navigate } = useMyContext();
+  const userData = {};
   function logout() {
     authService.signOut();
     navigate("/");
@@ -13,7 +15,7 @@ function Header() {
         <Link to="/">{userData.displayName}.log</Link>
       </p>
 
-      <div className="menu" onClick={() => setNavToggle((prev) => !prev)}>
+      <div className="menu">
         <img
           src={userData.photoURL}
           alt=""
@@ -29,7 +31,7 @@ function Header() {
         로그인
       </button>
       <ul className="sub_menu">
-        <li onClick={() => setNavToggle((prev) => !prev)}>
+        <li>
           <Link to="/profile">설정</Link>
         </li>
         <li onClick={logout}>로그아웃</li>

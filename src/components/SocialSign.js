@@ -1,6 +1,6 @@
 import React from "react";
-import { firebaseInstance } from "../Firebase";
-function SocialSign({ authService, db }) {
+import { authService, db, firebaseInstance } from "../Firebase";
+function SocialSign() {
   let provider;
   async function onGoogle() {
     provider = await new firebaseInstance.auth.GoogleAuthProvider();

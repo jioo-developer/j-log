@@ -1,14 +1,13 @@
 import { useQuery } from "react-query";
+import { loadUser } from "../module/exportFunction";
 
-const useLoadUser = (func: any) => {
-  const { isLoading, isError, data, error } = useQuery({
-    queryKey: ["loadUser"],
-    queryFn: func,
-    onSuccess: (data) => {
+const useLoadUser = () => {
+  const { isLoading, data, isError, error } = useQuery("loadUser", loadUser, {
+    onSuccess(data) {
       console.log(data);
     },
-    onError: (error) => {
-      console.log(error);
+    onError(err) {
+      console.log(err);
     },
   });
 
