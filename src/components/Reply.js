@@ -2,7 +2,7 @@ import React, { useCallback, useEffect, useState } from "react";
 import TextareaAutosize from "react-textarea-autosize";
 import { serverTimestamp } from "firebase/firestore";
 import { useLocation } from "react-router-dom";
-function Reply({ db, user, ReplyGet }) {
+function Reply() {
   const location = useLocation();
   let URLID = location.state.pageId;
   const [commentChange, setCommentChange] = useState(false);

@@ -2,7 +2,8 @@ import { Link } from "react-router-dom";
 import "../asset/home.scss";
 import "../asset/header.scss";
 function Home() {
-  const posts = [];
+  const posts: any[] = [];
+  const user = "";
   return (
     <div className="main">
       <div className="in_wrap">

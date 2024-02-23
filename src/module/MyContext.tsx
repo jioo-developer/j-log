@@ -17,7 +17,7 @@ const MyContext = createContext<MyContextProps>({
   navigate: () => {},
   dispatch: () => {},
 });
-// 이거 ts 때매 쓰네 (context 초기값);
+// 이거 (context 초기값);
 // 함수의 초기값 () => {}
 
 // context provider

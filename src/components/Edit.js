@@ -2,7 +2,7 @@ import React, { useCallback, useEffect, useState } from "react";
 import TextareaAutosize from "react-textarea-autosize";
 import { useLocation, Link } from "react-router-dom";
 import "../asset/upload.scss";
-function Edit({ user, navigate, db, storageService }) {
+function Edit() {
   const location = useLocation();
   const correction = location.state.pageData;
   const [pageInfor, setpageInfor] = useState(correction);

@@ -1,8 +1,20 @@
-import { useQuery } from "react-query";
+import { QueryObserverResult, useQuery } from "react-query";
 import { loadUser } from "../module/exportFunction";
 
+interface LoadUserHookResult {
+  displayName: string;
+  email: string;
+  photoURL: string;
+  uid: string;
+}
+
 const useLoadUser = () => {
-  const { isLoading, data, isError, error } = useQuery("loadUser", loadUser, {
+  const {
+    isLoading,
+    data,
+    isError,
+    error,
+  }: QueryObserverResult<LoadUserHookResult> = useQuery("loadUser", loadUser, {
     onSuccess(data) {
       console.log(data);
     },

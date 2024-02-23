@@ -3,7 +3,7 @@ import "../asset/profile.scss";
 import { firebaseInstance } from "../Firebase";
 import "../asset/header.scss";
 
-function Profile({ user, navigate, db, authService, storageService }) {
+function Profile() {
   const [NameEdit, setNameEdit] = useState(false);
   const [title, setTitle] = useState("");
   const [filter, setFilter] = useState([]);

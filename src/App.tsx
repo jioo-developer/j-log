@@ -6,12 +6,10 @@ import Upload from "./components/Upload";
 import Detail from "./components/Detail";
 import Profile from "./components/Profile";
 import Edit from "./components/Edit";
-import Header from "./components/Header.js";
-import useLoadUser from "./query/loadUser";
+import Header from "./components/Header";
 
 function App() {
   const location = window.location.pathname;
-  const data = useLoadUser();
   return (
     <div className="App">
       {location === "/" || location === "/profile" || location === "/detail" ? (

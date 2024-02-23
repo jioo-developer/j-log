@@ -1,5 +1,5 @@
 import React from "react";
-function FindData({ findAction, authService, useState }) {
+function FindData() {
   let [findPw, setFindPw] = useState("");
 
   function resetpw(e) {

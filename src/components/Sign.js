@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 import "../asset/Sign.scss";
 import FindData from "./FindData";
 import SocialSign from "./SocialSign";
-function Sign({ authService, user, navigate, db }) {
+function Sign() {
   const [id, setId] = useState("");
   const [password, setPassword] = useState("");
   const [findToggle, setFIndToggle] = useState(false);

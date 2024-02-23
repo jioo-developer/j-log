@@ -1,3 +1,4 @@
+import { resolve } from "path";
 import { authService, db, storageService } from "../Firebase";
 
 export async function loadPost() {
@@ -28,6 +29,23 @@ export async function loadUser() {
         reject({});
       }
       unsubscribe();
+    });
+  }).catch((error) => {
+    console.log(JSON.stringify(error));
+  });
+}
+
+export async function loadNickName() {
+  return new Promise((resolve, reject) => {
+    db.collection("nickname").onSnapshot((snapshot) => {
+      const data = snapshot.docs.map((doc) => ({
+        ...doc.data(),
+      }));
+      if (data.length > 0) {
+        resolve(data);
+      } else {
+        reject([]);
+      }
     });
   }).catch((error) => {
     console.log(JSON.stringify(error));

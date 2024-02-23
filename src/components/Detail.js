@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import "../asset/detail.scss";
 import { useLocation, Link } from "react-router-dom";
 import Reply from "./Reply";
-function Detail({ user, navigate, db, storageService, useInput }) {
+function Detail() {
   const location = useLocation();
   let URLID = location.state.pageId;
   const [pageData, setPageData] = useState([]);
