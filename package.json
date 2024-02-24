@@ -17,7 +17,7 @@
     "react-query": "^3.39.3",
     "react-redux": "^9.1.0",
     "react-router-dom": "^6.22.1",
-    "react-scripts": "4.0.3",
+    "react-scripts": "^5.0.1",
     "react-textarea-autosize": "^8.3.3",
     "redux": "^5.0.1",
     "redux-logger": "^3.0.6",
@@ -51,6 +51,7 @@
     ]
   },
   "devDependencies": {
+    "@babel/plugin-proposal-private-property-in-object": "^7.21.11",
     "classnames": "^2.3.2",
     "react-icons": "^4.6.0"
   }
