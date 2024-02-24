@@ -1,25 +1,26 @@
-import React from "react";
-function FindData() {
+import { FormEvent, useState } from "react";
+import { authService } from "../Firebase";
+function FindData({ findAction }: { findAction: (params: boolean) => void }) {
   let [findPw, setFindPw] = useState("");
 
-  function resetpw(e) {
+  function resetpw(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
-    if (findPw !== "") {
-      authService
-        .sendPasswordResetEmail(findPw)
-        .then(() => {
-          window.alert("입력하신 메일로 비밀번호 안내드렸습니다.");
-          findAction((prev) => !prev);
-        })
-        .catch((error) => {
+    authService
+      .sendPasswordResetEmail(findPw)
+      .then(() => {
+        window.alert("입력하신 메일로 비밀번호 안내드렸습니다.");
+        findAction(false);
+      })
+      .catch((error) => {
+        if (error instanceof Error) {
           if (
-            error.massage ===
+            error.message ===
             "There is no user record corresponding to this identifier. The user may have been deleted."
           ) {
             window.alert("해당 이메일이 존재하지 않습니다");
           }
-        });
-    }
+        }
+      });
   }
 
   return (
@@ -33,10 +34,10 @@ function FindData() {
             placeholder="이메일을 입력하세요."
             required
             value={findPw}
-            onChange={(e) => setFindPw(e)}
+            onChange={(e) => setFindPw(e.target.value)}
           />
           <div className="btn_wrap">
-            <div className="btn" onClick={() => findAction((prev) => !prev)}>
+            <div className="btn" onClick={() => findAction(false)}>
               취소
             </div>
             <button className="btn">완료</button>

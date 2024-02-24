@@ -1,11 +1,10 @@
-import { resolve } from "path";
-import { authService, db, storageService } from "../Firebase";
+import { authService, db } from "../Firebase";
 
 export async function loadPost() {
   return new Promise((resolve, reject) => {
     const collectionRef = db.collection("post").orderBy("timeStamp", "asc");
     collectionRef.onSnapshot((snapshot: any) => {
-      if (snapshot.docs.length) {
+      if (snapshot.docs.length > 0) {
         const postArray = snapshot.docs.map((doc: any) => {
           return {
             ...doc.data(),

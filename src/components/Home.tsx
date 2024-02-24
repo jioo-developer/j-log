@@ -1,9 +1,12 @@
 import { Link } from "react-router-dom";
 import "../asset/home.scss";
 import "../asset/header.scss";
-function Home() {
-  const posts: any[] = [];
-  const user = "";
+import { LoadUserHookResult } from "../query/loadUser";
+import useLoadPost from "../query/loadPost";
+
+function Home({ data }: { data: LoadUserHookResult | undefined }) {
+  const load = useLoadPost();
+  const posts = load.data;
   return (
     <div className="main">
       <div className="in_wrap">
@@ -43,7 +46,7 @@ function Home() {
               })
             : null}
         </section>
-        {user ? (
+        {data ? (
           <button className="new-post">
             <Link to="/upload">
               <img src="./img/add.svg" alt="" />

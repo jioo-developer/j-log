@@ -7,22 +7,34 @@ import Detail from "./components/Detail";
 import Profile from "./components/Profile";
 import Edit from "./components/Edit";
 import Header from "./components/Header";
+import useLoadUser from "./query/loadUser";
+import { useMyContext } from "./module/MyContext";
+import { useEffect } from "react";
 
 function App() {
+  const { navigate } = useMyContext();
+  const { data } = useLoadUser();
   const location = window.location.pathname;
+  useEffect(() => {
+    if (!data && navigate) {
+      navigate("sign");
+    } else if (data) {
+      navigate("/");
+    }
+  }, [data, navigate]);
   return (
     <div className="App">
-      {location === "/" || location === "/profile" || location === "/detail" ? (
-        <Header />
+      {(data && location !== "edit") || (data && location !== "upload") ? (
+        <Header data={data} />
       ) : null}
       <Routes>
-        <Route path="/" element={<Home />} />
-        <Route path="/detail" element={<Detail />} />
-        <Route path="/profile" element={<Profile />} />
-        <Route path="/upload" element={<Upload />} />
-        <Route path="/edit" element={<Edit />} />
-        <Route path="/sign" element={<Sign />} />
-        <Route path="/Auth" element={<Auth />} />
+        <Route path="/" element={<Home data={data} />}></Route>
+        <Route path="/detail" element={<Detail />}></Route>
+        <Route path="/profile" element={<Profile data={data} />}></Route>
+        <Route path="/upload" element={<Upload />}></Route>
+        <Route path="/edit" element={<Edit />}></Route>
+        <Route path="/sign" element={<Sign />}></Route>
+        <Route path="/Auth" element={<Auth />}></Route>
       </Routes>
     </div>
   );

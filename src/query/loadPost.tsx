@@ -1,16 +1,16 @@
-import { useQuery } from "react-query";
+import { QueryObserverResult, useQuery } from "react-query";
+import { loadPost } from "../module/exportFunction";
 
-const useLoadDataQuery = (func: any) => {
-  const { isLoading, isError, data, error } = useQuery({
-    queryKey: ["loadPost"],
-    queryFn: func,
-    onSuccess: (data) => {
-      console.log(data);
-    },
-    onError: (error) => {
-      console.log(error);
-    },
-  });
+const useLoadPost = () => {
+  const { isLoading, data, isError, error }: QueryObserverResult<any[]> =
+    useQuery("loadPost", loadPost, {
+      onSuccess(data) {
+        console.log(data);
+      },
+      onError(err) {
+        console.log(err);
+      },
+    });
 
   return {
     isLoading,
@@ -20,4 +20,4 @@ const useLoadDataQuery = (func: any) => {
   };
 };
 
-export default useLoadDataQuery;
+export default useLoadPost;

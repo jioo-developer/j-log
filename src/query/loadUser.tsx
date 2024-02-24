@@ -1,11 +1,12 @@
 import { QueryObserverResult, useQuery } from "react-query";
 import { loadUser } from "../module/exportFunction";
 
-interface LoadUserHookResult {
+export interface LoadUserHookResult {
   displayName: string;
   email: string;
   photoURL: string;
   uid: string;
+  updateProfile(): void;
 }
 
 const useLoadUser = () => {

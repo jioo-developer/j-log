@@ -1,4 +1,4 @@
-import { ChangeEvent, useEffect, useState } from "react";
+import { ChangeEvent, FormEvent, useEffect, useState } from "react";
 import "../asset/auth.scss";
 import { Link } from "react-router-dom";
 import { authService, db } from "../Firebase";
@@ -10,6 +10,7 @@ function Auth() {
   const [password, setPassword] = useState("");
   const [nickname, setNickname] = useState("");
   const [checkArr, setCheck] = useState<string[]>([]);
+  const [disabledCheck, setDisable] = useState<boolean>(true);
   const { navigate } = useMyContext();
   const { data } = useLoadNickName();
   const authData = [
@@ -18,55 +19,52 @@ function Auth() {
     { id: "location", text: "위치정보 이용약관 동의", important: false },
   ];
 
-  function signHelper(e: MouseEvent) {
+  function signHelper(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
+    if (data && data.length > 0) {
+      const overlapFilter = data.some(
+        (item: LoadNickFilter) => item.nickname === nickname
+      );
+      if (overlapFilter) {
+        window.alert("이미 사용중인 닉네임 입니다.");
+        setNickname("");
+      } else {
+        authService
+          .createUserWithEmailAndPassword(email, password)
+          .then((result) => {
+            if (Object.entries(result).length > 0) {
+              db.collection("nickname")
+                .doc(nickname)
+                .set({ nickname: nickname })
+                .then(() => {
+                  if (result.user !== null) {
+                    result.user.updateProfile({
+                      displayName: nickname,
+                      photoURL: "./img/default.svg",
+                    });
+                  }
+                });
 
-    if (nickname !== "" && email !== "" && password !== "") {
-      if (data && data.length > 0) {
-        const overlapFilter = data.some(
-          (item: LoadNickFilter) => item.nickname === nickname
-        );
-        if (overlapFilter) {
-          window.alert("이미 사용중인 닉네임 입니다.");
-          setNickname("");
-        } else {
-          authService
-            .createUserWithEmailAndPassword(email, password)
-            .then((result) => {
-              if (Object.entries(result).length > 0) {
-                db.collection("nickname")
-                  .doc(nickname)
-                  .set({ nickname: nickname })
-                  .then(() => {
-                    if (result.user !== null) {
-                      result.user.updateProfile({
-                        displayName: nickname,
-                        photoURL: "./img/default.svg",
-                      });
-                    }
-                  });
-
-                window.alert("회원가입을 환영합니다.");
-                navigate("/");
-              }
-            })
-            .catch((error) => {
-              if (error.message === "The email address is badly formatted.") {
-                window.alert("올바른 이메일 형식이 아닙니다.");
-              } else if (
-                error.message === "Password should be at least 6 characters"
-              ) {
-                window.alert("비밀번호가 너무짧습니다.");
-              } else if (
-                error.message ===
-                "The email address is already in use by another account."
-              ) {
-                window.alert("이미 사용중인 이메일입니다.");
-              } else {
-                window.alert(error.message);
-              }
-            });
-        }
+              window.alert("회원가입을 환영합니다.");
+              navigate("/");
+            }
+          })
+          .catch((error) => {
+            if (error.message === "The email address is badly formatted.") {
+              window.alert("올바른 이메일 형식이 아닙니다.");
+            } else if (
+              error.message === "Password should be at least 6 characters"
+            ) {
+              window.alert("비밀번호가 너무짧습니다.");
+            } else if (
+              error.message ===
+              "The email address is already in use by another account."
+            ) {
+              window.alert("이미 사용중인 이메일입니다.");
+            } else {
+              window.alert(error.message);
+            }
+          });
       }
     }
   }
@@ -96,11 +94,15 @@ function Auth() {
     const important1 = checkArr.includes("auth");
     const important2 = checkArr.includes("data");
     if (important1 && important2) {
-      return true;
+      setDisable(false);
     } else {
-      return false;
+      setDisable(true);
     }
   }
+
+  useEffect(() => {
+    importantCheck();
+  }, [checkArr]);
 
   return (
     <div className="Auth_wrap">
@@ -110,7 +112,10 @@ function Auth() {
         </Link>
         <p>회원가입</p>
       </div>
-      <form className="auth-form">
+      <form
+        className="auth-form"
+        onSubmit={(e: FormEvent<HTMLFormElement>) => signHelper(e)}
+      >
         <p className="id_title">
           이메일&nbsp;<span>*</span>
         </p>
@@ -169,7 +174,7 @@ function Auth() {
               }
             >
               {checkArr.length === authData.length ? (
-                <img src="./img/checked.svg" />
+                <img src="./img/checked.svg" alt="체크" />
               ) : null}
             </label>
             <p className="check_text">전체 약관 동의</p>
@@ -198,7 +203,7 @@ function Auth() {
                     }
                   >
                     {checkArr.includes(data.id) ? (
-                      <img src="./img/checked.svg" />
+                      <img src="./img/checked.svg" alt="체크" />
                     ) : null}
                   </label>
                   <p className="check_text">
@@ -213,9 +218,9 @@ function Auth() {
           </ul>
         </section>
         <button
-          className={importantCheck() ? "btn" : "un_btn"}
-          disabled={importantCheck()}
-          onClick={() => (e: MouseEvent) => signHelper(e)}
+          className={!disabledCheck ? "btn" : "un_btn"}
+          disabled={disabledCheck}
+          type="submit"
         >
           회원가입
         </button>

@@ -1,15 +1,15 @@
 import { Link } from "react-router-dom";
 import { useMyContext } from "../module/MyContext";
 import { authService } from "../Firebase";
-import useLoadUser from "../query/loadUser";
 import { useState } from "react";
-function Header() {
+import { LoadUserHookResult } from "../query/loadUser";
+function Header({ data }: { data: LoadUserHookResult }) {
   const [menuToggle, setToggle] = useState(false);
   const { navigate } = useMyContext();
-  const { data } = useLoadUser();
   function logout() {
-    authService.signOut();
-    navigate("/sign");
+    authService.signOut().then(() => {
+      navigate("sign");
+    });
   }
   return (
     <header>
@@ -35,7 +35,7 @@ function Header() {
               <li>
                 <Link to="/profile">설정</Link>
               </li>
-              <li onClick={logout}>로그아웃</li>
+              <li onClick={() => logout()}>로그아웃</li>
             </ul>
           ) : null}
         </>
