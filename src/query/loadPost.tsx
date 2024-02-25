@@ -1,5 +1,5 @@
 import { QueryObserverResult, useQuery } from "react-query";
-import { loadPost } from "../module/exportFunction";
+import { loadPost } from "../module/exportQueryFunction";
 
 const useLoadPost = () => {
   const { isLoading, data, isError, error }: QueryObserverResult<any[]> =

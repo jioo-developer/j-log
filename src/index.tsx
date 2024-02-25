@@ -4,21 +4,8 @@ import "./index.css";
 import App from "./App";
 import reportWebVitals from "./reportWebVitals";
 import { BrowserRouter } from "react-router-dom";
-// import { applyMiddleware, createStore } from "redux";
-// import logger from "redux-logger";
 import { QueryClient, QueryClientProvider } from "react-query";
 import { ReactQueryDevtools } from "react-query/devtools";
-// import { QueryClient, QueryClientProvider } from "react-query";
-
-// const initialState = {};
-
-// function reducer(state = initialState, action: any) {
-//   switch (action.type) {
-//     default:
-//       return state;
-//   }
-// }
-// let store = createStore(reducer, applyMiddleware(logger));
 
 const queryClient = new QueryClient();
 

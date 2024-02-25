@@ -1,15 +1,20 @@
-import React, { useEffect, useState } from "react";
+import { ChangeEvent, FormEvent, useEffect, useState } from "react";
 import "../asset/upload.scss";
 import TextareaAutosize from "react-textarea-autosize";
-import { useSelector } from "react-redux";
 import { serverTimestamp } from "firebase/firestore";
-function Upload() {
+import { LoadUserHookResult } from "../query/loadUser";
+import { onFileChange, onfileData } from "../module/exportFunction";
+import { useMyContext } from "../module/MyContext";
+import { db } from "../Firebase";
+type uploadProps = {
+  data: LoadUserHookResult | undefined;
+  posts: any[] | undefined;
+};
+function Upload({ data, posts }: uploadProps) {
   const [title, setTitle] = useState("");
   const [textarea, setTextarea] = useState("");
-  const [fileData, setFileData] = useState("");
-  const [preview, setPreview] = useState([]);
   const [pageId, setPageId] = useState("");
-  const posts = [];
+  const { navigate } = useMyContext();
 
   const time = new Date();
 
@@ -19,51 +24,25 @@ function Upload() {
     day: time.getDate(),
   };
 
-  function onFileChange(e) {
-    const files = Array.from(e.target.files);
-    const copyArray = [...fileData];
-    copyArray.push(...files);
-    setFileData(copyArray);
-    const SaveArray = [];
-    for (var i = 0; i < files.length; i++) {
-      const reader = new FileReader();
-      reader.readAsDataURL(files[i]);
-      reader.onloadend = (e) => {
-        SaveArray.push(e.target.result);
-        const copyPreview = [...preview];
-        copyPreview.push(...SaveArray);
-        setPreview(copyPreview);
-      };
-    }
-  }
+  const fileUrl: string[] = onfileData()[0];
+  const files: File[] = onfileData()[1];
 
-  async function post(e) {
-    e.preventDefault(e);
-    const imageArray = [];
-    if (title !== "" && textarea !== "") {
-      if (preview.length) {
-        for (var i = 0; i < preview.length; i++) {
-          const fileRef = storageService
-            .ref()
-            .child(`${user.uid}/${fileData[i].name}`);
-          const response = await fileRef.putString(preview[i], "data_url");
-          const result = await response.ref.getDownloadURL();
-          imageArray.push(result);
-        }
-      }
+  async function post(e: FormEvent<Element>) {
+    e.preventDefault();
+    if (title !== "" && textarea !== "" && data) {
       //이미지 부분
       const content = {
         title: title,
         text: textarea,
-        user: user.displayName,
-        writer: user.uid,
+        user: data.displayName,
+        writer: data.uid,
         date: `${timeData.year}년 ${timeData.month}월 ${timeData.day}일`,
-        url: imageArray.length ? imageArray : [],
+        url: fileUrl.length > 0 ? fileUrl : [],
         favorite: 0,
         pageId: pageId,
-        profile: user.photoURL,
+        profile: data.photoURL,
         timeStamp: serverTimestamp(),
-        fileName: fileData.length ? fileData.map((value) => value.name) : "",
+        fileName: files.length > 0 ? files.map((value) => value.name) : "",
       };
 
       await db
@@ -80,7 +59,7 @@ function Upload() {
     }
   }
 
-  const generateRandomString = (num) => {
+  const generateRandomString = (num: number) => {
     const words = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
     let result = "";
     for (var i = 0; i < num; i++)
@@ -88,30 +67,34 @@ function Upload() {
     return result;
   };
 
-  function overlap(params) {
-    return posts.some((item) => item.id === params);
+  function overlap(params: string) {
+    if (posts) {
+      return posts.some((item) => item.id === params);
+    }
   }
 
   useEffect(() => {
-    let randomStr = generateRandomString(20);
+    let randomStr: string = generateRandomString(20);
     if (overlap(randomStr)) {
       randomStr = generateRandomString(20);
       setPageId(randomStr);
     } else {
       setPageId(randomStr);
     }
-  }, []);
+  }, [posts]);
 
   return (
     <div className="upload">
-      <form onSubmit={post}>
+      <form onSubmit={(e: FormEvent<Element>) => post(e)}>
         <input
           type="text"
           className="form-control titlearea"
           id="title"
           placeholder="제목을 입력하세요."
           maxLength={120}
-          onChange={(e) => setTitle(e)}
+          onChange={(e: ChangeEvent<HTMLInputElement>) =>
+            setTitle(e.target.value)
+          }
         />
         <div className="textarea">
           <TextareaAutosize
@@ -120,11 +103,13 @@ function Upload() {
             onHeightChange={(height) => {}}
             className="text"
             placeholder="당신의 이야기를 적어보세요."
-            onChange={(e) => setTextarea(e)}
+            onChange={(e: ChangeEvent<HTMLTextAreaElement>) =>
+              setTextarea(e.target.value)
+            }
           />
           <figure>
-            {preview.length
-              ? preview.map((url, index) => (
+            {fileUrl.length > 0
+              ? fileUrl.map((url, index) => (
                   <img src={url} alt="" className="att" key={index} />
                 ))
               : null}
@@ -136,7 +121,7 @@ function Upload() {
           multiple
           className="file-form"
           id="image"
-          onChange={onFileChange}
+          onChange={(e: ChangeEvent) => onFileChange(e, "profile")}
         />
         <label htmlFor="image" className="Attachment image-att">
           이미지를 담아주세요

@@ -1,5 +1,5 @@
 import { QueryObserverResult, useQuery } from "react-query";
-import { loadUser } from "../module/exportFunction";
+import { loadUser } from "../module/exportQueryFunction";
 
 export interface LoadUserHookResult {
   displayName: string;

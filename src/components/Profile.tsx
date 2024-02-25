@@ -1,11 +1,12 @@
 import React, { ChangeEvent, useEffect, useState } from "react";
 import "../asset/profile.scss";
-import { authService, db, firebaseInstance, storageService } from "../Firebase";
+import { authService, db, firebaseInstance } from "../Firebase";
 import "../asset/header.scss";
 import { LoadUserHookResult } from "../query/loadUser";
 import useLoadNickName from "../query/loadNickName";
 import { useMyContext } from "../module/MyContext";
 import firebase from "firebase/compat/app";
+import { onFileChange } from "../module/exportFunction";
 
 function Profile({ data }: { data: LoadUserHookResult | undefined }) {
   const { navigate } = useMyContext();
@@ -55,33 +56,6 @@ function Profile({ data }: { data: LoadUserHookResult | undefined }) {
 
   //프로필 이미지 변경 함수
 
-  function onFileChange(e: ChangeEvent<HTMLInputElement>) {
-    const theFile = e.target.files;
-    if (theFile) {
-      const reader = new FileReader();
-      reader.readAsDataURL(theFile[0]);
-      reader.onloadend = (e) => {
-        if (e.target) {
-          const result: any = e.target.result;
-          ImgUpload(result, theFile[0]);
-        }
-      };
-    }
-  }
-
-  async function ImgUpload(imageurl: any, uploadfile: File) {
-    if (imageurl) {
-      const fileRef = storageService.ref().child(`profiles/${uploadfile.name}`);
-      const response = await fileRef.putString(imageurl, "data_url");
-      const profileUrl = await response.ref.getDownloadURL();
-      const user = data ? data : (firebase.auth().currentUser as firebase.User);
-      if (user) {
-        await user.updateProfile({ photoURL: profileUrl });
-        window.alert("프로필이미지가 변경 되었습니다.");
-      }
-    }
-  }
-
   async function NickNameChange() {
     const overlapFilter = (loadNick?.data || []).some(
       (item) => item.nickname === title
@@ -112,7 +86,7 @@ function Profile({ data }: { data: LoadUserHookResult | undefined }) {
               type="file"
               accept="image/*"
               id="img_check"
-              onChange={onFileChange}
+              onChange={(e: ChangeEvent) => onFileChange(e, "profile")}
             />
             <figure className="profileImg">
               <img src={data.photoURL} width="130px" height="135px" alt="" />

@@ -1,5 +1,5 @@
 import { QueryObserverResult, useQuery } from "react-query";
-import { loadNickName } from "../module/exportFunction";
+import { loadNickName } from "../module/exportQueryFunction";
 
 export interface LoadNickFilter {
   nickname: string;

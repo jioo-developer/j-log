@@ -1,54 +1,26 @@
-import React, { useCallback, useEffect, useState } from "react";
+import { ChangeEvent, FormEvent, useEffect, useState } from "react";
 import TextareaAutosize from "react-textarea-autosize";
 import { useLocation, Link } from "react-router-dom";
+import { useMyContext } from "../module/MyContext";
 import "../asset/upload.scss";
+import { db, storageService } from "../Firebase";
 function Edit() {
   const location = useLocation();
   const correction = location.state.pageData;
-  const [pageInfor, setpageInfor] = useState(correction);
   const [title, setTitle] = useState("");
   const [text, setText] = useState("");
   const [prevImage, setPrevImage] = useState([]);
+  const { navigate } = useMyContext();
 
   useEffect(() => {
-    setPrevImage(pageInfor.fileName);
-    setTitle(pageInfor.title);
-    setText(pageInfor.text);
+    setPrevImage(correction.fileName);
+    setTitle(correction.title);
+    setText(correction.text);
   }, []);
 
-  function onFileChange(e) {
-    const files = Array.from(e.target.files);
-    let saveArray = [];
-    for (var i = 0; i < files.length; i++) {
-      const reader = new FileReader();
-      let fileRef = storageService
-        .ref()
-        .child(`${pageInfor.user}/${files[i].name}`);
-      reader.readAsDataURL(files[i]);
-      reader.onload = (e) => {
-        saveArray.push(e.target.result);
-        connectHandler(saveArray, fileRef, files);
-      };
-    }
-  }
-
-  async function connectHandler(SaveArray, fileRef, files) {
-    let newArray = [];
-    let nameArray = [];
-    for (let [index, value] of SaveArray.entries()) {
-      const response = await fileRef.putString(value, "data_url");
-      newArray.push(await response.ref.getDownloadURL());
-      nameArray.push(files[index].name);
-      let copyState = { ...pageInfor };
-      copyState.url = newArray;
-      copyState.fileName = nameArray;
-      setpageInfor(copyState);
-    }
-  }
-
-  async function post(e) {
-    e.preventDefault(e);
-    let resultState = { ...pageInfor };
+  async function post(e: FormEvent<Element>) {
+    e.preventDefault();
+    let resultState = { ...correction };
     resultState.title = title;
     resultState.text = text;
     await db
@@ -57,9 +29,9 @@ function Edit() {
       .update(resultState)
       .then(() => {
         const storageRef = storageService.ref();
-        if (prevImage.length !== 0) {
+        if (prevImage.length > 0) {
           prevImage.forEach((value) => {
-            const imagesRef = storageRef.child(`${pageInfor.user}/${value}`);
+            const imagesRef = storageRef.child(`${correction.user}/${value}`);
             imagesRef.delete();
           });
         }
@@ -71,24 +43,25 @@ function Edit() {
 
   return (
     <div className="upload">
-      <form onSubmit={post}>
+      <form onSubmit={(e: FormEvent<Element>) => post(e)}>
         <input
           type="text"
           className="form-control titlearea"
           id="title"
           value={title}
           maxLength={120}
-          onChange={(e) => setTitle(e)}
         />
         <div className="textarea">
           <TextareaAutosize
             onHeightChange={(height) => {}}
             className="text"
             value={text}
-            onChange={(e) => setText(e)}
+            onChange={(e: ChangeEvent<HTMLTextAreaElement>) =>
+              setText(e.target.value)
+            }
           />
           <figure>
-            {pageInfor.url.map((value, index) => {
+            {correction.map((value, index) => {
               return <img src={value} alt="" className="att" key={index}></img>;
             })}
           </figure>
@@ -99,7 +72,6 @@ function Edit() {
           multiple
           className="file-form"
           id="image"
-          onChange={onFileChange}
         />
         <label htmlFor="image" className="Attachment image-att">
           이미지를 담아주세요

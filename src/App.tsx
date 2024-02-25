@@ -10,10 +10,13 @@ import Header from "./components/Header";
 import useLoadUser from "./query/loadUser";
 import { useMyContext } from "./module/MyContext";
 import { useEffect } from "react";
+import useLoadPost from "./query/loadPost";
 
 function App() {
   const { navigate } = useMyContext();
   const { data } = useLoadUser();
+  const load = useLoadPost();
+  const posts = load.data;
   const location = window.location.pathname;
   useEffect(() => {
     if (!data && navigate) {
@@ -28,10 +31,13 @@ function App() {
         <Header data={data} />
       ) : null}
       <Routes>
-        <Route path="/" element={<Home data={data} />}></Route>
+        <Route path="/" element={<Home data={data} posts={posts} />}></Route>
         <Route path="/detail" element={<Detail />}></Route>
         <Route path="/profile" element={<Profile data={data} />}></Route>
-        <Route path="/upload" element={<Upload />}></Route>
+        <Route
+          path="/upload"
+          element={<Upload data={data} posts={posts} />}
+        ></Route>
         <Route path="/edit" element={<Edit />}></Route>
         <Route path="/sign" element={<Sign />}></Route>
         <Route path="/Auth" element={<Auth />}></Route>

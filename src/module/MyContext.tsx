@@ -5,7 +5,7 @@ import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
 
 type MyContextProps = {
-  navigate: (params: string) => void;
+  navigate: (params: string, state?: any) => void;
   dispatch: (params: any) => void;
 };
 
