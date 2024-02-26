@@ -17,7 +17,7 @@ const useLoadUser = () => {
     error,
   }: QueryObserverResult<LoadUserHookResult> = useQuery("loadUser", loadUser, {
     onSuccess(data) {
-      console.log(data);
+      // console.log(data);
     },
     onError(err) {
       console.log(err);

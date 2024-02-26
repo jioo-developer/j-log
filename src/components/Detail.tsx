@@ -1,65 +1,45 @@
-import React, { useEffect, useState } from "react";
+import { ChangeEvent, useEffect, useState } from "react";
 import "../asset/detail.scss";
 import { useLocation, Link } from "react-router-dom";
 import Reply from "./Reply";
-function Detail() {
+import { FirebaseData } from "../module/interfaceModule";
+import { db, storageService } from "../Firebase";
+import useLoadDetail from "../query/loadDetail";
+import { LoadUserHookResult } from "../query/loadUser";
+
+function Detail({ data }: { data: LoadUserHookResult | undefined }) {
   const location = useLocation();
-  let URLID = location.state.pageId;
-  const [pageData, setPageData] = useState([]);
+  const URLID = location.state.pageId;
   const [favoriteBtn, setFavoriteBtn] = useState(false);
-  const [fileNameArr, setFileNameArr] = useState([]);
-  const [ReplyData, setReplyData] = useState([]);
-  let clientWidths;
-  let naturalWidths;
+  const loadPage = useLoadDetail(URLID);
+  const pageData: FirebaseData | undefined = loadPage.data;
   const time = new Date();
-  useEffect(() => {
-    if (!URLID) URLID = location.state;
-    async function init() {
-      await db
-        .collection("post")
-        .doc(URLID)
-        .onSnapshot((snapshot) => {
-          const postArray = { ...snapshot.data() };
-          setPageData(postArray);
-        });
-      let cookieCheck = document.cookie;
-      if (cookieCheck === `${URLID}-Cookie=done`) {
-        setFavoriteBtn(true);
-      } else {
-        setFavoriteBtn(false);
-      }
-    }
 
-    init();
-  }, []);
-
-  function setCookie(name, value, expiredays) {
+  function setCookie(name: string, value: string, expiredays: number) {
     time.setDate(time.getDate() + expiredays);
     document.cookie = `${name} = ${escape(
       value
     )}; expires =${time.toUTCString()};`;
   }
 
-  async function onDelete(e) {
-    e.preventDefault();
+  async function onDelete() {
     const ok = window.confirm("정말 삭제 하시겠습니까?");
     const locate = db.collection("post").doc(URLID);
     const storageRef = storageService.ref();
-    if (ok && fileNameArr) {
-      fileNameArr.map(function (item) {
+    if (ok && pageData) {
+      pageData.fileName.map(function (item) {
         const imagesRef = storageRef.child(`${pageData.user}/${item}`);
         imagesRef.delete();
       });
-
-      ReplyData.map((item) => locate.collection("reply").doc(item.id).delete());
-      locate.delete();
-      navigate("/");
-      window.location.reload();
     }
+    const ReplyData: any[] = [];
+    ReplyData.map((item) => locate.collection("reply").doc(item.id).delete());
+    locate.delete();
   }
 
-  function favoriteHandler(e) {
-    if (e.target.checked) {
+  function favoriteHandler(e: ChangeEvent) {
+    const inputEl = e.target as HTMLInputElement;
+    if (inputEl.checked && pageData) {
       db.collection("post")
         .doc(URLID)
         .update({
@@ -72,27 +52,26 @@ function Detail() {
     }
   }
 
-  function ReplyGet(data) {
-    setReplyData(data);
-  }
-
   useEffect(() => {
-    if (pageData.length !== 0) {
-      console.log(pageData);
-      setFileNameArr(pageData.fileName);
-      let imgTarget = Array.from(document.getElementsByClassName("att"));
-      let grid = document.getElementsByClassName("grid");
-      imgTarget.map(function (a, i) {
-        naturalWidths = document.getElementsByClassName("att")[i].naturalWidth;
-        clientWidths = document.getElementsByClassName("att")[i].offsetWidth;
-        if (naturalWidths < clientWidths)
-          imgTarget[i].classList.add("natural-size");
+    if (pageData) {
+      let imgTarget = Array.from(
+        document.querySelectorAll(".att")
+      ) as HTMLImageElement[];
+      imgTarget.forEach((item) => {
+        const naturalWidths = item.naturalWidth;
+        const clientWidths = item.offsetWidth;
+        if (naturalWidths < clientWidths) {
+          item.classList.add("natural-size");
+        }
       });
-      if (imgTarget.length > 1) grid[0].classList.add("grids");
+      const grid = document.querySelector(".grid");
+      if (grid && imgTarget.length > 1) {
+        grid.classList.add("grids");
+      }
     }
   }, [pageData]);
 
-  return user ? (
+  return pageData && data ? (
     <div className="detail_wrap">
       <div className="in_wrap">
         <section className="sub_header">
@@ -103,14 +82,14 @@ function Detail() {
               <p className="writer">{pageData.user}</p>
               <p className="date">{pageData.date}</p>
             </div>
-            {user.uid === pageData.writer ||
-            user.uid === "cylx7plFnrccO8Qv7wYXEAd1meG2" ? (
+            {data.uid === pageData.writer ||
+            data.uid === "cylx7plFnrccO8Qv7wYXEAd1meG2" ? (
               <>
                 <div className="right_wrap">
-                  <Link to={"/edit"} state={{ pageData: pageData }}>
+                  <Link to={"/edit"} state={{ pageId: URLID }}>
                     <button className="edit">수정</button>
                   </Link>
-                  <button className="delete" onClick={onDelete}>
+                  <button className="delete" onClick={() => onDelete()}>
                     삭제
                   </button>
                 </div>
@@ -133,7 +112,7 @@ function Detail() {
               <input
                 type="checkbox"
                 id="favorite_check"
-                onClick={(e) => favoriteHandler(e)}
+                onChange={(e: ChangeEvent) => favoriteHandler(e)}
               />
               {!favoriteBtn ? (
                 <>
@@ -147,12 +126,7 @@ function Detail() {
                 </div>
               )}
             </div>
-            <Reply
-              db={db}
-              user={user}
-              ReplyGet={ReplyGet}
-              useInput={useInput}
-            />
+            <Reply data={data} />
           </div>
         </section>
       </div>

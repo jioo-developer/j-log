@@ -1,9 +1,9 @@
 import { QueryObserverResult, useQuery } from "react-query";
-import { loadPost } from "../module/exportQueryFunction";
+import { loadReplys } from "../module/exportQueryFunction";
 
-const useLoadPost = () => {
+const useReply = (params: string) => {
   const { isLoading, data, isError, error }: QueryObserverResult<any[]> =
-    useQuery("loadPost", loadPost, {
+    useQuery(["loadReply", params], () => loadReplys(params), {
       onSuccess(data) {
         console.log(data);
       },
@@ -20,4 +20,4 @@ const useLoadPost = () => {
   };
 };
 
-export default useLoadPost;
+export default useReply;

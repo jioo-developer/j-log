@@ -2,15 +2,12 @@ import { ChangeEvent, FormEvent, useEffect, useState } from "react";
 import "../asset/upload.scss";
 import TextareaAutosize from "react-textarea-autosize";
 import { serverTimestamp } from "firebase/firestore";
-import { LoadUserHookResult } from "../query/loadUser";
 import { onFileChange, onfileData } from "../module/exportFunction";
 import { useMyContext } from "../module/MyContext";
 import { db } from "../Firebase";
-type uploadProps = {
-  data: LoadUserHookResult | undefined;
-  posts: any[] | undefined;
-};
-function Upload({ data, posts }: uploadProps) {
+import { queryProps } from "../module/interfaceModule";
+
+function Upload({ data, posts }: queryProps) {
   const [title, setTitle] = useState("");
   const [textarea, setTextarea] = useState("");
   const [pageId, setPageId] = useState("");

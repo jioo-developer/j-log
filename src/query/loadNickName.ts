@@ -16,7 +16,7 @@ const useLoadNickName = () => {
     loadNickName,
     {
       onSuccess(data) {
-        console.log(data);
+        // console.log(data);
       },
       onError(err) {
         console.log(err);

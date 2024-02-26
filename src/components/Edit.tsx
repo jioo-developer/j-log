@@ -4,96 +4,106 @@ import { useLocation, Link } from "react-router-dom";
 import { useMyContext } from "../module/MyContext";
 import "../asset/upload.scss";
 import { db, storageService } from "../Firebase";
+import useLoadDetail from "../query/loadDetail";
+import { LoadUserHookResult } from "../query/loadUser";
 function Edit() {
+  const { navigate } = useMyContext();
   const location = useLocation();
-  const correction = location.state.pageData;
+  const URLID = location.state.pageId;
+  const loadPage = useLoadDetail(URLID);
+  const pageData = loadPage.data;
   const [title, setTitle] = useState("");
   const [text, setText] = useState("");
-  const [prevImage, setPrevImage] = useState([]);
-  const { navigate } = useMyContext();
 
   useEffect(() => {
-    setPrevImage(correction.fileName);
-    setTitle(correction.title);
-    setText(correction.text);
-  }, []);
+    if (pageData) {
+      setTitle(pageData.title);
+      setText(pageData.text);
+    }
+  }, [pageData]);
 
-  async function post(e: FormEvent<Element>) {
+  function post(e: FormEvent<Element>) {
     e.preventDefault();
-    let resultState = { ...correction };
+    const resultState = { ...pageData };
     resultState.title = title;
     resultState.text = text;
-    await db
-      .collection("post")
-      .doc(correction.pageId)
-      .update(resultState)
-      .then(() => {
-        const storageRef = storageService.ref();
-        if (prevImage.length > 0) {
-          prevImage.forEach((value) => {
-            const imagesRef = storageRef.child(`${correction.user}/${value}`);
+    if (pageData) {
+      db.collection("post")
+        .doc(pageData.pageId)
+        .update(resultState)
+        .then(() => {
+          const storageRef = storageService.ref();
+          pageData.fileName.forEach((value) => {
+            const imagesRef = storageRef.child(`${pageData.user}/${value}`);
             imagesRef.delete();
           });
-        }
-        window.alert("수정이 완료 되었습니다.");
-        const redirect = `/detail?id=${correction.pageId}`;
-        navigate(redirect, { state: correction.pageId });
-      });
+          window.alert("수정이 완료 되었습니다.");
+          const redirect = `/detail?id=${pageData.pageId}`;
+          navigate(redirect, { state: pageData.pageId });
+        });
+    }
   }
 
   return (
-    <div className="upload">
-      <form onSubmit={(e: FormEvent<Element>) => post(e)}>
-        <input
-          type="text"
-          className="form-control titlearea"
-          id="title"
-          value={title}
-          maxLength={120}
-        />
-        <div className="textarea">
-          <TextareaAutosize
-            onHeightChange={(height) => {}}
-            className="text"
-            value={text}
-            onChange={(e: ChangeEvent<HTMLTextAreaElement>) =>
-              setText(e.target.value)
-            }
-          />
-          <figure>
-            {correction.map((value, index) => {
-              return <img src={value} alt="" className="att" key={index}></img>;
-            })}
-          </figure>
+    <>
+      {pageData ? (
+        <div className="upload">
+          <form onSubmit={(e: FormEvent<Element>) => post(e)}>
+            <input
+              type="text"
+              className="form-control titlearea"
+              id="title"
+              value={title}
+              onChange={(e: ChangeEvent<HTMLInputElement>) => e.target.value}
+              maxLength={120}
+            />
+            <div className="textarea">
+              <TextareaAutosize
+                onHeightChange={(height) => {}}
+                className="text"
+                value={text}
+                onChange={(e: ChangeEvent<HTMLTextAreaElement>) =>
+                  setText(e.target.value)
+                }
+              />
+              <figure>
+                {pageData.url.map((value, index) => {
+                  return (
+                    <img src={value} alt="" className="att" key={index}></img>
+                  );
+                })}
+              </figure>
+            </div>
+            <input
+              type="file"
+              accept="image/*"
+              multiple
+              className="file-form"
+              id="image"
+            />
+            <label htmlFor="image" className="Attachment image-att">
+              이미지를 담아주세요
+            </label>
+            <p className="warnning">
+              ※ 이미지를 한번에 업로드 해주세요. (하나씩 업로드하면 오류납니다)
+            </p>
+            <div className="bottom_wrap">
+              <Link
+                to={`/detail?id=${pageData.pageId}`}
+                state={{ pageId: pageData.pageId }}
+              >
+                <div className="exit">← &nbsp;나가기</div>
+              </Link>
+              <div className="cancel_wrap">
+                <button type="submit" className="post">
+                  글작성
+                </button>
+              </div>
+            </div>
+          </form>
         </div>
-        <input
-          type="file"
-          accept="image/*"
-          multiple
-          className="file-form"
-          id="image"
-        />
-        <label htmlFor="image" className="Attachment image-att">
-          이미지를 담아주세요
-        </label>
-        <p className="warnning">
-          ※ 이미지를 한번에 업로드 해주세요. (하나씩 업로드하면 오류납니다)
-        </p>
-        <div className="bottom_wrap">
-          <Link
-            to={`/detail?id=${correction.pageId}`}
-            state={{ pageId: correction.pageId }}
-          >
-            <div className="exit">← &nbsp;나가기</div>
-          </Link>
-          <div className="cancel_wrap">
-            <button type="submit" className="post">
-              글작성
-            </button>
-          </div>
-        </div>
-      </form>
-    </div>
+      ) : null}
+    </>
   );
 }
 

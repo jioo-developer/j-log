@@ -1,14 +1,9 @@
 import { Link } from "react-router-dom";
 import "../asset/home.scss";
 import "../asset/header.scss";
-import { LoadUserHookResult } from "../query/loadUser";
+import { queryProps } from "../module/interfaceModule";
 
-type homeProps = {
-  data: LoadUserHookResult | undefined;
-  posts: any[] | undefined;
-};
-
-function Home({ data, posts }: homeProps) {
+function Home({ data, posts }: queryProps) {
   return (
     <div className="main">
       <div className="in_wrap">
