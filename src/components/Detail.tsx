@@ -27,7 +27,7 @@ function Detail({ data }: { data: LoadUserHookResult | undefined }) {
     const locate = db.collection("post").doc(URLID);
     const storageRef = storageService.ref();
     if (ok && pageData) {
-      pageData.fileName.map(function (item) {
+      pageData.fileName.forEach((item) => {
         const imagesRef = storageRef.child(`${pageData.user}/${item}`);
         imagesRef.delete();
       });

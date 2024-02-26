@@ -49,15 +49,20 @@ function Auth() {
             }
           })
           .catch((error) => {
-            if (error.message === "The email address is badly formatted.") {
+            console.log(error);
+            if (
+              error.message ===
+              "Firebase: The email address is badly formatted. (auth/invalid-email)."
+            ) {
               window.alert("올바른 이메일 형식이 아닙니다.");
             } else if (
-              error.message === "Password should be at least 6 characters"
+              error.message ===
+              "Password should be at least 6 characters (auth/weak-password)."
             ) {
               window.alert("비밀번호가 너무짧습니다.");
             } else if (
               error.message ===
-              "The email address is already in use by another account."
+              "The email address is already in use by another account. (auth/email-already-in-use)."
             ) {
               window.alert("이미 사용중인 이메일입니다.");
             } else {

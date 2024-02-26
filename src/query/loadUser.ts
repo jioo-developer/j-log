@@ -15,7 +15,9 @@ const useLoadUser = () => {
     data,
     isError,
     error,
+    refetch,
   }: QueryObserverResult<LoadUserHookResult> = useQuery("loadUser", loadUser, {
+    refetchOnMount: true,
     onSuccess(data) {
       // console.log(data);
     },
@@ -29,6 +31,7 @@ const useLoadUser = () => {
     isError,
     data,
     error,
+    refetch,
   };
 };
 

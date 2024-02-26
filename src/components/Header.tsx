@@ -2,7 +2,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { authService } from "../Firebase";
 import { useState } from "react";
 import { LoadUserHookResult } from "../query/loadUser";
-function Header({ data }: { data: LoadUserHookResult }) {
+function Header({ data }: { data: LoadUserHookResult | undefined }) {
   const [menuToggle, setToggle] = useState(false);
   const navigate = useNavigate();
   function logout() {

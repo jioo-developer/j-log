@@ -16,7 +16,7 @@ function Sign() {
       .then(() => {
         navigate("/");
       })
-      .catch((error: Error) => {
+      .catch((error) => {
         if (error.code === "auth/invalid-email") {
           window.alert("유효하지 않은 이메일 주소입니다.");
         } else if (error.code === "auth/user-disabled") {

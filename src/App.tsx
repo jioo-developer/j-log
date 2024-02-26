@@ -8,25 +8,29 @@ import Profile from "./components/Profile";
 import Edit from "./components/Edit";
 import Header from "./components/Header";
 import useLoadUser from "./query/loadUser";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import useLoadPost from "./query/loadPost";
 
 function App() {
   const navigate = useNavigate();
-  const { data } = useLoadUser();
+  const { data, refetch } = useLoadUser();
   const load = useLoadPost();
   const posts = load.data;
+  const [headerShow, setheader] = useState(false);
   const location = window.location.pathname;
   useEffect(() => {
     if (!data) {
       navigate("/sign");
+      setheader(false);
     } else if (data) {
       navigate("/");
+      setheader(true);
     }
   }, [data]);
   return (
     <div className="App">
-      {(data && location !== "edit") || (data && location !== "upload") ? (
+      {(headerShow && location !== "edit") ||
+      (headerShow && location !== "upload") ? (
         <Header data={data} />
       ) : null}
       <Routes>
