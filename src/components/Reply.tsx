@@ -22,19 +22,27 @@ function Reply({ data }: { data: LoadUserHookResult | undefined }) {
   };
 
   function edit_reply(index: number) {
-    setCommentChange(true);
-    setCommentChange(false);
-    db.collection("post")
-      .doc(URLID)
-      .collection("reply")
-      .doc("")
-      .update({ comment: comment });
+    if (replyData) {
+      setCommentChange(true);
+      db.collection("post")
+        .doc(URLID)
+        .collection("reply")
+        .doc(replyData[index].id)
+        .update({ comment: comment })
+        .then(() => {
+          setCommentChange(false);
+        });
+    }
   }
 
   function reply_delete(index: number) {
     const ok = window.confirm("정말삭제하시겠습니까?");
-    if (ok)
-      db.collection("post").doc(URLID).collection("reply").doc("").delete();
+    if (ok && replyData)
+      db.collection("post")
+        .doc(URLID)
+        .collection("reply")
+        .doc(replyData[index].id)
+        .delete();
   }
   function commentUpload(e: FormEvent) {
     e.preventDefault();
@@ -102,6 +110,7 @@ function Reply({ data }: { data: LoadUserHookResult | undefined }) {
                   className={`reply_input  form-control`}
                   placeholder={item.comment}
                   value={comment}
+                  onChange={(e) => setcomment(e.target.value)}
                 />
               ) : (
                 <p className={`reply_text`}>{item.comment}</p>

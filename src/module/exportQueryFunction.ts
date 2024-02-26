@@ -70,7 +70,10 @@ export function loadReplys(pageId: string) {
     const collectionRef = db.collection("post").doc(pageId).collection("reply");
     const unsubscribe = collectionRef.onSnapshot((snapshot: any) => {
       if (snapshot.docs.length > 0) {
-        const postArray = snapshot.docs.map((doc: any) => ({ ...doc.data() }));
+        const postArray = snapshot.docs.map((doc: any) => ({
+          ...doc.data(),
+          id: doc.id,
+        }));
         resolve(postArray);
       } else {
         reject([]);
