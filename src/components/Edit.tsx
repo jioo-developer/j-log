@@ -6,6 +6,7 @@ import "../asset/upload.scss";
 import { db, storageService } from "../Firebase";
 import useLoadDetail from "../query/loadDetail";
 import { LoadUserHookResult } from "../query/loadUser";
+import { onFileChange } from "../module/exportFunction";
 function Edit() {
   const { navigate } = useMyContext();
   const location = useLocation();
@@ -80,6 +81,7 @@ function Edit() {
               multiple
               className="file-form"
               id="image"
+              onChange={(e: ChangeEvent) => onFileChange(e, "edit")}
             />
             <label htmlFor="image" className="Attachment image-att">
               이미지를 담아주세요

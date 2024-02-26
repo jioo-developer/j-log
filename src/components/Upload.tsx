@@ -118,7 +118,7 @@ function Upload({ data, posts }: queryProps) {
           multiple
           className="file-form"
           id="image"
-          onChange={(e: ChangeEvent) => onFileChange(e, "profile")}
+          onChange={(e: ChangeEvent) => onFileChange(e, "upload")}
         />
         <label htmlFor="image" className="Attachment image-att">
           이미지를 담아주세요
