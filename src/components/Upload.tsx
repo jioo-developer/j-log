@@ -3,16 +3,15 @@ import "../asset/upload.scss";
 import TextareaAutosize from "react-textarea-autosize";
 import { serverTimestamp } from "firebase/firestore";
 import { onFileChange, onfileData } from "../module/exportFunction";
-import { useMyContext } from "../module/MyContext";
 import { db } from "../Firebase";
 import { queryProps } from "../module/interfaceModule";
+import { useNavigate } from "react-router-dom";
 
 function Upload({ data, posts }: queryProps) {
   const [title, setTitle] = useState("");
   const [textarea, setTextarea] = useState("");
   const [pageId, setPageId] = useState("");
-  const { navigate } = useMyContext();
-
+  const navigate = useNavigate();
   const time = new Date();
 
   const timeData = {

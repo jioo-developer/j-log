@@ -1,14 +1,13 @@
-import { Link } from "react-router-dom";
-import { useMyContext } from "../module/MyContext";
+import { Link, useNavigate } from "react-router-dom";
 import { authService } from "../Firebase";
 import { useState } from "react";
 import { LoadUserHookResult } from "../query/loadUser";
 function Header({ data }: { data: LoadUserHookResult }) {
   const [menuToggle, setToggle] = useState(false);
-  const { navigate } = useMyContext();
+  const navigate = useNavigate();
   function logout() {
     authService.signOut().then(() => {
-      navigate("sign");
+      navigate("/sign");
     });
   }
   return (

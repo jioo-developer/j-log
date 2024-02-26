@@ -1,9 +1,8 @@
+import { useNavigate } from "react-router-dom";
 import { authService, db, firebaseInstance } from "../Firebase";
-import { useMyContext } from "../module/MyContext";
 
 function SocialSign() {
-  const { navigate } = useMyContext();
-
+  const navigate = useNavigate();
   async function onGoogle() {
     const provider = await new firebaseInstance.auth.GoogleAuthProvider();
     //데이터 받기
@@ -22,14 +21,15 @@ function SocialSign() {
   async function onFacebook() {
     const provider = await new firebaseInstance.auth.FacebookAuthProvider();
     //데이터 받기
-    const result = await authService.signInWithPopup(provider);
-
-    if (result.user && result.user.displayName) {
-      db.collection("nickname")
-        .doc(result.user.displayName)
-        .set({ nickname: result.user.displayName })
-        .then(() => navigate("/"));
-    }
+    await authService.signInWithPopup(provider).then((result) => {
+      console.log("현재 페이스북 로그인은 인증만료 처리중입니다.");
+      // if (result.user && result.user.displayName) {
+      //   db.collection("nickname")
+      //     .doc(result.user.displayName)
+      //     .set({ nickname: result.user.displayName })
+      //     .then(() => navigate("/"));
+      // }
+    });
   }
 
   return (

@@ -4,15 +4,15 @@ import { authService, db, firebaseInstance } from "../Firebase";
 import "../asset/header.scss";
 import { LoadUserHookResult } from "../query/loadUser";
 import useLoadNickName from "../query/loadNickName";
-import { useMyContext } from "../module/MyContext";
 import firebase from "firebase/compat/app";
 import { onFileChange } from "../module/exportFunction";
+import { useNavigate } from "react-router-dom";
 
 function Profile({ data }: { data: LoadUserHookResult | undefined }) {
-  const { navigate } = useMyContext();
   const [NameEdit, setNameEdit] = useState(false);
   const [title, setTitle] = useState("");
   const loadNick = useLoadNickName();
+  const navigate = useNavigate();
   useEffect(() => {
     if (data) {
       setTitle(data.displayName);

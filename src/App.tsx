@@ -1,4 +1,4 @@
-import { Route, Routes } from "react-router-dom";
+import { Route, Routes, useNavigate } from "react-router-dom";
 import Sign from "./components/Sign";
 import Auth from "./components/Auth";
 import Home from "./components/Home";
@@ -7,24 +7,23 @@ import Detail from "./components/Detail";
 import Profile from "./components/Profile";
 import Edit from "./components/Edit";
 import Header from "./components/Header";
-import useLoadUser, { LoadUserHookResult } from "./query/loadUser";
-import { useMyContext } from "./module/MyContext";
+import useLoadUser from "./query/loadUser";
 import { useEffect } from "react";
 import useLoadPost from "./query/loadPost";
 
 function App() {
-  const { navigate } = useMyContext();
+  const navigate = useNavigate();
   const { data } = useLoadUser();
   const load = useLoadPost();
   const posts = load.data;
   const location = window.location.pathname;
   useEffect(() => {
-    if (!data && navigate) {
-      navigate("sign");
+    if (!data) {
+      navigate("/sign");
     } else if (data) {
       navigate("/");
     }
-  }, [data, navigate]);
+  }, [data]);
   return (
     <div className="App">
       {(data && location !== "edit") || (data && location !== "upload") ? (

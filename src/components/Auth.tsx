@@ -1,8 +1,7 @@
 import { ChangeEvent, FormEvent, useEffect, useState } from "react";
 import "../asset/auth.scss";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { authService, db } from "../Firebase";
-import { useMyContext } from "../module/MyContext";
 import useLoadNickName, { LoadNickFilter } from "../query/loadNickName";
 
 function Auth() {
@@ -11,8 +10,8 @@ function Auth() {
   const [nickname, setNickname] = useState("");
   const [checkArr, setCheck] = useState<string[]>([]);
   const [disabledCheck, setDisable] = useState<boolean>(true);
-  const { navigate } = useMyContext();
   const { data } = useLoadNickName();
+  const navigate = useNavigate();
   const authData = [
     { id: "auth", text: "회원가입및 운영약관 동의", important: true },
     { id: "data", text: "개인정보 수집 및 동의", important: true },

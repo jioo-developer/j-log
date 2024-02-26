@@ -1,5 +1,5 @@
 import { FormEvent, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import "../asset/Sign.scss";
 import FindData from "./FindData";
 import SocialSign from "./SocialSign";
@@ -8,35 +8,27 @@ function Sign() {
   const [id, setId] = useState("");
   const [password, setPassword] = useState("");
   const [findToggle, setFIndToggle] = useState(false);
-
+  const navigate = useNavigate();
   async function LoginLogic(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
-    try {
-      await authService.signInWithEmailAndPassword(id, password);
-    } catch (error) {
-      if (error instanceof Error) {
-        if (
-          error.message ===
-          "The password is invalid or the user does not have a password."
-        ) {
-          window.alert("암호가 잘못되었거나 사용자에게 암호가 없습니다.");
-        } else if (
-          error.message ===
-          "There is no user record corresponding to this identifier. The user may have been deleted."
-        ) {
-          window.alert("이메일이 존재하지않거나, 삭제된 이메일입니다.");
-        } else if (
-          error.message ===
-          "Access to this account has been temporarily disabled due to many failed login attempts. You can immediately restore it by resetting your password or you can try again later."
-        ) {
-          window.alert(
-            "로그인 시도 실패로 인해 이 계정에 대한 액세스가 일시적으로 비활성화되었습니다. 암호를 재설정하여 즉시 복원하거나 나중에 다시 시도할 수 있습니다."
-          );
+    await authService
+      .signInWithEmailAndPassword(id, password)
+      .then(() => {
+        navigate("/");
+      })
+      .catch((error: Error) => {
+        if (error.code === "auth/invalid-email") {
+          window.alert("유효하지 않은 이메일 주소입니다.");
+        } else if (error.code === "auth/user-disabled") {
+          window.alert("사용자 계정이 비활성화되었습니다.");
+        } else if (error.code === "auth/user-not-found") {
+          window.alert("사용자를 찾을 수 없습니다.");
+        } else if (error.code === "auth/wrong-password") {
+          window.alert("잘못된 비밀번호입니다.");
         } else {
           window.alert(error.message);
         }
-      }
-    }
+      });
   }
 
   function findAction(value: boolean) {

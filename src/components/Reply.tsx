@@ -1,6 +1,6 @@
-import { FormEvent, useCallback, useRef, useState } from "react";
+import { FormEvent, useRef, useState } from "react";
 import TextareaAutosize from "react-textarea-autosize";
-import { addDoc, collection, serverTimestamp } from "firebase/firestore";
+import { serverTimestamp } from "firebase/firestore";
 import { useLocation } from "react-router-dom";
 import { db } from "../Firebase";
 import { LoadUserHookResult } from "../query/loadUser";
