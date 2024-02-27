@@ -30,7 +30,8 @@ export function loadUser() {
       unsubscribe();
     });
   }).catch((error) => {
-    console.log(JSON.stringify(error));
+    const location = window.location.pathname;
+    if (location !== "/sign") window.location.href = "/sign";
   });
 }
 
