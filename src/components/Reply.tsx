@@ -1,4 +1,4 @@
-import { FormEvent, useRef, useState } from "react";
+import { FormEvent, useEffect, useRef, useState } from "react";
 import TextareaAutosize from "react-textarea-autosize";
 import { serverTimestamp } from "firebase/firestore";
 import { useLocation } from "react-router-dom";
@@ -10,10 +10,13 @@ function Reply({ data }: { data: LoadUserHookResult | undefined }) {
   const location = useLocation();
   let URLID = location.state.pageId;
   const reply = useReply(URLID);
-  const replyData = reply.data;
+  const replyData = reply.data || [];
+  const refetch = reply.refetch;
   const [commentChange, setCommentChange] = useState(false);
+  const [replyTarget, setTarget] = useState("");
   const [comment, setcomment] = useState("");
   const replyArea = useRef<HTMLTextAreaElement | null>(null);
+
   const time = new Date();
   const timeData = {
     year: time.getFullYear(),
@@ -21,9 +24,14 @@ function Reply({ data }: { data: LoadUserHookResult | undefined }) {
     day: time.getDate(),
   };
 
-  function edit_reply(index: number) {
-    if (replyData) {
-      setCommentChange(true);
+  function replyhandler(index: number, type?: string) {
+    if (!type) {
+      if (replyData) {
+        setCommentChange(true);
+        setcomment(replyData[index].comment);
+        setTarget(replyData[index].id);
+      }
+    } else {
       db.collection("post")
         .doc(URLID)
         .collection("reply")
@@ -31,6 +39,7 @@ function Reply({ data }: { data: LoadUserHookResult | undefined }) {
         .update({ comment: comment })
         .then(() => {
           setCommentChange(false);
+          refetch();
         });
     }
   }
@@ -53,7 +62,6 @@ function Reply({ data }: { data: LoadUserHookResult | undefined }) {
         date: `${timeData.year}년${timeData.month}월${timeData.day}일`,
         profile: data.photoURL,
         uid: data.uid,
-        boolean: false,
         timeStamp: serverTimestamp(),
       };
       if (comment === "") {
@@ -71,12 +79,16 @@ function Reply({ data }: { data: LoadUserHookResult | undefined }) {
     }
   }
 
+  useEffect(() => {
+    console.log(comment);
+  }, [comment]);
+
   return replyData && data ? (
     <>
       {replyData.map(function (item, index) {
         return (
           <>
-            <div className="reply_wrap">
+            <div className="reply_wrap" key={index}>
               <div className="user_info">
                 <img src={item.profile} alt="" />
                 <div className="user_text">
@@ -84,33 +96,38 @@ function Reply({ data }: { data: LoadUserHookResult | undefined }) {
                   <p className="reply_date">{item.date}</p>
                 </div>
                 {data.uid === item.uid ||
-                data.uid === "cylx7plFnrccO8Qv7wYXEAd1meG2" ? (
+                data.uid === "SK3SlXUJXPdnXVUJvE6GV9Hr4hh2" ? (
                   <div className="edit_comment">
                     <button
                       className="edit btns"
-                      onClick={() => edit_reply(index)}
+                      onClick={() => {
+                        if (commentChange && replyTarget === item.id) {
+                          replyhandler(index, "update");
+                        } else {
+                          replyhandler(index);
+                        }
+                      }}
                     >
-                      수정
+                      {commentChange && replyTarget === item.id
+                        ? "완료"
+                        : "수정"}
                     </button>
                     <button
                       className="delete btns"
                       onClick={() => reply_delete(index)}
-                      data-id={item.id}
                     >
                       삭제
                     </button>
                   </div>
                 ) : null}
               </div>
-              {!commentChange && !item.boolean ? (
-                <p className={`reply_text`}>{item.comment}</p>
-              ) : commentChange && item.boolean ? (
+              {commentChange && replyTarget === item.id ? (
                 <input
                   type="text"
                   className={`reply_input  form-control`}
-                  placeholder={item.comment}
-                  value={comment}
+                  defaultValue={item.comment}
                   onChange={(e) => setcomment(e.target.value)}
+                  data-id={item.id}
                 />
               ) : (
                 <p className={`reply_text`}>{item.comment}</p>
@@ -126,6 +143,7 @@ function Reply({ data }: { data: LoadUserHookResult | undefined }) {
           minRows={4}
           className="comment_input"
           ref={replyArea}
+          onChange={(e) => setcomment(e.target.value)}
         />
         <button className="btn">댓글 작성</button>
       </form>

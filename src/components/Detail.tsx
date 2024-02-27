@@ -83,7 +83,7 @@ function Detail({ data }: { data: LoadUserHookResult | undefined }) {
               <p className="date">{pageData.date}</p>
             </div>
             {data.uid === pageData.writer ||
-            data.uid === "cylx7plFnrccO8Qv7wYXEAd1meG2" ? (
+            data.uid === "SK3SlXUJXPdnXVUJvE6GV9Hr4hh2" ? (
               <>
                 <div className="right_wrap">
                   <Link to={"/edit"} state={{ pageId: URLID }}>
