@@ -1,19 +1,30 @@
-import { FormEvent, useState } from "react";
+import { FormEvent, useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import "../asset/Sign.scss";
 import FindData from "./FindData";
 import SocialSign from "./SocialSign";
 import { authService } from "../Firebase";
-function Sign() {
+import { LoadUserHookResult } from "../query/loadUser";
+function Sign({
+  data,
+  refetch,
+}: {
+  data: LoadUserHookResult | undefined;
+  refetch: any;
+}) {
+  //체크 끝
   const [id, setId] = useState("");
   const [password, setPassword] = useState("");
   const [findToggle, setFIndToggle] = useState(false);
+  const [disabled, setDisable] = useState(false);
   const navigate = useNavigate();
+
   async function LoginLogic(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
     await authService
       .signInWithEmailAndPassword(id, password)
       .then(() => {
+        refetch();
         navigate("/");
       })
       .catch((error) => {
@@ -34,6 +45,11 @@ function Sign() {
   function findAction(value: boolean) {
     setFIndToggle(value);
   }
+
+  useEffect(() => {
+    if (data) setDisable(true);
+    else setDisable(false);
+  }, [data]);
 
   return (
     <>
@@ -61,9 +77,11 @@ function Sign() {
             value={password}
             onChange={(e) => setPassword(e.target.value)}
           />
-          <button className="btn">로그인</button>
+          <button className="btn" disabled={disabled}>
+            로그인
+          </button>
         </form>
-        <SocialSign />
+        <SocialSign data={data} />
         <div className="assistance">
           <button
             className="pw_reset ass_btn"

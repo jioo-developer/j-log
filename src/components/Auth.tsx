@@ -49,7 +49,6 @@ function Auth() {
             }
           })
           .catch((error) => {
-            console.log(error);
             if (
               error.message ===
               "Firebase: The email address is badly formatted. (auth/invalid-email)."

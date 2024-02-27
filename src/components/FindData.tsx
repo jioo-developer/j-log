@@ -12,13 +12,13 @@ function FindData({ findAction }: { findAction: (params: boolean) => void }) {
         findAction(false);
       })
       .catch((error) => {
-        if (error instanceof Error) {
-          if (
-            error.message ===
-            "There is no user record corresponding to this identifier. The user may have been deleted."
-          ) {
-            window.alert("해당 이메일이 존재하지 않습니다");
-          }
+        if (
+          error.message ===
+          "Firebase: There is no user record corresponding to this identifier. The user may have been deleted. (auth/user-not-found)."
+        ) {
+          window.alert("해당 이메일이 존재하지 않습니다");
+        } else {
+          window.alert(error.message);
         }
       });
   }
@@ -27,7 +27,10 @@ function FindData({ findAction }: { findAction: (params: boolean) => void }) {
     <section className="find">
       <div className="find_wrap">
         <p>비밀번호를 잊어 버리셨나요?</p>
-        <form className="find-form" onSubmit={resetpw}>
+        <form
+          className="find-form"
+          onSubmit={(e: FormEvent<HTMLFormElement>) => resetpw(e)}
+        >
           <input
             type="text"
             className="form-control"

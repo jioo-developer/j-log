@@ -20,8 +20,8 @@ function Upload({ data, posts }: queryProps) {
     day: time.getDate(),
   };
 
-  const fileUrl: string[] = onfileData()[0];
-  const files: File[] = onfileData()[1];
+  const fileUrl: string[] = onfileData()[0] || [];
+  const files: File[] = onfileData()[1] || [];
 
   async function post(e: FormEvent<Element>) {
     e.preventDefault();

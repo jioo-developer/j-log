@@ -7,49 +7,86 @@ import useLoadNickName from "../query/loadNickName";
 import firebase from "firebase/compat/app";
 import { onFileChange } from "../module/exportFunction";
 import { useNavigate } from "react-router-dom";
-
+import {
+  GoogleAuthProvider,
+  getAuth,
+  reauthenticateWithPopup,
+} from "firebase/auth";
 function Profile({ data }: { data: LoadUserHookResult | undefined }) {
   const [NameEdit, setNameEdit] = useState(false);
   const [title, setTitle] = useState("");
   const loadNick = useLoadNickName();
   const navigate = useNavigate();
   useEffect(() => {
-    if (data) {
-      setTitle(data.displayName);
-    }
+    if (data) setTitle(data.displayName);
   }, [data]);
 
-  async function deleteUser() {
+  async function deleteHandler(password: string | null, type: string) {
     if (data) {
-      let password;
-      const branch = window.confirm("소셜로그인을 사용하시나요?");
-      if (branch) {
-        password = window.prompt("2차 비밀번호를 입력해주세요.");
-      } else {
-        password = window.prompt("비밀번호를 입력해주세요.");
-      }
-      db.collection("delete").doc(`${data.uid}`).set({ 상태: "탈퇴" });
-      db.collection("nickname").doc(data.displayName).delete();
       const userDelete = authService.currentUser;
 
       if (userDelete && password) {
-        const credential =
-          await firebaseInstance.auth.EmailAuthProvider.credential(
-            data.email,
-            password
-          );
-        userDelete
-          .reauthenticateWithCredential(credential)
-          .then(() => {
-            userDelete.delete().then(() => {
-              window.alert("회원탈퇴 되었습니다.");
-              authService.signOut();
-              navigate("/");
+        if (type === "origin") {
+          const credential =
+            await firebaseInstance.auth.EmailAuthProvider.credential(
+              data.email,
+              password
+            );
+          if (credential) {
+            db.collection("delete").doc(`${data.uid}`).set({ 상태: "탈퇴" });
+            db.collection("nickname").doc(data.displayName).delete();
+          }
+          userDelete
+            .reauthenticateWithCredential(credential)
+            .then(() => {
+              userDelete.delete().then(() => {
+                window.alert("회원탈퇴 되었습니다.");
+                authService.signOut();
+                navigate("/sign");
+              });
+            })
+            .catch((error) => {
+              console.log(error.message);
+              window.alert("암호가 잘못되었거나 사용자에게 암호가 없습니다.");
             });
-          })
-          .catch(() => {
-            window.alert("암호가 잘못되었거나 사용자에게 암호가 없습니다.");
-          });
+        } else {
+          const googleProvider = new GoogleAuthProvider();
+          const user = getAuth().currentUser;
+          if (user) {
+            db.collection("delete").doc(`${data.uid}`).set({ 상태: "탈퇴" });
+            db.collection("nickname").doc(`${data.displayName}-G`).delete();
+            reauthenticateWithPopup(user, googleProvider).then(() => {
+              user.delete().then(() => {
+                window.alert("회원탈퇴 되었습니다.");
+                authService.signOut();
+                navigate("/sign");
+              });
+            });
+          }
+        }
+      }
+    }
+  }
+
+  async function deleteUser() {
+    if (data) {
+      const password = window.prompt("비밀번호를 입력해주세요.");
+      const check = await db
+        .collection("nickname")
+        .doc(`${data.displayName}-G`)
+        .get();
+      const soSialPW = check.data();
+
+      if (soSialPW) {
+        if (password === soSialPW.password) {
+          deleteHandler(password, "sosial");
+        } else {
+          window.alert("첫 가입시 입력하신 비밀번호랑 다릅니다.");
+        }
+      } else {
+        if (password) {
+          deleteHandler(password, "origin");
+        }
       }
     }
   }
@@ -57,18 +94,25 @@ function Profile({ data }: { data: LoadUserHookResult | undefined }) {
   //프로필 이미지 변경 함수
 
   async function NickNameChange() {
-    const overlapFilter = (loadNick?.data || []).some(
-      (item) => item.nickname === title
-    );
-    if (overlapFilter) {
-      window.alert("이미 사용중인 닉네임 입니다.");
-    } else {
-      const user = data ? data : (firebase.auth().currentUser as firebase.User);
-      if (user && user.displayName) {
-        db.collection("nickname").doc(user.displayName).delete();
-        db.collection("nickname").doc(title).set({ nickname: title });
-        await user.updateProfile({ displayName: title });
-        window.alert("닉네임이 변경되었습니다");
+    if (loadNick.data && data) {
+      const overlapFilter = (loadNick.data || []).some(
+        (item) => item.nickname === title
+      );
+      if (overlapFilter && title !== data.displayName) {
+        window.alert("이미 사용중인 닉네임 입니다.");
+      } else {
+        const user = data
+          ? data
+          : (firebase.auth().currentUser as firebase.User);
+        if (user && user.displayName) {
+          db.collection("nickname").doc(user.displayName).delete();
+          db.collection("nickname").doc(title).set({ nickname: title });
+          await user.updateProfile({ displayName: title });
+          if (title !== data.displayName) {
+            window.alert("닉네임이 변경되었습니다");
+          }
+          setNameEdit(false);
+        }
       }
     }
   }
@@ -130,8 +174,14 @@ function Profile({ data }: { data: LoadUserHookResult | undefined }) {
               회원 탈퇴
             </button>
           </div>
-          <p className="explan">
+          <p
+            className="explan"
+            style={{ borderBottom: "1px solid #eee", paddingBottom: 15 }}
+          >
             탈퇴 시 작성한 포스트 및 댓글이 모두 삭제되며 복구되지 않습니다.
+          </p>
+          <p className="explan">
+            소셜로그인 회원탈퇴는 첫 가입 시 입력했던 비밀번호 입니다.
           </p>
         </div>
       </section>

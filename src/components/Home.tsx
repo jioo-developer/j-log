@@ -4,6 +4,7 @@ import "../asset/header.scss";
 import { queryProps } from "../module/interfaceModule";
 
 function Home({ data, posts }: queryProps) {
+  //체크 끝
   return (
     <div className="main">
       <div className="in_wrap">

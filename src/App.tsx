@@ -8,30 +8,28 @@ import Profile from "./components/Profile";
 import Edit from "./components/Edit";
 import Header from "./components/Header";
 import useLoadUser from "./query/loadUser";
-import { useEffect, useState } from "react";
 import useLoadPost from "./query/loadPost";
+import { useEffect } from "react";
 
 function App() {
   const navigate = useNavigate();
-  const { data, refetch } = useLoadUser();
-  const load = useLoadPost();
-  const posts = load.data;
-  const [headerShow, setheader] = useState(false);
+  const { data, refetch, isLoading, isError } = useLoadUser();
+  const {
+    data: posts,
+    refetch: postRefetch,
+    isLoading: postIsLoading,
+    isError: postIsError,
+  } = useLoadPost();
   const location = window.location.pathname;
-  useEffect(() => {
-    if (!data) {
-      navigate("/sign");
-      setheader(false);
-    } else if (data) {
-      navigate("/");
-      setheader(true);
-    }
-  }, [data]);
+
+  if (postIsLoading) {
+    return <div className="App" />;
+  }
+
   return (
     <div className="App">
-      {(headerShow && location !== "edit") ||
-      (headerShow && location !== "upload") ? (
-        <Header data={data} />
+      {(data && location !== "edit") || (data && location !== "upload") ? (
+        <Header data={data} refetch={refetch} />
       ) : null}
       <Routes>
         <Route path="/" element={<Home data={data} posts={posts} />}></Route>
@@ -42,7 +40,10 @@ function App() {
           element={<Upload data={data} posts={posts} />}
         ></Route>
         <Route path="/edit" element={<Edit />}></Route>
-        <Route path="/sign" element={<Sign />}></Route>
+        <Route
+          path="/sign"
+          element={<Sign data={data} refetch={refetch} />}
+        ></Route>
         <Route path="/Auth" element={<Auth />}></Route>
       </Routes>
     </div>

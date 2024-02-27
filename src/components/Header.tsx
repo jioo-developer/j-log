@@ -2,12 +2,18 @@ import { Link, useNavigate } from "react-router-dom";
 import { authService } from "../Firebase";
 import { useState } from "react";
 import { LoadUserHookResult } from "../query/loadUser";
-function Header({ data }: { data: LoadUserHookResult | undefined }) {
+
+type headerProps = {
+  data: LoadUserHookResult | undefined;
+  refetch: any;
+};
+function Header({ data, refetch }: headerProps) {
   const [menuToggle, setToggle] = useState(false);
   const navigate = useNavigate();
   function logout() {
     authService.signOut().then(() => {
       navigate("/sign");
+      refetch();
     });
   }
   return (
@@ -32,7 +38,9 @@ function Header({ data }: { data: LoadUserHookResult | undefined }) {
           {menuToggle ? (
             <ul className="sub_menu">
               <li>
-                <Link to="/profile">설정</Link>
+                <Link to="/profile" onClick={() => setToggle(false)}>
+                  설정
+                </Link>
               </li>
               <li onClick={() => logout()}>로그아웃</li>
             </ul>
