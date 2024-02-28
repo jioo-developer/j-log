@@ -22,7 +22,7 @@ function Edit() {
       setText(pageData.text);
       setImage(pageData.url);
     }
-  }, [pageData]);
+  }, []);
 
   async function post(e: FormEvent<Element>) {
     e.preventDefault();
@@ -31,25 +31,42 @@ function Edit() {
         ...pageData,
         title: title,
         text: text,
-        url:
-          prevImage.length > 0
-            ? [...pageData.url, await storageUpload(newImage, file, "edit")]
-            : [],
+        url: prevImage.length > 0 ? await imagePostHandler() : [],
       };
-      // console.log(resultState);
+
       db.collection("post")
         .doc(pageData.pageId)
         .update(resultState)
         .then(() => {
           const storageRef = storageService.ref();
-          pageData.fileName.forEach((value) => {
-            const imagesRef = storageRef.child(`${pageData.user}/${value}`);
-            imagesRef.delete();
-          });
+          if (pageData.fileName) {
+            pageData.fileName.forEach((value) => {
+              const imagesRef = storageRef.child(`${pageData.user}/${value}`);
+              imagesRef.delete();
+            });
+          }
+
           window.alert("수정이 완료 되었습니다.");
           const redirect = `/detail?id=${pageData.pageId}`;
           navigate(redirect, { state: pageData.pageId });
         });
+    }
+  }
+
+  async function imagePostHandler() {
+    if (pageData) {
+      const imageResult = await storageUpload(newImage, file, "edit");
+      if (pageData.url.length === prevImage.length) {
+        return pageData.url;
+      } else if (prevImage.length > pageData.url.length) {
+        if (imageResult && imageResult.length > 0) {
+          return [...pageData.url, ...imageResult];
+        }
+      } else if (prevImage.length === 0) {
+        return [];
+      } else {
+        return pageData.url;
+      }
     }
   }
 
