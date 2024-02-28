@@ -1,17 +1,29 @@
 import { ChangeEvent, useEffect, useState } from "react";
 import "../asset/detail.scss";
-import { useLocation, Link } from "react-router-dom";
+import { useLocation, Link, useNavigate } from "react-router-dom";
 import Reply from "./Reply";
 import { FirebaseData } from "../module/interfaceModule";
 import { db, storageService } from "../Firebase";
 import useLoadDetail from "../query/loadDetail";
 import { LoadUserHookResult } from "../query/loadUser";
+import useReply from "../query/loadReply";
 
-function Detail({ data }: { data: LoadUserHookResult | undefined }) {
+type detailProps = {
+  data: LoadUserHookResult | undefined;
+  postRefetch: any;
+};
+
+function Detail({ data, postRefetch }: detailProps) {
   const location = useLocation();
-  const URLID = location.state.pageId;
+  const navigate = useNavigate();
+  const URLID = location.state.pageId ? location.state.pageId : location.state;
   const [favoriteBtn, setFavoriteBtn] = useState(false);
   const loadPage = useLoadDetail(URLID);
+  const reply = useReply(URLID);
+  const replyData = reply.data;
+  const replyRefetch = reply.refetch;
+  const refetch = loadPage.refetch;
+  const suspence = loadPage.isLoading;
   const pageData: FirebaseData | undefined = loadPage.data;
   const time = new Date();
 
@@ -26,15 +38,19 @@ function Detail({ data }: { data: LoadUserHookResult | undefined }) {
     const ok = window.confirm("정말 삭제 하시겠습니까?");
     const locate = db.collection("post").doc(URLID);
     const storageRef = storageService.ref();
-    if (ok && pageData) {
+    if (ok && pageData && pageData.fileName.length > 0) {
       pageData.fileName.forEach((item) => {
         const imagesRef = storageRef.child(`${pageData.user}/${item}`);
         imagesRef.delete();
       });
     }
-    const ReplyData: any[] = [];
-    ReplyData.map((item) => locate.collection("reply").doc(item.id).delete());
-    locate.delete();
+    if (replyData) {
+      replyData.map((item) => locate.collection("reply").doc(item.id).delete());
+    }
+    locate.delete().then(() => {
+      navigate("/");
+      postRefetch();
+    });
   }
 
   function favoriteHandler(e: ChangeEvent) {
@@ -46,6 +62,7 @@ function Detail({ data }: { data: LoadUserHookResult | undefined }) {
           favorite: pageData.favorite + 1,
         })
         .then(() => {
+          refetch();
           setCookie(`${URLID}-Cookie`, "done", 1);
           setFavoriteBtn(true);
         });
@@ -70,6 +87,10 @@ function Detail({ data }: { data: LoadUserHookResult | undefined }) {
       }
     }
   }, [pageData]);
+
+  if (suspence) {
+    return <div className="App" />;
+  }
 
   return pageData && data ? (
     <div className="detail_wrap">
@@ -99,7 +120,14 @@ function Detail({ data }: { data: LoadUserHookResult | undefined }) {
         </section>
         <section className="content_wrap">
           <pre className="text">{pageData.text}</pre>
-          <div className="grid">
+          <div
+            className="grid"
+            style={
+              pageData.url.length > 3
+                ? { gridTemplateColumns: `repeat(${pageData.url.length},1fr)` }
+                : { gridTemplateColumns: `repeat(${3},1fr)` }
+            }
+          >
             {pageData.url
               ? pageData.url.map((value, index) => {
                   return <img src={value} className="att" alt="" key={index} />;
@@ -126,7 +154,11 @@ function Detail({ data }: { data: LoadUserHookResult | undefined }) {
                 </div>
               )}
             </div>
-            <Reply data={data} />
+            <Reply
+              data={data}
+              replyData={replyData}
+              replyRefetch={replyRefetch}
+            />
           </div>
         </section>
       </div>

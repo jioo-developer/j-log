@@ -5,7 +5,7 @@ import "../asset/header.scss";
 import { LoadUserHookResult } from "../query/loadUser";
 import useLoadNickName from "../query/loadNickName";
 import firebase from "firebase/compat/app";
-import { onFileChange } from "../module/exportFunction";
+import { onFileChange, storageUpload } from "../module/exportFunction";
 import { useNavigate } from "react-router-dom";
 import {
   GoogleAuthProvider,
@@ -121,6 +121,13 @@ function Profile({ data }: { data: LoadUserHookResult | undefined }) {
     setNameEdit((prev) => !prev);
   }
 
+  async function changeHanlder(e: ChangeEvent) {
+    const changeResult: any = await onFileChange(e);
+    if (Array.isArray(changeResult)) {
+      storageUpload(changeResult[0], changeResult[1], "profile");
+    }
+  }
+
   return data ? (
     <div className="profile_wrap">
       <section className="content">
@@ -130,7 +137,7 @@ function Profile({ data }: { data: LoadUserHookResult | undefined }) {
               type="file"
               accept="image/*"
               id="img_check"
-              onChange={(e: ChangeEvent) => onFileChange(e, "profile")}
+              onChange={(e: ChangeEvent) => changeHanlder(e)}
             />
             <figure className="profileImg">
               <img src={data.photoURL} width="130px" height="135px" alt="" />

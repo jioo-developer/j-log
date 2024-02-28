@@ -4,19 +4,20 @@ import { serverTimestamp } from "firebase/firestore";
 import { useLocation } from "react-router-dom";
 import { db } from "../Firebase";
 import { LoadUserHookResult } from "../query/loadUser";
-import useReply from "../query/loadReply";
 
-function Reply({ data }: { data: LoadUserHookResult | undefined }) {
+type replyProps = {
+  data: LoadUserHookResult | undefined;
+  replyData: any[] | undefined;
+  replyRefetch: any;
+};
+
+function Reply({ data, replyData, replyRefetch }: replyProps) {
   const location = useLocation();
-  let URLID = location.state.pageId;
-  const reply = useReply(URLID);
-  const replyData = reply.data || [];
-  const refetch = reply.refetch;
+  const URLID = location.state.pageId ? location.state.pageId : location.state;
   const [commentChange, setCommentChange] = useState(false);
   const [replyTarget, setTarget] = useState("");
   const [comment, setcomment] = useState("");
   const replyArea = useRef<HTMLTextAreaElement | null>(null);
-
   const time = new Date();
   const timeData = {
     year: time.getFullYear(),
@@ -25,22 +26,22 @@ function Reply({ data }: { data: LoadUserHookResult | undefined }) {
   };
 
   function replyhandler(index: number, type?: string) {
-    if (!type) {
-      if (replyData) {
+    if (replyData) {
+      if (!type) {
         setCommentChange(true);
         setcomment(replyData[index].comment);
         setTarget(replyData[index].id);
+      } else {
+        db.collection("post")
+          .doc(URLID)
+          .collection("reply")
+          .doc(replyData[index].id)
+          .update({ comment: comment })
+          .then(() => {
+            setCommentChange(false);
+            replyRefetch();
+          });
       }
-    } else {
-      db.collection("post")
-        .doc(URLID)
-        .collection("reply")
-        .doc(replyData[index].id)
-        .update({ comment: comment })
-        .then(() => {
-          setCommentChange(false);
-          refetch();
-        });
     }
   }
 
@@ -79,63 +80,62 @@ function Reply({ data }: { data: LoadUserHookResult | undefined }) {
     }
   }
 
-  useEffect(() => {
-    console.log(comment);
-  }, [comment]);
-
-  return replyData && data ? (
+  return data ? (
     <>
-      {replyData.map(function (item, index) {
-        return (
-          <>
-            <div className="reply_wrap" key={index}>
-              <div className="user_info">
-                <img src={item.profile} alt="" />
-                <div className="user_text">
-                  <p className="reply_name">{item.replyrer}</p>
-                  <p className="reply_date">{item.date}</p>
-                </div>
-                {data.uid === item.uid ||
-                data.uid === "SK3SlXUJXPdnXVUJvE6GV9Hr4hh2" ? (
-                  <div className="edit_comment">
-                    <button
-                      className="edit btns"
-                      onClick={() => {
-                        if (commentChange && replyTarget === item.id) {
-                          replyhandler(index, "update");
-                        } else {
-                          replyhandler(index);
-                        }
-                      }}
-                    >
-                      {commentChange && replyTarget === item.id
-                        ? "완료"
-                        : "수정"}
-                    </button>
-                    <button
-                      className="delete btns"
-                      onClick={() => reply_delete(index)}
-                    >
-                      삭제
-                    </button>
+      {replyData
+        ? replyData.map(function (item, index) {
+            return (
+              <>
+                <div className="reply_wrap" key={index}>
+                  <div className="user_info">
+                    <img src={item.profile} alt="" />
+                    <div className="user_text">
+                      <p className="reply_name">{item.replyrer}</p>
+                      <p className="reply_date">{item.date}</p>
+                    </div>
+                    {data.uid === item.uid ||
+                    data.uid === "SK3SlXUJXPdnXVUJvE6GV9Hr4hh2" ? (
+                      <div className="edit_comment">
+                        <button
+                          className="edit btns"
+                          onClick={() => {
+                            if (commentChange && replyTarget === item.id) {
+                              replyhandler(index, "update");
+                            } else {
+                              replyhandler(index);
+                            }
+                          }}
+                        >
+                          {commentChange && replyTarget === item.id
+                            ? "완료"
+                            : "수정"}
+                        </button>
+                        <button
+                          className="delete btns"
+                          onClick={() => reply_delete(index)}
+                        >
+                          삭제
+                        </button>
+                      </div>
+                    ) : null}
                   </div>
-                ) : null}
-              </div>
-              {commentChange && replyTarget === item.id ? (
-                <input
-                  type="text"
-                  className={`reply_input  form-control`}
-                  defaultValue={item.comment}
-                  onChange={(e) => setcomment(e.target.value)}
-                  data-id={item.id}
-                />
-              ) : (
-                <p className={`reply_text`}>{item.comment}</p>
-              )}
-            </div>
-          </>
-        );
-      })}
+                  {commentChange && replyTarget === item.id ? (
+                    <input
+                      type="text"
+                      className={`reply_input  form-control`}
+                      defaultValue={item.comment}
+                      onChange={(e) => setcomment(e.target.value)}
+                      data-id={item.id}
+                    />
+                  ) : (
+                    <p className={`reply_text`}>{item.comment}</p>
+                  )}
+                </div>
+              </>
+            );
+          })
+        : null}
+
       <form onSubmit={(e: FormEvent) => commentUpload(e)} style={{ order: 0 }}>
         <TextareaAutosize
           cacheMeasurements

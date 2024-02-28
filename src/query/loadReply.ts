@@ -13,7 +13,7 @@ const useReply = (params: string) => {
     () => loadReplys(params),
     {
       onSuccess(data) {
-        console.log(data);
+        // console.log(data);
       },
       onError(err) {
         console.log(err);

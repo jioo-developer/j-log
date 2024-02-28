@@ -68,3 +68,7 @@ button {
   outline: none;
   border: 0;
 }
+
+#root {
+  background: rgba(249, 249, 249, 0.7803921569);
+}

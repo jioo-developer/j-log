@@ -150,6 +150,7 @@
         }
 
         .com_title {
+          margin-top: 5px;
           color: #495057;
         }
 
@@ -282,7 +283,6 @@
 
   .grids {
     display: grid;
-    grid-template-columns: 1fr 1fr;
     column-gap: 10px;
 
     .att {

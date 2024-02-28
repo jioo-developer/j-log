@@ -9,7 +9,6 @@ import Edit from "./components/Edit";
 import Header from "./components/Header";
 import useLoadUser from "./query/loadUser";
 import useLoadPost from "./query/loadPost";
-import { useEffect } from "react";
 
 function App() {
   const navigate = useNavigate();
@@ -33,7 +32,10 @@ function App() {
       ) : null}
       <Routes>
         <Route path="/" element={<Home data={data} posts={posts} />}></Route>
-        <Route path="/detail" element={<Detail data={data} />}></Route>
+        <Route
+          path="/detail"
+          element={<Detail data={data} postRefetch={postRefetch} />}
+        ></Route>
         <Route path="/profile" element={<Profile data={data} />}></Route>
         <Route
           path="/upload"

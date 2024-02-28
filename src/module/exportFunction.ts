@@ -2,39 +2,38 @@ import { ChangeEvent } from "react";
 import { storageService } from "../Firebase";
 import firebase from "firebase/compat/app";
 
-export async function onFileChange(
-  e: ChangeEvent,
-  type: string,
-  setState?: any
-) {
+export async function onFileChange(e: ChangeEvent) {
   const inputElement = e.target as HTMLInputElement;
   if (inputElement.files) {
     const theFiles = Array.from(inputElement.files);
+    console.log(theFiles);
     if (theFiles.length > 0) {
-      const reader = new FileReader();
-      const resultData: Promise<any>[] = await Promise.all(
-        // promise를 묶어서 resultData로 return 해줌
-        theFiles.map(async (item) => {
-          // files에 map을 써서 return 되는 걸 새로운 배열로 만들어줌
-          return await new Promise((resolve, reject) => {
-            reader.onloadend = () => resolve(reader.result);
-            reader.onerror = reject;
+      const result = await Promise.all(
+        theFiles.map((item: File) => {
+          return new Promise((resolve, reject) => {
+            const reader = new FileReader();
             reader.readAsDataURL(item);
+            reader.onloadend = (e) => {
+              if (e.target) {
+                const dataURL = e.target.result as string;
+                resolve(dataURL);
+              } else {
+                reject("");
+              }
+            };
           });
         })
       );
-      if (setState) setState(resultData);
-      onfileData(resultData, theFiles);
-      storageUpload(resultData, theFiles, type);
+      return [result, theFiles];
     }
   }
 }
 
-export function onfileData(imageurl?: any, fileData?: File[]) {
-  return [imageurl, fileData];
-}
-
-async function storageUpload(imageurl: any, fileData: File[], type: string) {
+export async function storageUpload(
+  imageurl: any,
+  fileData: File[],
+  type: string
+) {
   let fileRef: firebase.storage.Reference;
   const user = firebase.auth().currentUser as firebase.User;
   if (imageurl.length > 0) {
@@ -53,7 +52,7 @@ async function storageUpload(imageurl: any, fileData: File[], type: string) {
           await user.updateProfile({ photoURL: profileUrl });
           window.alert("프로필이미지가 변경 되었습니다.");
         } else {
-          const response = await fileRef.putString(imageurl, "data_url");
+          const response = await fileRef.putString(imageurl[index], "data_url");
           return await response.ref.getDownloadURL();
         }
       })

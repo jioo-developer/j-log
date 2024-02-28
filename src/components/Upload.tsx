@@ -2,7 +2,7 @@ import { ChangeEvent, FormEvent, useEffect, useState } from "react";
 import "../asset/upload.scss";
 import TextareaAutosize from "react-textarea-autosize";
 import { serverTimestamp } from "firebase/firestore";
-import { onFileChange, onfileData } from "../module/exportFunction";
+import { onFileChange, storageUpload } from "../module/exportFunction";
 import { db } from "../Firebase";
 import { queryProps } from "../module/interfaceModule";
 import { useNavigate } from "react-router-dom";
@@ -11,6 +11,8 @@ function Upload({ data, posts }: queryProps) {
   const [title, setTitle] = useState("");
   const [textarea, setTextarea] = useState("");
   const [pageId, setPageId] = useState("");
+  const [preview, setPreview] = useState<any[]>([]);
+  const [files, setFile] = useState<any[]>([]);
   const navigate = useNavigate();
   const time = new Date();
 
@@ -19,9 +21,6 @@ function Upload({ data, posts }: queryProps) {
     month: time.getMonth() + 1,
     day: time.getDate(),
   };
-
-  const fileUrl: string[] = onfileData()[0] || [];
-  const files: File[] = onfileData()[1] || [];
 
   async function post(e: FormEvent<Element>) {
     e.preventDefault();
@@ -33,14 +32,17 @@ function Upload({ data, posts }: queryProps) {
         user: data.displayName,
         writer: data.uid,
         date: `${timeData.year}년 ${timeData.month}월 ${timeData.day}일`,
-        url: fileUrl.length > 0 ? fileUrl : [],
+        url:
+          preview.length > 0
+            ? await storageUpload(preview, files, "upload")
+            : [],
         favorite: 0,
         pageId: pageId,
         profile: data.photoURL,
         timeStamp: serverTimestamp(),
-        fileName: files.length > 0 ? files.map((value) => value.name) : "",
+        fileName:
+          files.length > 0 ? files.map((value: File) => value.name) : "",
       };
-
       await db
         .collection("post")
         .doc(pageId)
@@ -69,6 +71,14 @@ function Upload({ data, posts }: queryProps) {
     }
   }
 
+  async function filechangeHandler(e: ChangeEvent) {
+    const changeResult = await onFileChange(e);
+    if (Array.isArray(changeResult)) {
+      setPreview(changeResult[0]);
+      setFile(changeResult[1]);
+    }
+  }
+
   useEffect(() => {
     let randomStr: string = generateRandomString(20);
     if (overlap(randomStr)) {
@@ -77,7 +87,7 @@ function Upload({ data, posts }: queryProps) {
     } else {
       setPageId(randomStr);
     }
-  }, [posts]);
+  }, []);
 
   return (
     <div className="upload">
@@ -95,7 +105,6 @@ function Upload({ data, posts }: queryProps) {
         <div className="textarea">
           <TextareaAutosize
             cacheMeasurements
-            // contentEditable="true"
             onHeightChange={(height) => {}}
             className="text"
             placeholder="당신의 이야기를 적어보세요."
@@ -104,8 +113,8 @@ function Upload({ data, posts }: queryProps) {
             }
           />
           <figure>
-            {fileUrl.length > 0
-              ? fileUrl.map((url, index) => (
+            {preview.length > 0
+              ? preview.map((url, index) => (
                   <img src={url} alt="" className="att" key={index} />
                 ))
               : null}
@@ -117,7 +126,7 @@ function Upload({ data, posts }: queryProps) {
           multiple
           className="file-form"
           id="image"
-          onChange={(e: ChangeEvent) => onFileChange(e, "upload")}
+          onChange={(e: ChangeEvent) => filechangeHandler(e)}
         />
         <label htmlFor="image" className="Attachment image-att">
           이미지를 담아주세요
