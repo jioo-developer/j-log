@@ -36,6 +36,7 @@ function Edit() {
             ? [...pageData.url, await storageUpload(newImage, file, "edit")]
             : [],
       };
+      // console.log(resultState);
       db.collection("post")
         .doc(pageData.pageId)
         .update(resultState)

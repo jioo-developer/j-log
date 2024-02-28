@@ -19,6 +19,8 @@ function Detail({ data, postRefetch }: detailProps) {
   const URLID = location.state.pageId ? location.state.pageId : location.state;
   const [favoriteBtn, setFavoriteBtn] = useState(false);
   const loadPage = useLoadDetail(URLID);
+  const [lazyload, setLazy] = useState(false);
+  const [lazyCount, setLazyCount] = useState(0);
   const reply = useReply(URLID);
   const replyData = reply.data;
   const replyRefetch = reply.refetch;
@@ -52,6 +54,16 @@ function Detail({ data, postRefetch }: detailProps) {
       postRefetch();
     });
   }
+
+  function lazyfunction() {
+    setLazyCount((prev) => prev + 1);
+  }
+
+  useEffect(() => {
+    if (lazyCount === pageData?.url.length) {
+      setLazy(true);
+    }
+  }, [lazyCount]);
 
   function favoriteHandler(e: ChangeEvent) {
     const inputEl = e.target as HTMLInputElement;
@@ -130,7 +142,16 @@ function Detail({ data, postRefetch }: detailProps) {
           >
             {pageData.url
               ? pageData.url.map((value, index) => {
-                  return <img src={value} className="att" alt="" key={index} />;
+                  return (
+                    <img
+                      src={value}
+                      className="att"
+                      alt=""
+                      key={index}
+                      style={lazyload ? { opacity: 1 } : { opacity: 0 }}
+                      onLoad={lazyfunction}
+                    />
+                  );
                 })
               : null}
           </div>
