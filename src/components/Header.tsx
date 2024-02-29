@@ -6,8 +6,9 @@ import { LoadUserHookResult } from "../query/loadUser";
 type headerProps = {
   data: LoadUserHookResult | undefined;
   refetch: any;
+  isLoading: any;
 };
-function Header({ data, refetch }: headerProps) {
+function Header({ data, refetch, isLoading }: headerProps) {
   const [menuToggle, setToggle] = useState(false);
   const navigate = useNavigate();
   function logout() {

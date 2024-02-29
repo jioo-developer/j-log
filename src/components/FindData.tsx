@@ -40,9 +40,9 @@ function FindData({ findAction }: { findAction: (params: boolean) => void }) {
             onChange={(e) => setFindPw(e.target.value)}
           />
           <div className="btn_wrap">
-            <div className="btn" onClick={() => findAction(false)}>
+            <button className="btn" onClick={() => findAction(false)}>
               취소
-            </div>
+            </button>
             <button className="btn">완료</button>
           </div>
         </form>

@@ -4,39 +4,39 @@ import "../asset/header.scss";
 import { queryProps } from "../module/interfaceModule";
 
 function Home({ data, posts }: queryProps) {
-  //체크 끝
   return (
     <div className="main">
       <div className="in_wrap">
         <section className="post_section">
           {posts
-            ? posts.map(function (post, index) {
+            ? posts.map(function (item, index) {
                 return (
                   <Link
-                    to={`/detail?id=${post.pageId}`}
-                    state={{ pageId: post.pageId }}
+                    to={`/detail?id=${item.pageId}`}
+                    state={{ pageId: item.pageId }}
                     key={index}
                   >
                     <div className="post" key={index}>
                       <figure className="thumbnail">
                         <img
                           src={
-                            post.url.length ? post.url[0] : "./img/no-image.jpg"
+                            item.url.length > 0
+                              ? item.url
+                              : "./img/no-image.jpg"
                           }
-                          alt=""
                         />
                       </figure>
                       <div className="text_wrap">
-                        <p className="post_title">{post.title}</p>
-                        <p className="post_text">{post.text}</p>
-                        <p className="post_date">{post.date}</p>
+                        <p className="post_title">{item.title}</p>
+                        <p className="post_text">{item.text}</p>
+                        <p className="post_date">{item.date}</p>
                       </div>
                       <div className="writer_wrap">
                         <div className="id writter-id">
-                          <img src={post.profile} alt="" className="profile" />
-                          <p className="profile_id">{post.user}</p>
+                          <img src={item.profile} alt="" className="profile" />
+                          <p className="profile_id">{item.user}</p>
                         </div>
-                        <p className="favorite">❤{post.favorite}</p>
+                        <p className="favorite">❤{item.favorite}</p>
                       </div>
                     </div>
                   </Link>

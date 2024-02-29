@@ -4,7 +4,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { authService, db } from "../Firebase";
 import useLoadNickName, { LoadNickFilter } from "../query/loadNickName";
 
-function Auth() {
+function Auth({ refetch }: any) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [nickname, setNickname] = useState("");
@@ -36,14 +36,14 @@ function Auth() {
                 .doc(nickname)
                 .set({ nickname: nickname })
                 .then(() => {
-                  if (result.user !== null) {
+                  if (result.user) {
                     result.user.updateProfile({
                       displayName: nickname,
                       photoURL: "./img/default.svg",
                     });
                   }
+                  refetch();
                 });
-
               window.alert("회원가입을 환영합니다.");
               navigate("/");
             }

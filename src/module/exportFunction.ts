@@ -50,7 +50,6 @@ export async function storageUpload(
           const response = await fileRef.putString(imageurl[index], "data_url");
           const profileUrl = await response.ref.getDownloadURL();
           await user.updateProfile({ photoURL: profileUrl });
-          window.alert("프로필이미지가 변경 되었습니다.");
         } else {
           const response = await fileRef.putString(imageurl[index], "data_url");
           return await response.ref.getDownloadURL();

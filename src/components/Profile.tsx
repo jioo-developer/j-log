@@ -7,12 +7,14 @@ import useLoadNickName from "../query/loadNickName";
 import firebase from "firebase/compat/app";
 import { onFileChange, storageUpload } from "../module/exportFunction";
 import { useNavigate } from "react-router-dom";
-import {
-  GoogleAuthProvider,
-  getAuth,
-  reauthenticateWithPopup,
-} from "firebase/auth";
-function Profile({ data }: { data: LoadUserHookResult | undefined }) {
+import { GoogleAuthProvider, reauthenticateWithPopup } from "firebase/auth";
+
+type profileProps = {
+  data: LoadUserHookResult | undefined;
+  refetch: any;
+};
+
+function Profile({ data, refetch }: profileProps) {
   const [NameEdit, setNameEdit] = useState(false);
   const [title, setTitle] = useState("");
   const loadNick = useLoadNickName();
@@ -32,18 +34,10 @@ function Profile({ data }: { data: LoadUserHookResult | undefined }) {
               data.email,
               password
             );
-          if (credential) {
-            db.collection("delete").doc(`${data.uid}`).set({ 상태: "탈퇴" });
-            db.collection("nickname").doc(data.displayName).delete();
-          }
           userDelete
             .reauthenticateWithCredential(credential)
             .then(() => {
-              userDelete.delete().then(() => {
-                window.alert("회원탈퇴 되었습니다.");
-                authService.signOut();
-                navigate("/sign");
-              });
+              userDelete.delete().then(() => dbDelete(userDelete, type));
             })
             .catch((error) => {
               console.log(error.message);
@@ -51,16 +45,9 @@ function Profile({ data }: { data: LoadUserHookResult | undefined }) {
             });
         } else {
           const googleProvider = new GoogleAuthProvider();
-          const user = getAuth().currentUser;
-          if (user) {
-            db.collection("delete").doc(`${data.uid}`).set({ 상태: "탈퇴" });
-            db.collection("nickname").doc(`${data.displayName}-G`).delete();
-            reauthenticateWithPopup(user, googleProvider).then(() => {
-              user.delete().then(() => {
-                window.alert("회원탈퇴 되었습니다.");
-                authService.signOut();
-                navigate("/sign");
-              });
+          if (userDelete) {
+            reauthenticateWithPopup(userDelete, googleProvider).then(() => {
+              userDelete.delete().then(() => dbDelete(userDelete, type));
             });
           }
         }
@@ -68,13 +55,32 @@ function Profile({ data }: { data: LoadUserHookResult | undefined }) {
     }
   }
 
+  async function dbDelete(user: firebase.User, type: string) {
+    if (data) {
+      const deletePromises = [
+        db
+          .collection("delete")
+          .doc(`${data.uid}`)
+          .set({ 상태: "탈퇴", nickname: user.displayName }),
+        db.collection("nickname").doc(`${user.displayName}`).delete(),
+      ];
+
+      if (type === "social") {
+        deletePromises.push(
+          db.collection("nickname").doc(`${data.uid}-G`).delete()
+        );
+      }
+      return Promise.all(deletePromises).then(() => {
+        window.alert("회원탈퇴 되었습니다.");
+        navigate("/sign");
+      });
+    }
+  }
+
   async function deleteUser() {
     if (data) {
       const password = window.prompt("비밀번호를 입력해주세요.");
-      const check = await db
-        .collection("nickname")
-        .doc(`${data.displayName}-G`)
-        .get();
+      const check = await db.collection("nickname").doc(`${data.uid}-G`).get();
       const soSialPW = check.data();
 
       if (soSialPW) {
@@ -91,26 +97,30 @@ function Profile({ data }: { data: LoadUserHookResult | undefined }) {
     }
   }
 
-  //프로필 이미지 변경 함수
+  async function changeHanlder(e: ChangeEvent) {
+    const changeResult: any = await onFileChange(e);
+    if (Array.isArray(changeResult)) {
+      storageUpload(changeResult[0], changeResult[1], "profile");
+      //프로필 이미지 변경을 담당하는 외부 함수
+    }
+  }
+
+  //프로필 이미지 변경 전체 함수 ↑
 
   async function NickNameChange() {
-    if (loadNick.data && data) {
-      const overlapFilter = (loadNick.data || []).some(
+    if (loadNick.data && loadNick.data.length > 0 && data) {
+      const overlapFilter = loadNick.data.some(
         (item) => item.nickname === title
       );
       if (overlapFilter && title !== data.displayName) {
         window.alert("이미 사용중인 닉네임 입니다.");
       } else {
-        const user = data
-          ? data
-          : (firebase.auth().currentUser as firebase.User);
+        const user = authService.currentUser;
         if (user && user.displayName) {
           db.collection("nickname").doc(user.displayName).delete();
           db.collection("nickname").doc(title).set({ nickname: title });
           await user.updateProfile({ displayName: title });
-          if (title !== data.displayName) {
-            window.alert("닉네임이 변경되었습니다");
-          }
+          refetch();
           setNameEdit(false);
         }
       }
@@ -119,13 +129,6 @@ function Profile({ data }: { data: LoadUserHookResult | undefined }) {
 
   function nickToggleFunc() {
     setNameEdit((prev) => !prev);
-  }
-
-  async function changeHanlder(e: ChangeEvent) {
-    const changeResult: any = await onFileChange(e);
-    if (Array.isArray(changeResult)) {
-      storageUpload(changeResult[0], changeResult[1], "profile");
-    }
   }
 
   return data ? (

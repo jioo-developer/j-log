@@ -12,7 +12,6 @@ function Sign({
   data: LoadUserHookResult | undefined;
   refetch: any;
 }) {
-  //체크 끝
   const [id, setId] = useState("");
   const [password, setPassword] = useState("");
   const [findToggle, setFIndToggle] = useState(false);

@@ -22,6 +22,14 @@ function Upload({ data, posts }: queryProps) {
     day: time.getDate(),
   };
 
+  async function filechangeHandler(e: ChangeEvent) {
+    const changeResult = await onFileChange(e);
+    if (Array.isArray(changeResult)) {
+      setPreview(changeResult[0]);
+      setFile(changeResult[1]);
+    }
+  }
+
   async function post(e: FormEvent<Element>) {
     e.preventDefault();
     if (title !== "" && textarea !== "" && data) {
@@ -48,7 +56,6 @@ function Upload({ data, posts }: queryProps) {
         .doc(pageId)
         .set(content)
         .then(() => {
-          window.alert("포스트가 업로드 되었습니다.");
           const redirect = `/detail?id=${pageId}`;
           navigate(redirect, { state: pageId });
         });
@@ -68,14 +75,6 @@ function Upload({ data, posts }: queryProps) {
   function overlap(params: string) {
     if (posts) {
       return posts.some((item) => item.id === params);
-    }
-  }
-
-  async function filechangeHandler(e: ChangeEvent) {
-    const changeResult = await onFileChange(e);
-    if (Array.isArray(changeResult)) {
-      setPreview(changeResult[0]);
-      setFile(changeResult[1]);
     }
   }
 
@@ -132,9 +131,9 @@ function Upload({ data, posts }: queryProps) {
           이미지를 담아주세요
         </label>
         <div className="bottom_wrap">
-          <div className="exit" onClick={() => navigate("/")}>
+          <button className="exit" onClick={() => navigate("/")}>
             ← &nbsp;나가기
-          </div>
+          </button>
           <button type="submit" className="post">
             글작성
           </button>

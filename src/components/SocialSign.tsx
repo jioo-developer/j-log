@@ -15,20 +15,24 @@ function SocialSign({ data }: { data: LoadUserHookResult | undefined }) {
     const provider = await new firebaseInstance.auth.GoogleAuthProvider();
     //데이터 받기
     const result = await authService.signInWithPopup(provider);
-    if (result.user?.displayName) {
+    if (result.user) {
       const check = await db
         .collection("nickname")
-        .doc(`${result.user.displayName}-G`)
+        .doc(`${result.user.uid}-G`)
         .get();
       if (!check.data()) {
         const password = window.prompt(
           "회원 탈퇴에 사용 될 비밀번호를 입력해주세요."
         );
-        if (result.user && result.user.displayName && password) {
-          db.collection("nickname")
-            .doc(`${result.user.displayName}-G`)
-            .set({ nickname: result.user.displayName, password: password });
+        if (password) {
+          db.collection("nickname").doc(`${result.user.uid}-G`).set({
+            nickname: result.user.displayName,
+            id: result.user.uid,
+            password: password,
+          });
           navigate("/");
+        } else {
+          authService.signOut();
         }
       } else {
         navigate("/");
