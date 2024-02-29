@@ -17,8 +17,7 @@ function Edit() {
   const [title, setTitle] = useState("");
   const [text, setText] = useState("");
 
-  const [prevImage, setImage] = useState<any[]>([]);
-  const [newImage, setNew] = useState<any[]>([]);
+  const [preview, setImage] = useState<any[]>([]);
   const [file, setFile] = useState<any[]>([]);
 
   useEffect(() => {
@@ -36,9 +35,9 @@ function Edit() {
         ...pageData,
         title: title,
         text: text,
-        url: prevImage.length > 0 ? await imagePostHandler() : [],
+        url: preview.length > 0 ? await imagePostHandler() : [],
       };
-
+      // console.log(resultState);
       db.collection("post")
         .doc(pageData.pageId)
         .update(resultState)
@@ -60,32 +59,44 @@ function Edit() {
 
   async function imagePostHandler() {
     if (pageData) {
-      const imageResult = await storageUpload(newImage, file, "edit");
-      if (pageData.url.length === prevImage.length) {
-        return pageData.url;
-      } else if (prevImage.length > pageData.url.length) {
-        if (imageResult && imageResult.length > 0) {
-          return [...pageData.url, ...imageResult];
-        } else {
-          return pageData.url;
+      const arr = [...preview];
+      const filterArr = arr.filter((item) =>
+        item.includes("data:image/png;base64")
+      );
+      // preview에 이전 데이터 url 과 신규 데이터 url이 섞여 있는 걸 filter
+      // 그러면 신규 url만 filterArr에 남음
+
+      const paramsArr = filterArr.length === 0 ? pageData.url : filterArr;
+      // 필터의 길이가 일때 pageData 유지 || 필터 배열을 할당
+      const imageResult: any[] = (await storageUpload(paramsArr, file)) || [];
+      // 그러면 필터 배열의 새 url이 나옴
+
+      for (let i = 0; i < arr.length; i++) {
+        if (arr[i].includes("data:image/png;base64")) {
+          arr.splice(i, 1, imageResult[i]);
         }
-      } else if (prevImage.length === 0) {
-        return [];
-      } else {
-        return pageData.url;
       }
+      return arr;
+    } else {
+      return [];
     }
   }
 
   async function filechangeHandler(e: ChangeEvent) {
     const changeResult = await onFileChange(e);
     if (Array.isArray(changeResult)) {
-      const copyArray = [...prevImage];
+      const copyArray = [...preview];
       copyArray.push(...changeResult[0]);
-      setImage(copyArray);
-      setNew(changeResult[0]);
-      setFile(changeResult[1]);
+      setImage(copyArray); //preview
+      setFile(changeResult[1]); //new file
     }
+  }
+
+  function previewDelete(value: number) {
+    const filter1 = preview.filter((item, index) => index !== value);
+    const filter2 = file.filter((item, index) => index !== value);
+    setImage(filter1);
+    setFile(filter2);
   }
 
   return (
@@ -113,12 +124,21 @@ function Edit() {
                 }
               />
               <figure>
-                {prevImage.length > 0
-                  ? prevImage.map((value, index) => {
-                      return (
-                        <img src={value} alt="" className="att" key={index} />
-                      );
-                    })
+                {preview.length > 0
+                  ? preview.map((url, index) => (
+                      <div key={index}>
+                        <button
+                          type="button"
+                          className="preview_delete"
+                          onClick={() => {
+                            previewDelete(index);
+                          }}
+                        >
+                          <img src="./img/close.png" />
+                        </button>
+                        <img src={url} alt="" className="att" key={index} />
+                      </div>
+                    ))
                   : null}
               </figure>
             </div>

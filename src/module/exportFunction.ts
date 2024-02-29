@@ -32,7 +32,7 @@ export async function onFileChange(e: ChangeEvent) {
 export async function storageUpload(
   imageurl: any,
   fileData: File[],
-  type: string
+  type?: string
 ) {
   const user = firebase.auth().currentUser as firebase.User;
   if (imageurl.length > 0) {

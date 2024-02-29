@@ -32,10 +32,7 @@ function Upload({ data, posts }: queryProps) {
         user: data.displayName,
         writer: data.uid,
         date: `${timeData.year}년 ${timeData.month}월 ${timeData.day}일`,
-        url:
-          preview.length > 0
-            ? await storageUpload(preview, files, "upload")
-            : [],
+        url: preview.length > 0 ? await storageUpload(preview, files) : [],
         favorite: 0,
         pageId: pageId,
         profile: data.photoURL,
