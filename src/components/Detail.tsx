@@ -23,8 +23,6 @@ function Detail({ data, postRefetch }: detailProps) {
   const [lazyload, setLazy] = useState(false);
   const [lazyCount, setLazyCount] = useState(0);
 
-  const [favoriteBtn, setFavoriteBtn] = useState(false);
-
   const reply = useReply(URLID);
   const replyData = reply.data;
   const replyRefetch = reply.refetch;
@@ -34,45 +32,51 @@ function Detail({ data, postRefetch }: detailProps) {
 
   function setCookie(name: string, value: string, expiredays: number) {
     time.setDate(time.getDate() + expiredays);
-    document.cookie = `${name} = ${escape(
+    document.cookie = `${name}=${escape(
       value
-    )}; expires =${time.toUTCString()};`;
+    )}; expires=${time.toUTCString()};`;
   }
 
-  function favoriteHandler(e: ChangeEvent) {
-    //여기서 쿠키체크
-    const inputEl = e.target as HTMLInputElement;
-    if (inputEl.checked && pageData) {
-      db.collection("post")
-        .doc(URLID)
-        .update({
-          favorite: pageData.favorite + 1,
-        })
-        .then(() => {
-          refetch();
-          setCookie(`${URLID}-Cookie`, "done", 1);
-          setFavoriteBtn(true);
-        });
+  function favoriteHandler() {
+    const cookieCheck = document.cookie;
+    if (data && pageData) {
+      if (!cookieCheck.includes(`${data.uid}-Cookie`)) {
+        db.collection("post")
+          .doc(URLID)
+          .update({
+            favorite: pageData.favorite + 1,
+          })
+          .then(() => {
+            refetch();
+            setCookie(`${data.uid}-Cookie`, "done", 1);
+          });
+      } else {
+        console.log("쿠키있음");
+      }
     }
   }
 
   async function onDelete() {
     const ok = window.confirm("정말 삭제 하시겠습니까?");
-    const locate = db.collection("post").doc(URLID);
-    const storageRef = storageService.ref();
-    if (ok && pageData && pageData.fileName.length > 0) {
-      pageData.fileName.forEach((item) => {
-        const imagesRef = storageRef.child(`${pageData.writer}/${item}`);
-        imagesRef.delete();
+    if (ok) {
+      const locate = db.collection("post").doc(URLID);
+      const storageRef = storageService.ref();
+      if (pageData && pageData.fileName.length > 0) {
+        pageData.fileName.forEach((item) => {
+          const imagesRef = storageRef.child(`${pageData.writer}/${item}`);
+          imagesRef.delete();
+        });
+      }
+      if (replyData) {
+        replyData.map((item) =>
+          locate.collection("reply").doc(item.id).delete()
+        );
+      }
+      locate.delete().then(() => {
+        navigate("/");
+        postRefetch();
       });
     }
-    if (replyData) {
-      replyData.map((item) => locate.collection("reply").doc(item.id).delete());
-    }
-    locate.delete().then(() => {
-      navigate("/");
-      postRefetch();
-    });
   }
 
   function lazyfunction() {
@@ -120,7 +124,7 @@ function Detail({ data, postRefetch }: detailProps) {
               <p className="date">{pageData.date}</p>
             </div>
             {data.uid === pageData.writer ||
-            data.uid === "IKTiBQSTpmOqKY4Sx9kmKBeWnT52" ? (
+            data.uid === "MgoM64rubkOZMYOhNJjV8KFZxCV2" ? (
               <>
                 <div className="right_wrap">
                   <Link to={"/edit"} state={{ pageId: URLID }}>
@@ -162,22 +166,9 @@ function Detail({ data, postRefetch }: detailProps) {
           <div className="comment">
             <div className="favorite_wrap">
               <p className="com_title">게시글에 대한 댓글을 달아주세요.</p>
-              <input
-                type="checkbox"
-                id="favorite_check"
-                onChange={(e: ChangeEvent) => favoriteHandler(e)}
-              />
-              {!favoriteBtn ? (
-                <>
-                  <label htmlFor="favorite_check" className="favorite_btn">
-                    <span>👍</span>추천&nbsp;{pageData.favorite}
-                  </label>
-                </>
-              ) : (
-                <div className="favorite_btn">
-                  <span>👍</span>추천&nbsp;{pageData.favorite}
-                </div>
-              )}
+              <button className="favorite_btn" onClick={favoriteHandler}>
+                <span>👍</span>추천&nbsp;{pageData.favorite}
+              </button>
             </div>
             <Reply
               data={data}

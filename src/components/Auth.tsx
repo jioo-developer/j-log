@@ -42,10 +42,14 @@ function Auth({ refetch }: any) {
                       photoURL: "./img/default.svg",
                     });
                   }
+                })
+                .then(() => {
                   refetch();
+                  navigate("/");
+                })
+                .then(() => {
+                  window.alert("회원가입을 환영합니다.");
                 });
-              window.alert("회원가입을 환영합니다.");
-              navigate("/");
             }
           })
           .catch((error) => {

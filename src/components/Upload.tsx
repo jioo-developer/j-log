@@ -22,14 +22,6 @@ function Upload({ data, posts }: queryProps) {
     day: time.getDate(),
   };
 
-  async function filechangeHandler(e: ChangeEvent) {
-    const changeResult = await onFileChange(e);
-    if (Array.isArray(changeResult)) {
-      setPreview(changeResult[0]);
-      setFile(changeResult[1]);
-    }
-  }
-
   async function post(e: FormEvent<Element>) {
     e.preventDefault();
     if (title !== "" && textarea !== "" && data) {
@@ -88,6 +80,21 @@ function Upload({ data, posts }: queryProps) {
     }
   }, []);
 
+  async function filechangeHandler(e: ChangeEvent) {
+    const changeResult = await onFileChange(e);
+    if (Array.isArray(changeResult)) {
+      setPreview(changeResult[0]);
+      setFile(changeResult[1]);
+    }
+  }
+
+  function previewDelete(value: number) {
+    const filter1 = preview.filter((item, index) => index !== value);
+    const filter2 = files.filter((item, index) => index !== value);
+    setPreview(filter1);
+    setFile(filter2);
+  }
+
   return (
     <div className="upload">
       <form onSubmit={(e: FormEvent<Element>) => post(e)}>
@@ -114,7 +121,18 @@ function Upload({ data, posts }: queryProps) {
           <figure>
             {preview.length > 0
               ? preview.map((url, index) => (
-                  <img src={url} alt="" className="att" key={index} />
+                  <div>
+                    <button
+                      type="button"
+                      className="preview_delete"
+                      onClick={() => {
+                        previewDelete(index);
+                      }}
+                    >
+                      <img src="./img/close.png" />
+                    </button>
+                    <img src={url} alt="" className="att" key={index} />
+                  </div>
                 ))
               : null}
           </figure>

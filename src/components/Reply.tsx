@@ -97,7 +97,7 @@ function Reply({ data, replyData, replyRefetch }: replyProps) {
                       <p className="reply_date">{item.date}</p>
                     </div>
                     {data.uid === item.uid ||
-                    data.uid === "IKTiBQSTpmOqKY4Sx9kmKBeWnT52" ? (
+                    data.uid === "MgoM64rubkOZMYOhNJjV8KFZxCV2" ? (
                       <div className="edit_comment">
                         <button
                           className="edit btns"

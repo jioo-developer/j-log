@@ -31,7 +31,7 @@ export function loadUser() {
     });
   }).catch((error) => {
     const location = window.location.pathname;
-    if (location !== "/sign" && location !== "Auth") {
+    if (location !== "/sign" && location !== "/Auth") {
       window.location.href = "/sign";
     }
   });

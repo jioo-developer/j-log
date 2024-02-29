@@ -1,4 +1,4 @@
-import { Route, Routes } from "react-router-dom";
+import { Route, Routes, useLocation } from "react-router-dom";
 import Sign from "./components/Sign";
 import Auth from "./components/Auth";
 import Home from "./components/Home";
@@ -6,9 +6,9 @@ import Upload from "./components/Upload";
 import Detail from "./components/Detail";
 import Profile from "./components/Profile";
 import Edit from "./components/Edit";
-import Header from "./components/Header";
 import useLoadUser from "./query/loadUser";
 import useLoadPost from "./query/loadPost";
+import Header from "./components/Header";
 
 function App() {
   const { data, refetch, isLoading } = useLoadUser();
@@ -17,7 +17,8 @@ function App() {
     refetch: postRefetch,
     isLoading: postIsLoading,
   } = useLoadPost();
-  const location = window.location.pathname;
+
+  const location = useLocation();
 
   if (postIsLoading) {
     return <div className="App" />;
@@ -25,7 +26,9 @@ function App() {
 
   return (
     <div className="App">
-      {(data && location !== "edit") || (data && location !== "upload") ? (
+      {location.pathname === "/detail" ||
+      location.pathname === "/profile" ||
+      location.pathname === "/" ? (
         <Header data={data} refetch={refetch} isLoading={isLoading} />
       ) : null}
       <Routes>
