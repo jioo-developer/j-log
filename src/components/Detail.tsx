@@ -17,16 +17,19 @@ function Detail({ data, postRefetch }: detailProps) {
   const location = useLocation();
   const navigate = useNavigate();
   const URLID = location.state.pageId ? location.state.pageId : location.state;
-  const [favoriteBtn, setFavoriteBtn] = useState(false);
   const loadPage = useLoadDetail(URLID);
+  const pageData: FirebaseData | undefined = loadPage.data;
+
   const [lazyload, setLazy] = useState(false);
   const [lazyCount, setLazyCount] = useState(0);
+
+  const [favoriteBtn, setFavoriteBtn] = useState(false);
+
   const reply = useReply(URLID);
   const replyData = reply.data;
   const replyRefetch = reply.refetch;
   const refetch = loadPage.refetch;
-  const suspence = loadPage.isLoading;
-  const pageData: FirebaseData | undefined = loadPage.data;
+
   const time = new Date();
 
   function setCookie(name: string, value: string, expiredays: number) {
@@ -36,13 +39,30 @@ function Detail({ data, postRefetch }: detailProps) {
     )}; expires =${time.toUTCString()};`;
   }
 
+  function favoriteHandler(e: ChangeEvent) {
+    //여기서 쿠키체크
+    const inputEl = e.target as HTMLInputElement;
+    if (inputEl.checked && pageData) {
+      db.collection("post")
+        .doc(URLID)
+        .update({
+          favorite: pageData.favorite + 1,
+        })
+        .then(() => {
+          refetch();
+          setCookie(`${URLID}-Cookie`, "done", 1);
+          setFavoriteBtn(true);
+        });
+    }
+  }
+
   async function onDelete() {
     const ok = window.confirm("정말 삭제 하시겠습니까?");
     const locate = db.collection("post").doc(URLID);
     const storageRef = storageService.ref();
     if (ok && pageData && pageData.fileName.length > 0) {
       pageData.fileName.forEach((item) => {
-        const imagesRef = storageRef.child(`${pageData.user}/${item}`);
+        const imagesRef = storageRef.child(`${pageData.writer}/${item}`);
         imagesRef.delete();
       });
     }
@@ -65,22 +85,6 @@ function Detail({ data, postRefetch }: detailProps) {
     }
   }, [lazyCount]);
 
-  function favoriteHandler(e: ChangeEvent) {
-    const inputEl = e.target as HTMLInputElement;
-    if (inputEl.checked && pageData) {
-      db.collection("post")
-        .doc(URLID)
-        .update({
-          favorite: pageData.favorite + 1,
-        })
-        .then(() => {
-          refetch();
-          setCookie(`${URLID}-Cookie`, "done", 1);
-          setFavoriteBtn(true);
-        });
-    }
-  }
-
   useEffect(() => {
     if (pageData) {
       let imgTarget = Array.from(
@@ -100,7 +104,7 @@ function Detail({ data, postRefetch }: detailProps) {
     }
   }, [pageData]);
 
-  if (suspence) {
+  if (loadPage.isLoading) {
     return <div className="App" />;
   }
 
@@ -116,7 +120,7 @@ function Detail({ data, postRefetch }: detailProps) {
               <p className="date">{pageData.date}</p>
             </div>
             {data.uid === pageData.writer ||
-            data.uid === "SK3SlXUJXPdnXVUJvE6GV9Hr4hh2" ? (
+            data.uid === "IKTiBQSTpmOqKY4Sx9kmKBeWnT52" ? (
               <>
                 <div className="right_wrap">
                   <Link to={"/edit"} state={{ pageId: URLID }}>

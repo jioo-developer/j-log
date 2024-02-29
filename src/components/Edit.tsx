@@ -7,15 +7,20 @@ import useLoadDetail from "../query/loadDetail";
 import { onFileChange, storageUpload } from "../module/exportFunction";
 function Edit() {
   const location = useLocation();
+  const navigate = useNavigate();
+
   const URLID = location.state.pageId ? location.state.pageId : location.state;
+
   const loadPage = useLoadDetail(URLID);
   const pageData = loadPage.data;
-  const navigate = useNavigate();
+
   const [title, setTitle] = useState("");
   const [text, setText] = useState("");
+
   const [prevImage, setImage] = useState<any[]>([]);
   const [newImage, setNew] = useState<any[]>([]);
   const [file, setFile] = useState<any[]>([]);
+
   useEffect(() => {
     if (pageData) {
       setTitle(pageData.title);
@@ -41,7 +46,7 @@ function Edit() {
           const storageRef = storageService.ref();
           if (pageData.fileName) {
             pageData.fileName.forEach((value) => {
-              const imagesRef = storageRef.child(`${pageData.user}/${value}`);
+              const imagesRef = storageRef.child(`${pageData.writer}/${value}`);
               imagesRef.delete();
             });
           }
@@ -61,6 +66,8 @@ function Edit() {
       } else if (prevImage.length > pageData.url.length) {
         if (imageResult && imageResult.length > 0) {
           return [...pageData.url, ...imageResult];
+        } else {
+          return pageData.url;
         }
       } else if (prevImage.length === 0) {
         return [];

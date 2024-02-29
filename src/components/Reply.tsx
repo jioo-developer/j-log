@@ -1,4 +1,4 @@
-import { FormEvent, useEffect, useRef, useState } from "react";
+import { FormEvent, useRef, useState } from "react";
 import TextareaAutosize from "react-textarea-autosize";
 import { serverTimestamp } from "firebase/firestore";
 import { useLocation } from "react-router-dom";
@@ -14,10 +14,12 @@ type replyProps = {
 function Reply({ data, replyData, replyRefetch }: replyProps) {
   const location = useLocation();
   const URLID = location.state.pageId ? location.state.pageId : location.state;
+
   const [commentChange, setCommentChange] = useState(false);
-  const [replyTarget, setTarget] = useState("");
   const [comment, setcomment] = useState("");
   const replyArea = useRef<HTMLTextAreaElement | null>(null);
+  const [replyTarget, setTarget] = useState("");
+
   const time = new Date();
   const timeData = {
     year: time.getFullYear(),
@@ -47,12 +49,13 @@ function Reply({ data, replyData, replyRefetch }: replyProps) {
 
   function reply_delete(index: number) {
     const ok = window.confirm("정말삭제하시겠습니까?");
-    if (ok && replyData)
+    if (ok && replyData) {
       db.collection("post")
         .doc(URLID)
         .collection("reply")
         .doc(replyData[index].id)
         .delete();
+    }
   }
   function commentUpload(e: FormEvent) {
     e.preventDefault();
@@ -94,7 +97,7 @@ function Reply({ data, replyData, replyRefetch }: replyProps) {
                       <p className="reply_date">{item.date}</p>
                     </div>
                     {data.uid === item.uid ||
-                    data.uid === "SK3SlXUJXPdnXVUJvE6GV9Hr4hh2" ? (
+                    data.uid === "IKTiBQSTpmOqKY4Sx9kmKBeWnT52" ? (
                       <div className="edit_comment">
                         <button
                           className="edit btns"

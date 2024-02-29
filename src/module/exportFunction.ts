@@ -34,18 +34,13 @@ export async function storageUpload(
   fileData: File[],
   type: string
 ) {
-  let fileRef: firebase.storage.Reference;
   const user = firebase.auth().currentUser as firebase.User;
   if (imageurl.length > 0) {
     return await Promise.all(
       fileData.map(async (item, index) => {
-        if (type === "profile") {
-          fileRef = storageService.ref().child(`${type}/${item.name}`);
-        } else if (type === "upload") {
-          fileRef = storageService.ref().child(`${user.uid}/${item.name}`);
-        } else if (type === "edit") {
-          fileRef = storageService.ref().child(`${type}/${item.name}`);
-        }
+        const fileRef: firebase.storage.Reference = storageService
+          .ref()
+          .child(`${user.uid}/${item.name}`);
         if (type === "profile") {
           const response = await fileRef.putString(imageurl[index], "data_url");
           const profileUrl = await response.ref.getDownloadURL();

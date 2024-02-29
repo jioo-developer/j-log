@@ -27,7 +27,8 @@
       box-sizing: border-box;
       outline: 0;
       background: transparent;
-
+      border-bottom: 1px solid rgb(217 216 216 / 93%);
+      padding-bottom: 13px;
       &::placeholder {
         color: rgb(177, 177, 177);
       }
