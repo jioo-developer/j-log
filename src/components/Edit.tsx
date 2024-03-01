@@ -5,7 +5,7 @@ import "../asset/upload.scss";
 import { db, storageService } from "../Firebase";
 import useLoadDetail from "../query/loadDetail";
 import { onFileChange, storageUpload } from "../module/exportFunction";
-function Edit({ postRefetch }: any) {
+function Edit() {
   const location = useLocation();
   const navigate = useNavigate();
 
@@ -56,6 +56,23 @@ function Edit({ postRefetch }: any) {
     }
   }
 
+  async function filechangeHandler(e: ChangeEvent) {
+    const changeResult = await onFileChange(e);
+    if (Array.isArray(changeResult)) {
+      const copyArray = [...preview];
+      copyArray.push(...changeResult[0]);
+      setImage(copyArray); //preview
+      setFile(changeResult[1]); //new file
+    }
+  }
+
+  function previewDelete(value: number) {
+    const filter1 = preview.filter((item, index) => index !== value);
+    const filter2 = file.filter((item, index) => index !== value);
+    setImage(filter1);
+    setFile(filter2);
+  }
+
   async function imagePostHandler() {
     if (pageData) {
       const arr = [...preview];
@@ -72,23 +89,6 @@ function Edit({ postRefetch }: any) {
         return arr;
       }
     }
-  }
-
-  async function filechangeHandler(e: ChangeEvent) {
-    const changeResult = await onFileChange(e);
-    if (Array.isArray(changeResult)) {
-      const copyArray = [...preview];
-      copyArray.push(...changeResult[0]);
-      setImage(copyArray); //preview
-      setFile(changeResult[1]); //new file
-    }
-  }
-
-  function previewDelete(value: number) {
-    const filter1 = preview.filter((item, index) => index !== value);
-    const filter2 = file.filter((item, index) => index !== value);
-    setImage(filter1);
-    setFile(filter2);
   }
 
   return (
@@ -154,13 +154,6 @@ function Edit({ postRefetch }: any) {
                 <div className="exit">← &nbsp;나가기</div>
               </Link>
               <div className="cancel_wrap">
-                <button
-                  type="button"
-                  onClick={imagePostHandler}
-                  style={{ marginRight: 30, fontSize: 20 }}
-                >
-                  임시
-                </button>
                 <button type="submit" className="post">
                   글작성
                 </button>
