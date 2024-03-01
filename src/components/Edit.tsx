@@ -77,7 +77,7 @@ function Edit() {
     if (pageData) {
       const arr = [...preview];
       const matchArr = arr.filter((item) => {
-        item.match(/data:image\/(png|jpg|jpeg|gif|bmp);base64/);
+        return item.match(/data:image\/(png|jpg|jpeg|gif|bmp);base64/);
       });
       // 새 이미지 배열
 
@@ -126,7 +126,7 @@ function Edit() {
                             previewDelete(index);
                           }}
                         >
-                          <img src="./img/close.png" />
+                          <img src="./img/close.png" alt="" />
                         </button>
                         <img src={url} alt="" className="att" key={index} />
                       </div>
