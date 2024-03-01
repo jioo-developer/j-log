@@ -5,7 +5,7 @@ import "../asset/upload.scss";
 import { db, storageService } from "../Firebase";
 import useLoadDetail from "../query/loadDetail";
 import { onFileChange, storageUpload } from "../module/exportFunction";
-function Edit() {
+function Edit({ postRefetch }: any) {
   const location = useLocation();
   const navigate = useNavigate();
 
@@ -37,7 +37,6 @@ function Edit() {
         text: text,
         url: preview.length > 0 ? await imagePostHandler() : [],
       };
-      // console.log(resultState);
       db.collection("post")
         .doc(pageData.pageId)
         .update(resultState)
@@ -60,25 +59,18 @@ function Edit() {
   async function imagePostHandler() {
     if (pageData) {
       const arr = [...preview];
-      const filterArr = arr.filter((item) =>
-        item.includes("data:image/png;base64")
-      );
-      // preview에 이전 데이터 url 과 신규 데이터 url이 섞여 있는 걸 filter
-      // 그러면 신규 url만 filterArr에 남음
+      const matchArr = arr.filter((item) => {
+        item.match(/data:image\/(png|jpg|jpeg|gif|bmp);base64/);
+      });
+      // 새 이미지 배열
 
-      const paramsArr = filterArr.length === 0 ? pageData.url : filterArr;
-      // 필터의 길이가 일때 pageData 유지 || 필터 배열을 할당
-      const imageResult: any[] = (await storageUpload(paramsArr, file)) || [];
-      // 그러면 필터 배열의 새 url이 나옴
-
-      for (let i = 0; i < arr.length; i++) {
-        if (arr[i].includes("data:image/png;base64")) {
-          arr.splice(i, 1, imageResult[i]);
-        }
+      if (matchArr.length > 0) {
+        const imageResult: any[] = (await storageUpload(matchArr, file)) || [];
+        const urlArr = arr.filter((item) => item.includes("firebase"));
+        return [...urlArr, ...imageResult];
+      } else {
+        return arr;
       }
-      return arr;
-    } else {
-      return [];
     }
   }
 
@@ -162,6 +154,13 @@ function Edit() {
                 <div className="exit">← &nbsp;나가기</div>
               </Link>
               <div className="cancel_wrap">
+                <button
+                  type="button"
+                  onClick={imagePostHandler}
+                  style={{ marginRight: 30, fontSize: 20 }}
+                >
+                  임시
+                </button>
                 <button type="submit" className="post">
                   글작성
                 </button>
