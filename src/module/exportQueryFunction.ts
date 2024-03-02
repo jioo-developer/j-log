@@ -3,7 +3,7 @@ import { authService, db } from "../Firebase";
 export function loadPost() {
   return new Promise((resolve, reject) => {
     const collectionRef = db.collection("post").orderBy("timeStamp", "asc");
-    const unsubscribe = collectionRef.onSnapshot((snapshot: any) => {
+    collectionRef.get().then((snapshot) => {
       if (snapshot.docs.length > 0) {
         const postArray = snapshot.docs.map((doc: any) => {
           return {
@@ -16,7 +16,6 @@ export function loadPost() {
         reject([]);
       }
     });
-    return unsubscribe;
   }).catch((error) => {
     console.log(JSON.stringify(error));
   });
@@ -39,13 +38,14 @@ export function loadUser() {
 
 export function loadNickName() {
   return new Promise((resolve, reject) => {
-    const unsubscribe = db.collection("nickname").onSnapshot((snapshot) => {
-      const data = snapshot.docs.map((doc) => ({ ...doc.data() }));
+    db.collection("nickname")
+      .get()
+      .then((snapshot) => {
+        const data = snapshot.docs.map((doc) => ({ ...doc.data() }));
 
-      if (data.length > 0) resolve(data);
-      else reject([]);
-    });
-    return unsubscribe;
+        if (data.length > 0) resolve(data);
+        else reject([]);
+      });
   }).catch((error) => {
     console.log(JSON.stringify(error));
   });
@@ -53,16 +53,15 @@ export function loadNickName() {
 
 export function loadDetail(pageId: string) {
   return new Promise((resolve, reject) => {
-    const unsubscribe = db
-      .collection("post")
+    db.collection("post")
       .doc(pageId)
-      .onSnapshot((snapshot) => {
+      .get()
+      .then((snapshot) => {
         const data = snapshot.data();
 
         if (data) resolve(data);
         else reject({});
       });
-    return unsubscribe;
   }).catch((error) => {
     console.log(JSON.stringify(error));
   });
@@ -71,7 +70,7 @@ export function loadDetail(pageId: string) {
 export function loadReplys(pageId: string) {
   return new Promise((resolve, reject) => {
     const collectionRef = db.collection("post").doc(pageId).collection("reply");
-    const unsubscribe = collectionRef.onSnapshot((snapshot: any) => {
+    collectionRef.get().then((snapshot: any) => {
       if (snapshot.docs.length > 0) {
         const postArray = snapshot.docs.map((doc: any) => ({
           ...doc.data(),
@@ -82,7 +81,6 @@ export function loadReplys(pageId: string) {
         reject([]);
       }
     });
-    return unsubscribe;
   }).catch((error) => {
     console.log(JSON.stringify(error));
   });

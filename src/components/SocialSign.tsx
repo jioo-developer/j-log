@@ -3,7 +3,12 @@ import { authService, db, firebaseInstance } from "../Firebase";
 import { LoadUserHookResult } from "../query/loadUser";
 import { useEffect, useState } from "react";
 
-function SocialSign({ data }: { data: LoadUserHookResult | undefined }) {
+type sosialType = {
+  data: LoadUserHookResult | undefined;
+  refetch: any;
+};
+
+function SocialSign({ data, refetch }: sosialType) {
   const [disabled, setDisable] = useState(false);
   const navigate = useNavigate();
   useEffect(() => {
@@ -25,11 +30,14 @@ function SocialSign({ data }: { data: LoadUserHookResult | undefined }) {
           "회원 탈퇴에 사용 될 비밀번호를 입력해주세요."
         );
         if (password) {
-          db.collection("nickname").doc(`${result.user.uid}-G`).set({
-            nickname: result.user.displayName,
-            id: result.user.uid,
-            password: password,
-          });
+          db.collection("nickname")
+            .doc(`${result.user.uid}-G`)
+            .set({
+              nickname: result.user.displayName,
+              id: result.user.uid,
+              password: password,
+            })
+            .then(() => refetch());
           navigate("/");
         } else {
           authService.signOut();
@@ -50,7 +58,7 @@ function SocialSign({ data }: { data: LoadUserHookResult | undefined }) {
     await authService
       .signInWithPopup(provider)
       .then((result) => {
-        console.log("현재 페이스북 로그인은 인증만료 처리중입니다.");
+        window.alert("현재 페이스북 로그인은 인증만료 처리중입니다.");
         // if (result.user && result.user.displayName) {
         //   db.collection("nickname")
         //     .doc(result.user.displayName)

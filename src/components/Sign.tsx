@@ -80,7 +80,7 @@ function Sign({
             로그인
           </button>
         </form>
-        <SocialSign data={data} />
+        <SocialSign data={data} refetch={refetch} />
         <div className="assistance">
           <button
             className="pw_reset ass_btn"

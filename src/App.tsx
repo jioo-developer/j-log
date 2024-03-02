@@ -29,7 +29,7 @@ function App() {
       {location.pathname === "/detail" ||
       location.pathname === "/profile" ||
       location.pathname === "/" ? (
-        <Header data={data} refetch={refetch} />
+        <Header data={data} refetch={refetch} postRefetch={postRefetch} />
       ) : null}
       <Routes>
         <Route path="/" element={<Home data={data} posts={posts} />}></Route>
@@ -43,7 +43,9 @@ function App() {
         ></Route>
         <Route
           path="/upload"
-          element={<Upload data={data} posts={posts} />}
+          element={
+            <Upload data={data} posts={posts} postRefetch={postRefetch} />
+          }
         ></Route>
         <Route path="/edit" element={<Edit />}></Route>
         <Route

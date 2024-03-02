@@ -61,7 +61,6 @@ function Profile({ data, refetch }: profileProps) {
                 userDelete.delete().then(() => dbDelete(userDelete, type));
               })
               .catch((error) => {
-                console.log(error.message);
                 window.alert("암호가 잘못되었습니다.");
               });
           } else {
@@ -108,7 +107,7 @@ function Profile({ data, refetch }: profileProps) {
         changeResult[0] as string[],
         changeResult[1] as File[],
         "profile"
-      );
+      ).then(() => refetch());
       //프로필 이미지 변경을 담당하는 외부 함수
     }
   }

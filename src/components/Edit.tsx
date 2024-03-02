@@ -14,12 +14,14 @@ function Edit() {
 
   const loadPage = useLoadDetail(URLID);
   const pageData = loadPage.data;
+  const detailRefetch = loadPage.refetch;
 
   const [title, setTitle] = useState("");
   const [text, setText] = useState("");
 
   const [preview, setImage] = useState<string[]>([]);
   const [file, setFile] = useState<File[]>([]);
+
   useEffect(() => {
     if (pageData) {
       setTitle(pageData.title);
@@ -51,6 +53,7 @@ function Edit() {
 
           window.alert("수정이 완료 되었습니다.");
           const redirect = `/detail?id=${pageData.pageId}`;
+          detailRefetch();
           navigate(redirect, { state: pageData.pageId });
         });
     }

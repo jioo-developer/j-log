@@ -6,7 +6,6 @@ export async function onFileChange(e: ChangeEvent) {
   const inputElement = e.target as HTMLInputElement;
   if (inputElement.files) {
     const theFiles = Array.from(inputElement.files);
-    console.log(theFiles);
     if (theFiles.length > 0) {
       const result = await Promise.all(
         theFiles.map((item: File) => {

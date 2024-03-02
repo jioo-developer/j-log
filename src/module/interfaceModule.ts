@@ -3,6 +3,7 @@ import { LoadUserHookResult } from "../query/loadUser";
 export type queryProps = {
   data: LoadUserHookResult | undefined;
   posts: postProps[] | undefined;
+  postRefetch?: any;
 };
 
 export type postProps = {

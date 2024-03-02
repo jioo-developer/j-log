@@ -55,7 +55,8 @@ function Reply({ data, replyData, replyRefetch }: replyProps) {
         .doc(URLID)
         .collection("reply")
         .doc(replyData[index].id)
-        .delete();
+        .delete()
+        .then(() => replyRefetch());
     }
   }
   function commentUpload(e: FormEvent) {
@@ -75,7 +76,8 @@ function Reply({ data, replyData, replyRefetch }: replyProps) {
         db.collection("post")
           .doc(URLID)
           .collection("reply")
-          .add(comment_content);
+          .add(comment_content)
+          .then(() => replyRefetch());
         if (replyArea.current) {
           replyArea.current.value = "";
         }

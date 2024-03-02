@@ -6,8 +6,9 @@ import { LoadUserHookResult } from "../query/loadUser";
 type headerProps = {
   data: LoadUserHookResult | undefined;
   refetch: any;
+  postRefetch: any;
 };
-function Header({ data, refetch }: headerProps) {
+function Header({ data, refetch, postRefetch }: headerProps) {
   const [menuToggle, setToggle] = useState(false);
   const navigate = useNavigate();
   function logout() {
@@ -20,7 +21,7 @@ function Header({ data, refetch }: headerProps) {
     <header>
       {data ? (
         <>
-          <p className="title">
+          <p className="title" onClick={() => postRefetch()}>
             <Link to="/">{data.displayName}.log</Link>
           </p>
 

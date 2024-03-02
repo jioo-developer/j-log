@@ -1,4 +1,10 @@
-import { ChangeEvent, FormEvent, useEffect, useState } from "react";
+import {
+  ChangeEvent,
+  FormEvent,
+  useCallback,
+  useEffect,
+  useState,
+} from "react";
 import "../asset/upload.scss";
 import TextareaAutosize from "react-textarea-autosize";
 import { serverTimestamp } from "firebase/firestore";
@@ -7,7 +13,7 @@ import { db } from "../Firebase";
 import { postProps, queryProps } from "../module/interfaceModule";
 import { useNavigate } from "react-router-dom";
 
-function Upload({ data, posts }: queryProps) {
+function Upload({ data, posts, postRefetch }: queryProps) {
   const [title, setTitle] = useState("");
   const [textarea, setTextarea] = useState("");
   const [pageId, setPageId] = useState("");
@@ -46,6 +52,7 @@ function Upload({ data, posts }: queryProps) {
         .set(content)
         .then(() => {
           const redirect = `/detail?id=${pageId}`;
+          postRefetch();
           navigate(redirect, { state: pageId });
         });
     } else {
@@ -65,16 +72,17 @@ function Upload({ data, posts }: queryProps) {
     const array = posts as postProps[];
     return array.some((item) => item.id === params);
   }
+  const overlapCallback = useCallback(overlap, [posts]);
 
   useEffect(() => {
     let randomStr: string = generateRandomString(20);
-    if (overlap(randomStr)) {
+    if (overlapCallback(randomStr)) {
       randomStr = generateRandomString(20);
       setPageId(randomStr);
     } else {
       setPageId(randomStr);
     }
-  }, []);
+  }, [overlapCallback]);
 
   async function filechangeHandler(e: ChangeEvent) {
     const changeResult = await onFileChange(e);
