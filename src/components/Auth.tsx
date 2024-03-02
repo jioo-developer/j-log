@@ -1,59 +1,69 @@
-import React, { useEffect, useState } from "react";
+import { ChangeEvent, FormEvent, useEffect, useState } from "react";
 import "../asset/auth.scss";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import { authService, db } from "../Firebase";
+import useLoadNickName, { LoadNickFilter } from "../query/loadNickName";
+import firebase from "firebase/compat/app";
 
-function Auth({ navigate, authService, db, useInput }) {
-  const [email, setEmail] = useInput("");
-  const [password, setPassword] = useInput("");
-  const [nickname, setNickname] = useInput("");
-  const [nickFilter, setFilter] = useState([]);
-  const [checkArr, setCheck] = useState([]);
+function Auth({ refetch }: any) {
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [nickname, setNickname] = useState("");
+  const [checkArr, setCheck] = useState<string[]>([]);
+  const [disabledCheck, setDisable] = useState<boolean>(true);
+  const { data } = useLoadNickName();
+  const navigate = useNavigate();
   const authData = [
     { id: "auth", text: "회원가입및 운영약관 동의", important: true },
     { id: "data", text: "개인정보 수집 및 동의", important: true },
     { id: "location", text: "위치정보 이용약관 동의", important: false },
   ];
 
-  useEffect(() => {
-    if (nickname !== "") {
-      db.collection("nickname").onSnapshot((snapshot) => {
-        const NIckData = snapshot.docs.map((doc) => ({
-          ...doc.data(),
-          id: doc.id,
-        }));
-        setFilter(NIckData);
-      });
-    }
-  }, [nickname]);
-
-  function signHelper(e) {
+  function signHelper(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
-    if (nickname !== "" && email !== "" && password !== "") {
-      const overlapFilter = nickFilter.some((item) => item.id === nickname);
+    if (data && data.length > 0) {
+      const overlapFilter = data.some(
+        (item: LoadNickFilter) => item.nickname === nickname
+      );
       if (overlapFilter) {
         window.alert("이미 사용중인 닉네임 입니다.");
+        setNickname("");
       } else {
         authService
           .createUserWithEmailAndPassword(email, password)
           .then((result) => {
-            db.collection("nickname").doc(nickname).set({ nickname: nickname });
-            result.user.updateProfile({
-              displayName: nickname,
-              photoURL: "./img/default.svg",
-            });
-            window.alert("회원가입을 환영합니다.");
-            navigate("/");
+            db.collection("nickname")
+              .doc(nickname)
+              .set({ nickname: nickname })
+              .then(() => {
+                const user = result.user as firebase.User;
+                user.updateProfile({
+                  displayName: nickname,
+                  photoURL: "./img/default.svg",
+                });
+              })
+              .then(() => {
+                refetch();
+                navigate("/");
+              })
+              .then(() => {
+                window.alert("회원가입을 환영합니다.");
+              });
           })
           .catch((error) => {
-            if (error.message === "The email address is badly formatted.") {
+            if (
+              error.message ===
+              "Firebase: The email address is badly formatted. (auth/invalid-email)."
+            ) {
               window.alert("올바른 이메일 형식이 아닙니다.");
             } else if (
-              error.message === "Password should be at least 6 characters"
+              error.message ===
+              "Password should be at least 6 characters (auth/weak-password)."
             ) {
               window.alert("비밀번호가 너무짧습니다.");
             } else if (
               error.message ===
-              "The email address is already in use by another account."
+              "The email address is already in use by another account. (auth/email-already-in-use)."
             ) {
               window.alert("이미 사용중인 이메일입니다.");
             } else {
@@ -64,12 +74,10 @@ function Auth({ navigate, authService, db, useInput }) {
     }
   }
 
-  function checkHanlder(e) {
+  function checkHanlder(e: ChangeEvent<HTMLInputElement>) {
     if (e.target.id === "all_check") {
       if (e.target.checked) {
         const allcheck = authData.map((item) => item.id);
-        const checkboxs = document.querySelectorAll(".eachCheckbox");
-        checkboxs.forEach((item) => (item.checked = true));
         setCheck(allcheck);
       } else {
         setCheck([]);
@@ -87,6 +95,20 @@ function Auth({ navigate, authService, db, useInput }) {
     }
   }
 
+  function importantCheck() {
+    const important1 = checkArr.includes("auth");
+    const important2 = checkArr.includes("data");
+    if (important1 && important2) {
+      setDisable(false);
+    } else {
+      setDisable(true);
+    }
+  }
+
+  useEffect(() => {
+    importantCheck();
+  }, [checkArr]);
+
   return (
     <div className="Auth_wrap">
       <div className="title_area">
@@ -95,7 +117,10 @@ function Auth({ navigate, authService, db, useInput }) {
         </Link>
         <p>회원가입</p>
       </div>
-      <form className="auth-form">
+      <form
+        className="auth-form"
+        onSubmit={(e: FormEvent<HTMLFormElement>) => signHelper(e)}
+      >
         <p className="id_title">
           이메일&nbsp;<span>*</span>
         </p>
@@ -107,7 +132,7 @@ function Auth({ navigate, authService, db, useInput }) {
           placeholder="이메일을 입력하세요."
           required
           value={email}
-          onChange={setEmail}
+          onChange={(e) => setEmail(e.target.value)}
         />
         <p className="warning">
           ※ 실제 사용하시는 이메일을 사용하셔야 비밀번호를 찾으실 수 있습니다.
@@ -122,7 +147,7 @@ function Auth({ navigate, authService, db, useInput }) {
           placeholder="8자리 이상 입력하세요."
           required
           value={password}
-          onChange={setPassword}
+          onChange={(e) => setPassword(e.target.value)}
         />
         <p className="id_title">
           닉네임 &nbsp;<span>*</span>
@@ -134,14 +159,15 @@ function Auth({ navigate, authService, db, useInput }) {
           placeholder="활동명을 입력하세요."
           required
           value={nickname}
-          onChange={(e) => setNickname(e)}
+          onChange={(e) => setNickname(e.target.value)}
         />
         <section className="terms">
           <div className="all_check">
             <input
               type="checkbox"
               id="all_check"
-              onChange={(e) => checkHanlder(e)}
+              checked={checkArr.length === authData.length}
+              onChange={(e: ChangeEvent<HTMLInputElement>) => checkHanlder(e)}
             />
             <label
               htmlFor="all_check"
@@ -153,7 +179,7 @@ function Auth({ navigate, authService, db, useInput }) {
               }
             >
               {checkArr.length === authData.length ? (
-                <img src="./img/checked.svg" />
+                <img src="./img/checked.svg" alt="체크" />
               ) : null}
             </label>
             <p className="check_text">전체 약관 동의</p>
@@ -164,10 +190,13 @@ function Auth({ navigate, authService, db, useInput }) {
                 <li key={index}>
                   <input
                     type="checkbox"
-                    class="eachCheckbox"
+                    className="eachCheckbox"
                     id={data.id}
                     name="sub_check"
-                    onChange={(e) => checkHanlder(e)}
+                    checked={checkArr.includes(data.id)}
+                    onChange={(e: ChangeEvent<HTMLInputElement>) =>
+                      checkHanlder(e)
+                    }
                   />
                   <label
                     htmlFor={data.id}
@@ -179,7 +208,7 @@ function Auth({ navigate, authService, db, useInput }) {
                     }
                   >
                     {checkArr.includes(data.id) ? (
-                      <img src="./img/checked.svg" />
+                      <img src="./img/checked.svg" alt="체크" />
                     ) : null}
                   </label>
                   <p className="check_text">
@@ -194,8 +223,9 @@ function Auth({ navigate, authService, db, useInput }) {
           </ul>
         </section>
         <button
-          className={checkArr.length > 1 ? "btn" : "un_btn"}
-          onClick={checkArr.length > 1 ? (e) => signHelper(e) : null}
+          className={!disabledCheck ? "btn" : "un_btn"}
+          disabled={disabledCheck}
+          type="submit"
         >
           회원가입
         </button>

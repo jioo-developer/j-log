@@ -165,7 +165,7 @@
 
       .explan {
         @include size();
-        margin-top: 15px;
+        margin-top: 28px;
         color: #868e96;
         @media #{$breakpoint-mobile} {
           margin-top: 10px;
@@ -184,6 +184,7 @@
       .delete_wrap {
         @include size();
         display: flex;
+        align-items: center;
 
         .withdrawal_title {
           margin-right: 50px;

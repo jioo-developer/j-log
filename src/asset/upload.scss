@@ -27,7 +27,8 @@
       box-sizing: border-box;
       outline: 0;
       background: transparent;
-
+      border-bottom: 1px solid rgb(217 216 216 / 93%);
+      padding-bottom: 13px;
       &::placeholder {
         color: rgb(177, 177, 177);
       }
@@ -45,7 +46,7 @@
       font-size: 18px;
       border: 1px solid #eee;
       box-sizing: border-box;
-      height: 600px;
+      min-height: 600px;
       margin-bottom: 30px;
       padding-top: 15px;
       position: relative;
@@ -155,5 +156,25 @@
     gap: 10px;
     padding: 5px 10px;
     box-sizing: border-box;
+
+    div {
+      position: relative;
+
+      button {
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        width: 26px;
+        height: 26px;
+        filter: drop-shadow(2px 4px 12px black);
+        img {
+          cursor: pointer;
+        }
+      }
+    }
+
+    img {
+      width: 100%;
+    }
   }
 }
