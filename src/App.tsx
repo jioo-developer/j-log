@@ -11,7 +11,7 @@ import useLoadPost from "./query/loadPost";
 import Header from "./components/Header";
 
 function App() {
-  const { data, refetch, isLoading } = useLoadUser();
+  const { data, refetch } = useLoadUser();
   const {
     data: posts,
     refetch: postRefetch,
@@ -29,7 +29,7 @@ function App() {
       {location.pathname === "/detail" ||
       location.pathname === "/profile" ||
       location.pathname === "/" ? (
-        <Header data={data} refetch={refetch} isLoading={isLoading} />
+        <Header data={data} refetch={refetch} />
       ) : null}
       <Routes>
         <Route path="/" element={<Home data={data} posts={posts} />}></Route>

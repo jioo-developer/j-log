@@ -20,10 +20,11 @@ function Home({ data, posts }: queryProps) {
                       <figure className="thumbnail">
                         <img
                           src={
-                            item.url.length > 0
-                              ? item.url
+                            item.url && item.url.length > 0
+                              ? item.url[0]
                               : "./img/no-image.jpg"
                           }
+                          alt="썸네일"
                         />
                       </figure>
                       <div className="text_wrap">

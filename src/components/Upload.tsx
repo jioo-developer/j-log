@@ -4,15 +4,15 @@ import TextareaAutosize from "react-textarea-autosize";
 import { serverTimestamp } from "firebase/firestore";
 import { onFileChange, storageUpload } from "../module/exportFunction";
 import { db } from "../Firebase";
-import { queryProps } from "../module/interfaceModule";
+import { postProps, queryProps } from "../module/interfaceModule";
 import { useNavigate } from "react-router-dom";
 
 function Upload({ data, posts }: queryProps) {
   const [title, setTitle] = useState("");
   const [textarea, setTextarea] = useState("");
   const [pageId, setPageId] = useState("");
-  const [preview, setPreview] = useState<any[]>([]);
-  const [files, setFile] = useState<any[]>([]);
+  const [preview, setPreview] = useState<string[]>([]);
+  const [files, setFile] = useState<File[]>([]);
   const navigate = useNavigate();
   const time = new Date();
 
@@ -62,9 +62,8 @@ function Upload({ data, posts }: queryProps) {
   };
 
   function overlap(params: string) {
-    if (posts) {
-      return posts.some((item) => item.id === params);
-    }
+    const array = posts as postProps[];
+    return array.some((item) => item.id === params);
   }
 
   useEffect(() => {
@@ -80,8 +79,8 @@ function Upload({ data, posts }: queryProps) {
   async function filechangeHandler(e: ChangeEvent) {
     const changeResult = await onFileChange(e);
     if (Array.isArray(changeResult)) {
-      setPreview(changeResult[0]);
-      setFile(changeResult[1]);
+      setPreview(changeResult[0] as string[]);
+      setFile(changeResult[1] as File[]);
     }
   }
 
@@ -126,7 +125,7 @@ function Upload({ data, posts }: queryProps) {
                         previewDelete(index);
                       }}
                     >
-                      <img src="./img/close.png" />
+                      <img src="./img/close.png" alt="" />
                     </button>
                     <img src={url} alt="" className="att" key={index} />
                   </div>

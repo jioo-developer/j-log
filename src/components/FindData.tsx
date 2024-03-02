@@ -2,7 +2,6 @@ import { FormEvent, useState } from "react";
 import { authService } from "../Firebase";
 function FindData({ findAction }: { findAction: (params: boolean) => void }) {
   let [findPw, setFindPw] = useState("");
-
   function resetpw(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
     authService

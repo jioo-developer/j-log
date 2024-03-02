@@ -3,6 +3,7 @@ import "../asset/auth.scss";
 import { Link, useNavigate } from "react-router-dom";
 import { authService, db } from "../Firebase";
 import useLoadNickName, { LoadNickFilter } from "../query/loadNickName";
+import firebase from "firebase/compat/app";
 
 function Auth({ refetch }: any) {
   const [email, setEmail] = useState("");
@@ -31,26 +32,23 @@ function Auth({ refetch }: any) {
         authService
           .createUserWithEmailAndPassword(email, password)
           .then((result) => {
-            if (Object.entries(result).length > 0) {
-              db.collection("nickname")
-                .doc(nickname)
-                .set({ nickname: nickname })
-                .then(() => {
-                  if (result.user) {
-                    result.user.updateProfile({
-                      displayName: nickname,
-                      photoURL: "./img/default.svg",
-                    });
-                  }
-                })
-                .then(() => {
-                  refetch();
-                  navigate("/");
-                })
-                .then(() => {
-                  window.alert("회원가입을 환영합니다.");
+            db.collection("nickname")
+              .doc(nickname)
+              .set({ nickname: nickname })
+              .then(() => {
+                const user = result.user as firebase.User;
+                user.updateProfile({
+                  displayName: nickname,
+                  photoURL: "./img/default.svg",
                 });
-            }
+              })
+              .then(() => {
+                refetch();
+                navigate("/");
+              })
+              .then(() => {
+                window.alert("회원가입을 환영합니다.");
+              });
           })
           .catch((error) => {
             if (

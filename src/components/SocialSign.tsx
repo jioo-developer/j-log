@@ -37,6 +37,8 @@ function SocialSign({ data }: { data: LoadUserHookResult | undefined }) {
       } else {
         navigate("/");
       }
+    } else {
+      window.alert("로그인 정보를 불러 올 수 없습니다.");
     }
 
     // await 후 authService에서 받은 데이터 조회
@@ -45,15 +47,18 @@ function SocialSign({ data }: { data: LoadUserHookResult | undefined }) {
   async function onFacebook() {
     const provider = await new firebaseInstance.auth.FacebookAuthProvider();
     //데이터 받기
-    await authService.signInWithPopup(provider).then((result) => {
-      console.log("현재 페이스북 로그인은 인증만료 처리중입니다.");
-      // if (result.user && result.user.displayName) {
-      //   db.collection("nickname")
-      //     .doc(result.user.displayName)
-      //     .set({ nickname: result.user.displayName })
-      //     .then(() => navigate("/"));
-      // }
-    });
+    await authService
+      .signInWithPopup(provider)
+      .then((result) => {
+        console.log("현재 페이스북 로그인은 인증만료 처리중입니다.");
+        // if (result.user && result.user.displayName) {
+        //   db.collection("nickname")
+        //     .doc(result.user.displayName)
+        //     .set({ nickname: result.user.displayName })
+        //     .then(() => navigate("/"));
+        // }
+      })
+      .catch(() => window.alert("로그인 정보를 찾지 못했습니다."));
   }
 
   return (

@@ -1,5 +1,6 @@
 import { QueryObserverResult, useQuery } from "react-query";
 import { loadPost } from "../module/exportQueryFunction";
+import { postProps } from "../module/interfaceModule";
 
 const useLoadPost = () => {
   const {
@@ -8,7 +9,7 @@ const useLoadPost = () => {
     isError,
     error,
     refetch,
-  }: QueryObserverResult<any[]> = useQuery("loadPost", loadPost, {
+  }: QueryObserverResult<postProps[]> = useQuery("loadPost", loadPost, {
     onSuccess(data) {
       // console.log(data);
     },

@@ -23,6 +23,26 @@ function Profile({ data, refetch }: profileProps) {
     if (data) setTitle(data.displayName);
   }, [data]);
 
+  async function deleteUser() {
+    if (data) {
+      const password = window.prompt("비밀번호를 입력해주세요.");
+      const check = await db.collection("nickname").doc(`${data.uid}-G`).get();
+      const soSialPW = check.data();
+
+      if (soSialPW) {
+        if (password === soSialPW.password) {
+          deleteHandler(password, "sosial");
+        } else {
+          window.alert("첫 가입시 입력하신 비밀번호랑 다릅니다.");
+        }
+      } else {
+        if (password) {
+          deleteHandler(password, "origin");
+        }
+      }
+    }
+  }
+
   async function deleteHandler(password: string | null, type: string) {
     if (data) {
       const userDelete = authService.currentUser;
@@ -34,22 +54,26 @@ function Profile({ data, refetch }: profileProps) {
               data.email,
               password
             );
-          userDelete
-            .reauthenticateWithCredential(credential)
+          if (credential) {
+            userDelete
+              .reauthenticateWithCredential(credential)
+              .then(() => {
+                userDelete.delete().then(() => dbDelete(userDelete, type));
+              })
+              .catch((error) => {
+                console.log(error.message);
+                window.alert("암호가 잘못되었습니다.");
+              });
+          } else {
+            window.alert("회원 탈퇴가 완료되지 않았습니다. 문의하십시오.");
+          }
+        } else {
+          const googleProvider = new GoogleAuthProvider();
+          reauthenticateWithPopup(userDelete, googleProvider)
             .then(() => {
               userDelete.delete().then(() => dbDelete(userDelete, type));
             })
-            .catch((error) => {
-              console.log(error.message);
-              window.alert("암호가 잘못되었거나 사용자에게 암호가 없습니다.");
-            });
-        } else {
-          const googleProvider = new GoogleAuthProvider();
-          if (userDelete) {
-            reauthenticateWithPopup(userDelete, googleProvider).then(() => {
-              userDelete.delete().then(() => dbDelete(userDelete, type));
-            });
-          }
+            .catch(() => window.alert("회원 정보가 없습니다."));
         }
       }
     }
@@ -77,30 +101,14 @@ function Profile({ data, refetch }: profileProps) {
     }
   }
 
-  async function deleteUser() {
-    if (data) {
-      const password = window.prompt("비밀번호를 입력해주세요.");
-      const check = await db.collection("nickname").doc(`${data.uid}-G`).get();
-      const soSialPW = check.data();
-
-      if (soSialPW) {
-        if (password === soSialPW.password) {
-          deleteHandler(password, "sosial");
-        } else {
-          window.alert("첫 가입시 입력하신 비밀번호랑 다릅니다.");
-        }
-      } else {
-        if (password) {
-          deleteHandler(password, "origin");
-        }
-      }
-    }
-  }
-
   async function changeHanlder(e: ChangeEvent) {
     const changeResult: any = await onFileChange(e);
     if (Array.isArray(changeResult)) {
-      storageUpload(changeResult[0], changeResult[1], "profile");
+      storageUpload(
+        changeResult[0] as string[],
+        changeResult[1] as File[],
+        "profile"
+      );
       //프로필 이미지 변경을 담당하는 외부 함수
     }
   }

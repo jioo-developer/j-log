@@ -1,4 +1,4 @@
-import { ChangeEvent, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import "../asset/detail.scss";
 import { useLocation, Link, useNavigate } from "react-router-dom";
 import Reply from "./Reply";
@@ -19,6 +19,7 @@ function Detail({ data, postRefetch }: detailProps) {
   const URLID = location.state.pageId ? location.state.pageId : location.state;
   const loadPage = useLoadDetail(URLID);
   const pageData: FirebaseData | undefined = loadPage.data;
+  const refetch = loadPage.refetch;
 
   const [lazyload, setLazy] = useState(false);
   const [lazyCount, setLazyCount] = useState(0);
@@ -26,7 +27,6 @@ function Detail({ data, postRefetch }: detailProps) {
   const reply = useReply(URLID);
   const replyData = reply.data;
   const replyRefetch = reply.refetch;
-  const refetch = loadPage.refetch;
 
   const time = new Date();
 
@@ -50,8 +50,6 @@ function Detail({ data, postRefetch }: detailProps) {
             refetch();
             setCookie(`${data.uid}-Cookie`, "done", 1);
           });
-      } else {
-        console.log("쿠키있음");
       }
     }
   }
@@ -84,10 +82,14 @@ function Detail({ data, postRefetch }: detailProps) {
   }
 
   useEffect(() => {
-    if (lazyCount === pageData?.url.length) {
-      setLazy(true);
+    if (pageData) {
+      if (lazyCount === pageData.url.length) {
+        setLazy(true);
+      } else {
+        setLazy((prev) => prev);
+      }
     }
-  }, [lazyCount]);
+  }, [lazyCount, pageData]);
 
   useEffect(() => {
     if (pageData) {
@@ -148,7 +150,7 @@ function Detail({ data, postRefetch }: detailProps) {
                 : { gridTemplateColumns: `repeat(${3},1fr)` }
             }
           >
-            {pageData.url
+            {pageData.url && pageData.url.length > 0
               ? pageData.url.map((value, index) => {
                   return (
                     <img

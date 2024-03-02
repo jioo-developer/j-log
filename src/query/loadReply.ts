@@ -1,5 +1,6 @@
 import { QueryObserverResult, useQuery } from "react-query";
 import { loadReplys } from "../module/exportQueryFunction";
+import { replyType } from "../module/interfaceModule";
 
 const useReply = (params: string) => {
   const {
@@ -8,7 +9,7 @@ const useReply = (params: string) => {
     isError,
     error,
     refetch,
-  }: QueryObserverResult<any[]> = useQuery(
+  }: QueryObserverResult<replyType[]> = useQuery(
     ["loadReply", params],
     () => loadReplys(params),
     {

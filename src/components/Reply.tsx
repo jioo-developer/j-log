@@ -4,10 +4,11 @@ import { serverTimestamp } from "firebase/firestore";
 import { useLocation } from "react-router-dom";
 import { db } from "../Firebase";
 import { LoadUserHookResult } from "../query/loadUser";
+import { replyType } from "../module/interfaceModule";
 
 type replyProps = {
   data: LoadUserHookResult | undefined;
-  replyData: any[] | undefined;
+  replyData: replyType[] | undefined;
   replyRefetch: any;
 };
 

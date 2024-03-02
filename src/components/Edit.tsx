@@ -5,6 +5,7 @@ import "../asset/upload.scss";
 import { db, storageService } from "../Firebase";
 import useLoadDetail from "../query/loadDetail";
 import { onFileChange, storageUpload } from "../module/exportFunction";
+
 function Edit() {
   const location = useLocation();
   const navigate = useNavigate();
@@ -17,16 +18,15 @@ function Edit() {
   const [title, setTitle] = useState("");
   const [text, setText] = useState("");
 
-  const [preview, setImage] = useState<any[]>([]);
-  const [file, setFile] = useState<any[]>([]);
-
+  const [preview, setImage] = useState<string[]>([]);
+  const [file, setFile] = useState<File[]>([]);
   useEffect(() => {
     if (pageData) {
       setTitle(pageData.title);
       setText(pageData.text);
       setImage(pageData.url);
     }
-  }, []);
+  }, [pageData]);
 
   async function post(e: FormEvent<Element>) {
     e.preventDefault();
@@ -60,9 +60,9 @@ function Edit() {
     const changeResult = await onFileChange(e);
     if (Array.isArray(changeResult)) {
       const copyArray = [...preview];
-      copyArray.push(...changeResult[0]);
+      copyArray.push(...(changeResult[0] as string[]));
       setImage(copyArray); //preview
-      setFile(changeResult[1]); //new file
+      setFile(changeResult[1] as File[]); //new file
     }
   }
 
@@ -82,7 +82,10 @@ function Edit() {
       // 새 이미지 배열
 
       if (matchArr.length > 0) {
-        const imageResult: any[] = (await storageUpload(matchArr, file)) || [];
+        const imageResult =
+          (await storageUpload(matchArr, file))?.filter(
+            (item) => item !== undefined
+          ) || [];
         const urlArr = arr.filter((item) => item.includes("firebase"));
         return [...urlArr, ...imageResult];
       } else {
@@ -116,7 +119,7 @@ function Edit() {
                 }
               />
               <figure>
-                {preview.length > 0
+                {preview && preview.length > 0
                   ? preview.map((url, index) => (
                       <div key={index}>
                         <button
