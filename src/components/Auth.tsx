@@ -1,18 +1,20 @@
 import { ChangeEvent, FormEvent, useEffect, useState } from "react";
 import "../asset/auth.scss";
-import { Link, useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { authService, db } from "../Firebase";
 import useLoadNickName, { LoadNickFilter } from "../query/loadNickName";
 import firebase from "firebase/compat/app";
+import { useMyContext } from "../module/Mycontext";
 
-function Auth({ refetch }: any) {
+function Auth() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [nickname, setNickname] = useState("");
   const [checkArr, setCheck] = useState<string[]>([]);
   const [disabledCheck, setDisable] = useState<boolean>(true);
   const { data } = useLoadNickName();
-  const navigate = useNavigate();
+  const { navigate, refetch } = useMyContext();
+
   const authData = [
     { id: "auth", text: "회원가입및 운영약관 동의", important: true },
     { id: "data", text: "개인정보 수집 및 동의", important: true },

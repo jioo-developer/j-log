@@ -4,14 +4,9 @@ import "../asset/Sign.scss";
 import FindData from "./FindData";
 import SocialSign from "./SocialSign";
 import { authService } from "../Firebase";
-import { LoadUserHookResult } from "../query/loadUser";
-function Sign({
-  data,
-  refetch,
-}: {
-  data: LoadUserHookResult | undefined;
-  refetch: any;
-}) {
+import { useMyContext } from "../module/Mycontext";
+function Sign() {
+  const { refetch, data } = useMyContext();
   const [id, setId] = useState("");
   const [password, setPassword] = useState("");
   const [findToggle, setFIndToggle] = useState(false);
@@ -80,7 +75,7 @@ function Sign({
             로그인
           </button>
         </form>
-        <SocialSign data={data} refetch={refetch} />
+        <SocialSign />
         <div className="assistance">
           <button
             className="pw_reset ass_btn"

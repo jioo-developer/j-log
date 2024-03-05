@@ -1,9 +1,10 @@
 import { Link } from "react-router-dom";
 import "../asset/home.scss";
 import "../asset/header.scss";
-import { queryProps } from "../module/interfaceModule";
+import { useMyContext } from "../module/Mycontext";
 
-function Home({ data, posts }: queryProps) {
+function Home() {
+  const { posts, data } = useMyContext();
   return (
     <div className="main">
       <div className="in_wrap">

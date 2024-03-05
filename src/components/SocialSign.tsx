@@ -1,16 +1,12 @@
 import { useNavigate } from "react-router-dom";
 import { authService, db, firebaseInstance } from "../Firebase";
-import { LoadUserHookResult } from "../query/loadUser";
 import { useEffect, useState } from "react";
+import { useMyContext } from "../module/Mycontext";
 
-type sosialType = {
-  data: LoadUserHookResult | undefined;
-  refetch: any;
-};
-
-function SocialSign({ data, refetch }: sosialType) {
+function SocialSign() {
   const [disabled, setDisable] = useState(false);
   const navigate = useNavigate();
+  const { data, refetch } = useMyContext();
   useEffect(() => {
     if (data) setDisable(true);
     else setDisable(false);

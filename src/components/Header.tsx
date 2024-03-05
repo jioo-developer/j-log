@@ -1,16 +1,11 @@
-import { Link, useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { authService } from "../Firebase";
 import { useState } from "react";
-import { LoadUserHookResult } from "../query/loadUser";
+import { useMyContext } from "../module/Mycontext";
 
-type headerProps = {
-  data: LoadUserHookResult | undefined;
-  refetch: any;
-  postRefetch: any;
-};
-function Header({ data, refetch, postRefetch }: headerProps) {
+function Header() {
   const [menuToggle, setToggle] = useState(false);
-  const navigate = useNavigate();
+  const { navigate, refetch, data, postRefetch } = useMyContext();
   function logout() {
     authService.signOut().then(() => {
       navigate("/sign");
