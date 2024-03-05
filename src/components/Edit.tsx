@@ -1,15 +1,14 @@
 import { ChangeEvent, FormEvent, useEffect, useState } from "react";
 import TextareaAutosize from "react-textarea-autosize";
-import { useLocation, Link, useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import "../asset/upload.scss";
 import { db, storageService } from "../Firebase";
 import useLoadDetail from "../query/loadDetail";
 import { onFileChange, storageUpload } from "../module/exportFunction";
+import { useMyContext } from "../module/Mycontext";
 
 function Edit() {
-  const location = useLocation();
-  const navigate = useNavigate();
-
+  const { navigate, location } = useMyContext();
   const URLID = location.state.pageId ? location.state.pageId : location.state;
 
   const loadPage = useLoadDetail(URLID);

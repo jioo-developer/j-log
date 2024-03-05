@@ -2,23 +2,19 @@ import React, { ChangeEvent, useEffect, useState } from "react";
 import "../asset/profile.scss";
 import { authService, db, firebaseInstance } from "../Firebase";
 import "../asset/header.scss";
-import { LoadUserHookResult } from "../query/loadUser";
 import useLoadNickName from "../query/loadNickName";
 import firebase from "firebase/compat/app";
 import { onFileChange, storageUpload } from "../module/exportFunction";
 import { useNavigate } from "react-router-dom";
 import { GoogleAuthProvider, reauthenticateWithPopup } from "firebase/auth";
+import { useMyContext } from "../module/Mycontext";
 
-type profileProps = {
-  data: LoadUserHookResult | undefined;
-  refetch: any;
-};
-
-function Profile({ data, refetch }: profileProps) {
+function Profile() {
   const [NameEdit, setNameEdit] = useState(false);
   const [title, setTitle] = useState("");
   const loadNick = useLoadNickName();
   const navigate = useNavigate();
+  const { data, refetch } = useMyContext();
   useEffect(() => {
     if (data) setTitle(data.displayName);
   }, [data]);

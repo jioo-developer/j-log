@@ -10,10 +10,12 @@ import TextareaAutosize from "react-textarea-autosize";
 import { serverTimestamp } from "firebase/firestore";
 import { onFileChange, storageUpload } from "../module/exportFunction";
 import { db } from "../Firebase";
-import { postProps, queryProps } from "../module/interfaceModule";
+import { postProps } from "../module/interfaceModule";
 import { useNavigate } from "react-router-dom";
+import { useMyContext } from "../module/Mycontext";
 
-function Upload({ data, posts, postRefetch }: queryProps) {
+function Upload() {
+  const { data, posts, postRefetch } = useMyContext();
   const [title, setTitle] = useState("");
   const [textarea, setTextarea] = useState("");
   const [pageId, setPageId] = useState("");

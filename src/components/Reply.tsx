@@ -1,19 +1,18 @@
 import { FormEvent, useRef, useState } from "react";
 import TextareaAutosize from "react-textarea-autosize";
 import { serverTimestamp } from "firebase/firestore";
-import { useLocation } from "react-router-dom";
 import { db } from "../Firebase";
-import { LoadUserHookResult } from "../query/loadUser";
 import { replyType } from "../module/interfaceModule";
+import { useMyContext } from "../module/Mycontext";
 
 type replyProps = {
-  data: LoadUserHookResult | undefined;
   replyData: replyType[] | undefined;
   replyRefetch: any;
 };
 
-function Reply({ data, replyData, replyRefetch }: replyProps) {
-  const location = useLocation();
+function Reply({ replyData, replyRefetch }: replyProps) {
+  const { location, data } = useMyContext();
+
   const URLID = location.state.pageId ? location.state.pageId : location.state;
 
   const [commentChange, setCommentChange] = useState(false);

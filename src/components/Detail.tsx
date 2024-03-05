@@ -1,22 +1,18 @@
 import { useEffect, useState } from "react";
 import "../asset/detail.scss";
-import { useLocation, Link, useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import Reply from "./Reply";
 import { FirebaseData } from "../module/interfaceModule";
 import { db, storageService } from "../Firebase";
 import useLoadDetail from "../query/loadDetail";
-import { LoadUserHookResult } from "../query/loadUser";
 import useReply from "../query/loadReply";
+import { useMyContext } from "../module/Mycontext";
 
-type detailProps = {
-  data: LoadUserHookResult | undefined;
-  postRefetch: any;
-};
+function Detail() {
+  const { location, data, navigate, postRefetch } = useMyContext();
 
-function Detail({ data, postRefetch }: detailProps) {
-  const location = useLocation();
-  const navigate = useNavigate();
   const URLID = location.state.pageId ? location.state.pageId : location.state;
+
   const loadPage = useLoadDetail(URLID);
   const pageData: FirebaseData | undefined = loadPage.data;
   const refetch = loadPage.refetch;
@@ -172,11 +168,7 @@ function Detail({ data, postRefetch }: detailProps) {
                 <span>👍</span>추천&nbsp;{pageData.favorite}
               </button>
             </div>
-            <Reply
-              data={data}
-              replyData={replyData}
-              replyRefetch={replyRefetch}
-            />
+            <Reply replyData={replyData} replyRefetch={replyRefetch} />
           </div>
         </section>
       </div>
