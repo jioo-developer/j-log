@@ -15,6 +15,7 @@ function Profile() {
   const loadNick = useLoadNickName();
   const navigate = useNavigate();
   const { data, refetch } = useMyContext();
+
   useEffect(() => {
     if (data) setTitle(data.displayName);
   }, [data]);

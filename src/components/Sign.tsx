@@ -59,6 +59,7 @@ function Sign() {
             name="id"
             placeholder="아이디"
             required
+            autoComplete="off"
             value={id}
             onChange={(e) => setId(e.target.value)}
           />
@@ -66,6 +67,7 @@ function Sign() {
             type="password"
             className="form-control"
             name="password"
+            autoComplete="off"
             placeholder="비밀번호"
             required
             value={password}

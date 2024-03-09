@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import "../asset/detail.scss";
 import { Link } from "react-router-dom";
 import Reply from "./Reply";
@@ -11,7 +11,9 @@ import { useMyContext } from "../module/Mycontext";
 function Detail() {
   const { location, data, navigate, postRefetch } = useMyContext();
 
-  const URLID = location.state.pageId ? location.state.pageId : location.state;
+  const URLID: string = useMemo(() => {
+    return location.state.pageId ? location.state.pageId : location.state;
+  }, [location]);
 
   const loadPage = useLoadDetail(URLID);
   const pageData: FirebaseData | undefined = loadPage.data;
@@ -77,34 +79,31 @@ function Detail() {
     setLazyCount((prev) => prev + 1);
   }
 
+  const lazyloading = useCallback(() => {
+    const imgTarget = Array.from(
+      document.querySelectorAll(".att")
+    ) as HTMLImageElement[];
+    imgTarget.forEach((item) => {
+      const naturalWidths = item.naturalWidth;
+      const clientWidths = item.offsetWidth;
+      if (naturalWidths < clientWidths) {
+        item.classList.add("natural-size");
+      }
+    });
+    const grid = document.querySelector(".grid");
+    if (grid && imgTarget.length > 1) {
+      grid.classList.add("grids");
+    }
+  }, []);
+
   useEffect(() => {
     if (pageData) {
       if (lazyCount === pageData.url.length) {
         setLazy(true);
-      } else {
-        setLazy((prev) => prev);
+        lazyloading();
       }
     }
-  }, [lazyCount, pageData]);
-
-  useEffect(() => {
-    if (pageData) {
-      let imgTarget = Array.from(
-        document.querySelectorAll(".att")
-      ) as HTMLImageElement[];
-      imgTarget.forEach((item) => {
-        const naturalWidths = item.naturalWidth;
-        const clientWidths = item.offsetWidth;
-        if (naturalWidths < clientWidths) {
-          item.classList.add("natural-size");
-        }
-      });
-      const grid = document.querySelector(".grid");
-      if (grid && imgTarget.length > 1) {
-        grid.classList.add("grids");
-      }
-    }
-  }, [pageData]);
+  }, [pageData, lazyCount, lazyloading]);
 
   if (loadPage.isLoading) {
     return <div className="App" />;
@@ -168,7 +167,12 @@ function Detail() {
                 <span>👍</span>추천&nbsp;{pageData.favorite}
               </button>
             </div>
-            <Reply replyData={replyData} replyRefetch={replyRefetch} />
+            <Reply
+              replyData={replyData}
+              replyRefetch={replyRefetch}
+              URLID={URLID}
+              data={data}
+            />
           </div>
         </section>
       </div>

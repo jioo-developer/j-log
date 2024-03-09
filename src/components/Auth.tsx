@@ -1,4 +1,10 @@
-import { ChangeEvent, FormEvent, useEffect, useState } from "react";
+import {
+  ChangeEvent,
+  FormEvent,
+  useCallback,
+  useEffect,
+  useState,
+} from "react";
 import "../asset/auth.scss";
 import { Link } from "react-router-dom";
 import { authService, db } from "../Firebase";
@@ -97,7 +103,7 @@ function Auth() {
     }
   }
 
-  function importantCheck() {
+  const importantCheck = useCallback(() => {
     const important1 = checkArr.includes("auth");
     const important2 = checkArr.includes("data");
     if (important1 && important2) {
@@ -105,11 +111,11 @@ function Auth() {
     } else {
       setDisable(true);
     }
-  }
+  }, [checkArr]);
 
   useEffect(() => {
     importantCheck();
-  }, [checkArr]);
+  }, [checkArr, importantCheck]);
 
   return (
     <div className="Auth_wrap">
