@@ -1,4 +1,4 @@
-import { ChangeEvent, FormEvent, useEffect, useState } from "react";
+import { ChangeEvent, FormEvent, useEffect, useMemo, useState } from "react";
 import TextareaAutosize from "react-textarea-autosize";
 import { Link } from "react-router-dom";
 import "../asset/upload.scss";
@@ -9,10 +9,17 @@ import { useMyContext } from "../module/Mycontext";
 
 function Edit() {
   const { navigate, location } = useMyContext();
-  const URLID = location.state.pageId ? location.state.pageId : location.state;
+
+  const URLID: string = useMemo(() => {
+    return location.state.pageId ? location.state.pageId : location.state;
+  }, [location]);
 
   const loadPage = useLoadDetail(URLID);
-  const pageData = loadPage.data;
+
+  const pageData = useMemo(() => {
+    return loadPage.data;
+  }, [loadPage]);
+
   const detailRefetch = loadPage.refetch;
 
   const [title, setTitle] = useState("");

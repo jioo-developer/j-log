@@ -1,25 +1,22 @@
-import { FormEvent, useRef, useState } from "react";
+import React, { FormEvent, useRef, useState } from "react";
 import TextareaAutosize from "react-textarea-autosize";
 import { serverTimestamp } from "firebase/firestore";
 import { db } from "../Firebase";
 import { replyType } from "../module/interfaceModule";
-import { useMyContext } from "../module/Mycontext";
+import { LoadUserHookResult } from "../query/loadUser";
 
 type replyProps = {
   replyData: replyType[] | undefined;
   replyRefetch: any;
+  URLID: string;
+  data: LoadUserHookResult | undefined;
 };
 
-function Reply({ replyData, replyRefetch }: replyProps) {
-  const { location, data } = useMyContext();
-
-  const URLID = location.state.pageId ? location.state.pageId : location.state;
-
+function Reply({ replyData, replyRefetch, URLID, data }: replyProps) {
   const [commentChange, setCommentChange] = useState(false);
   const [comment, setcomment] = useState("");
   const replyArea = useRef<HTMLTextAreaElement | null>(null);
   const [replyTarget, setTarget] = useState("");
-
   const time = new Date();
   const timeData = {
     year: time.getFullYear(),
@@ -88,10 +85,10 @@ function Reply({ replyData, replyRefetch }: replyProps) {
   return data ? (
     <>
       {replyData
-        ? replyData.map(function (item, index) {
+        ? replyData.map(function (item, idx) {
             return (
               <>
-                <div className="reply_wrap" key={index}>
+                <div className="reply_wrap" key={`reply-${idx}`}>
                   <div className="user_info">
                     <img src={item.profile} alt="" />
                     <div className="user_text">
@@ -105,9 +102,9 @@ function Reply({ replyData, replyRefetch }: replyProps) {
                           className="edit btns"
                           onClick={() => {
                             if (commentChange && replyTarget === item.id) {
-                              replyhandler(index, "update");
+                              replyhandler(idx, "update");
                             } else {
-                              replyhandler(index);
+                              replyhandler(idx);
                             }
                           }}
                         >
@@ -117,7 +114,7 @@ function Reply({ replyData, replyRefetch }: replyProps) {
                         </button>
                         <button
                           className="delete btns"
-                          onClick={() => reply_delete(index)}
+                          onClick={() => reply_delete(idx)}
                         >
                           삭제
                         </button>
@@ -156,4 +153,4 @@ function Reply({ replyData, replyRefetch }: replyProps) {
   ) : null;
 }
 
-export default Reply;
+export default React.memo(Reply);

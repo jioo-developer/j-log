@@ -1,12 +1,10 @@
-import { useNavigate } from "react-router-dom";
 import { authService, db, firebaseInstance } from "../Firebase";
 import { useEffect, useState } from "react";
 import { useMyContext } from "../module/Mycontext";
 
 function SocialSign() {
   const [disabled, setDisable] = useState(false);
-  const navigate = useNavigate();
-  const { data, refetch } = useMyContext();
+  const { data, refetch, navigate } = useMyContext();
   useEffect(() => {
     if (data) setDisable(true);
     else setDisable(false);
@@ -54,7 +52,6 @@ function SocialSign() {
     await authService
       .signInWithPopup(provider)
       .then((result) => {
-        window.alert("현재 페이스북 로그인은 인증만료 처리중입니다.");
         // if (result.user && result.user.displayName) {
         //   db.collection("nickname")
         //     .doc(result.user.displayName)
@@ -62,7 +59,9 @@ function SocialSign() {
         //     .then(() => navigate("/"));
         // }
       })
-      .catch(() => window.alert("로그인 정보를 찾지 못했습니다."));
+      .catch(() =>
+        window.alert("현재 페이스북 로그인은 인증만료 처리중입니다.")
+      );
   }
 
   return (
