@@ -17,6 +17,7 @@ function Reply({ replyData, replyRefetch, URLID, data }: replyProps) {
   const [comment, setcomment] = useState("");
   const replyArea = useRef<HTMLTextAreaElement | null>(null);
   const [replyTarget, setTarget] = useState("");
+
   const time = new Date();
   const timeData = {
     year: time.getFullYear(),
@@ -24,7 +25,7 @@ function Reply({ replyData, replyRefetch, URLID, data }: replyProps) {
     day: time.getDate(),
   };
 
-  function replyhandler(index: number, type?: string) {
+  function replyUpdate(index: number, type?: string) {
     if (replyData) {
       if (!type) {
         setCommentChange(true);
@@ -55,6 +56,7 @@ function Reply({ replyData, replyRefetch, URLID, data }: replyProps) {
         .then(() => replyRefetch());
     }
   }
+
   function commentUpload(e: FormEvent) {
     e.preventDefault();
     if (data && replyArea) {
@@ -102,9 +104,9 @@ function Reply({ replyData, replyRefetch, URLID, data }: replyProps) {
                           className="edit btns"
                           onClick={() => {
                             if (commentChange && replyTarget === item.id) {
-                              replyhandler(idx, "update");
+                              replyUpdate(idx, "update");
                             } else {
-                              replyhandler(idx);
+                              replyUpdate(idx);
                             }
                           }}
                         >

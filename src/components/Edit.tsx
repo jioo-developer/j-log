@@ -2,7 +2,7 @@ import { ChangeEvent, FormEvent, useEffect, useMemo, useState } from "react";
 import TextareaAutosize from "react-textarea-autosize";
 import { Link } from "react-router-dom";
 import "../asset/upload.scss";
-import { db, storageService } from "../Firebase";
+import { db } from "../Firebase";
 import useLoadDetail from "../query/loadDetail";
 import { onFileChange, storageUpload } from "../module/exportFunction";
 import { useMyContext } from "../module/Mycontext";
@@ -23,7 +23,7 @@ function Edit() {
   const [title, setTitle] = useState("");
   const [text, setText] = useState("");
 
-  const [preview, setImage] = useState<string[]>([]);
+  const [preview, setImage] = useState<any[]>([]);
   const [file, setFile] = useState<File[]>([]);
 
   useEffect(() => {
@@ -32,7 +32,7 @@ function Edit() {
       setText(pageData.text);
       setImage(pageData.url);
     }
-  }, [pageData]);
+  }, []);
 
   async function post(e: FormEvent<Element>) {
     e.preventDefault();
@@ -47,14 +47,6 @@ function Edit() {
         .doc(pageData.pageId)
         .update(resultState)
         .then(() => {
-          const storageRef = storageService.ref();
-          if (pageData.fileName) {
-            pageData.fileName.forEach((value) => {
-              const imagesRef = storageRef.child(`${pageData.writer}/${value}`);
-              imagesRef.delete();
-            });
-          }
-
           window.alert("수정이 완료 되었습니다.");
           const redirect = `/detail?id=${pageData.pageId}`;
           navigate(redirect, { state: pageData.pageId });
@@ -64,6 +56,7 @@ function Edit() {
 
   async function filechangeHandler(e: ChangeEvent) {
     const changeResult = await onFileChange(e);
+
     if (Array.isArray(changeResult)) {
       const copyArray = [...preview];
       copyArray.push(...(changeResult[0] as string[]));
@@ -86,14 +79,15 @@ function Edit() {
         return item.match(/data:image\/(png|jpg|jpeg|gif|bmp);base64/);
       });
       // 새 이미지 배열
-
       if (matchArr.length > 0) {
-        const imageResult =
-          (await storageUpload(matchArr, file))?.filter(
-            (item) => item !== undefined
-          ) || [];
+        const imageResult = await storageUpload(matchArr, file);
+        const typeFilter =
+          imageResult.length > 0
+            ? imageResult.filter((item) => item !== undefined)
+            : [];
         const urlArr = arr.filter((item) => item.includes("firebase"));
-        return [...urlArr, ...imageResult];
+        const result = [...urlArr, ...typeFilter];
+        return result;
       } else {
         return arr;
       }
@@ -169,6 +163,9 @@ function Edit() {
                 <button type="submit" className="post">
                   글작성
                 </button>
+                {/* <button type="button" onClick={imagePostHandler}>
+                  임시
+                </button> */}
               </div>
             </div>
           </form>

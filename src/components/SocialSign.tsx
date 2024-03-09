@@ -5,6 +5,7 @@ import { useMyContext } from "../module/Mycontext";
 function SocialSign() {
   const [disabled, setDisable] = useState(false);
   const { data, refetch, navigate } = useMyContext();
+
   useEffect(() => {
     if (data) setDisable(true);
     else setDisable(false);

@@ -69,6 +69,8 @@ function Upload() {
     return result;
   };
 
+  const overlapCallback = useCallback(overlap, [posts]);
+
   function overlap(params: string) {
     if (posts && posts.length > 0) {
       return posts.some((item) => item.id === params);
@@ -76,7 +78,6 @@ function Upload() {
       return false;
     }
   }
-  const overlapCallback = useCallback(overlap, [posts]);
 
   useEffect(() => {
     let randomStr: string = generateRandomString(20);
@@ -86,7 +87,7 @@ function Upload() {
     } else {
       setPageId(randomStr);
     }
-  }, [overlapCallback]);
+  }, []);
 
   async function filechangeHandler(e: ChangeEvent) {
     const changeResult = await onFileChange(e);

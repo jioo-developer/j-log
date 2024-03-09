@@ -50,5 +50,7 @@ export async function storageUpload(
         }
       })
     );
+  } else {
+    return [];
   }
 }

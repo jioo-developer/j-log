@@ -17,7 +17,9 @@ function Profile() {
   const { data, refetch } = useMyContext();
 
   useEffect(() => {
-    if (data) setTitle(data.displayName);
+    if (data) {
+      setTitle(data.displayName);
+    }
   }, [data]);
 
   async function deleteUser() {

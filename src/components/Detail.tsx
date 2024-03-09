@@ -15,12 +15,10 @@ function Detail() {
     return location.state.pageId ? location.state.pageId : location.state;
   }, [location]);
 
+  const [imageInit, setInit] = useState(false);
   const loadPage = useLoadDetail(URLID);
   const pageData: FirebaseData | undefined = loadPage.data;
   const refetch = loadPage.refetch;
-
-  const [lazyload, setLazy] = useState(false);
-  const [lazyCount, setLazyCount] = useState(0);
 
   const reply = useReply(URLID);
   const replyData = reply.data;
@@ -75,35 +73,30 @@ function Detail() {
     }
   }
 
-  function lazyfunction() {
-    setLazyCount((prev) => prev + 1);
-  }
-
   const lazyloading = useCallback(() => {
     const imgTarget = Array.from(
       document.querySelectorAll(".att")
     ) as HTMLImageElement[];
-    imgTarget.forEach((item) => {
-      const naturalWidths = item.naturalWidth;
-      const clientWidths = item.offsetWidth;
-      if (naturalWidths < clientWidths) {
-        item.classList.add("natural-size");
+    const el = document.querySelector(".grid") as HTMLElement;
+    if (el) {
+      el.style.display = "grid";
+      el.style.gap = "0 10px";
+      if (imgTarget.length > 2) {
+        el.style.gridTemplateColumns = `repeat(${imgTarget.length},1fr)`;
+      } else if (imgTarget.length === 2) {
+        el.style.gridTemplateColumns = `repeat(${3},1fr)`;
+      } else if (imgTarget.length === 1) {
+        return false;
       }
-    });
-    const grid = document.querySelector(".grid");
-    if (grid && imgTarget.length > 1) {
-      grid.classList.add("grids");
     }
   }, []);
 
   useEffect(() => {
-    if (pageData) {
-      if (lazyCount === pageData.url.length) {
-        setLazy(true);
-        lazyloading();
-      }
-    }
-  }, [pageData, lazyCount, lazyloading]);
+    setTimeout(() => {
+      setInit(true);
+      lazyloading();
+    }, 700);
+  }, []);
 
   if (loadPage.isLoading) {
     return <div className="App" />;
@@ -137,29 +130,17 @@ function Detail() {
         </section>
         <section className="content_wrap">
           <pre className="text">{pageData.text}</pre>
-          <div
-            className="grid"
-            style={
-              pageData.url.length > 3
-                ? { gridTemplateColumns: `repeat(${pageData.url.length},1fr)` }
-                : { gridTemplateColumns: `repeat(${3},1fr)` }
-            }
-          >
-            {pageData.url && pageData.url.length > 0
-              ? pageData.url.map((value, index) => {
-                  return (
-                    <img
-                      src={value}
-                      className="att"
-                      alt=""
-                      key={index}
-                      style={lazyload ? { opacity: 1 } : { opacity: 0 }}
-                      onLoad={lazyfunction}
-                    />
-                  );
-                })
-              : null}
-          </div>
+          {imageInit ? (
+            <div className="grid">
+              {pageData.url && pageData.url.length > 0
+                ? pageData.url.map((value, index) => {
+                    return (
+                      <img src={value} className="att" alt="" key={index} />
+                    );
+                  })
+                : null}
+            </div>
+          ) : null}
           <div className="comment">
             <div className="favorite_wrap">
               <p className="com_title">게시글에 대한 댓글을 달아주세요.</p>
