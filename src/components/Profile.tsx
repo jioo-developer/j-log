@@ -1,6 +1,6 @@
 import React, { ChangeEvent, useEffect, useState } from "react";
 import "../asset/profile.scss";
-import { authService, db, firebaseInstance } from "../Firebase";
+import { authService, db, firebaseInstance, storageService } from "../Firebase";
 import "../asset/header.scss";
 import useLoadNickName from "../query/loadNickName";
 import firebase from "firebase/compat/app";
@@ -77,12 +77,16 @@ function Profile() {
 
   async function dbDelete(user: firebase.User, type: string) {
     if (data) {
+      const ref = storageService.ref();
+      const imageRef = ref.child(`${user.uid}`);
+
       const deletePromises = [
         db
           .collection("delete")
           .doc(`${data.uid}`)
           .set({ 상태: "탈퇴", nickname: user.displayName }),
         db.collection("nickname").doc(`${user.displayName}`).delete(),
+        imageRef.delete(),
       ];
 
       if (type === "social") {

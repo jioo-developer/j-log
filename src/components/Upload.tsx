@@ -10,7 +10,6 @@ import TextareaAutosize from "react-textarea-autosize";
 import { serverTimestamp } from "firebase/firestore";
 import { onFileChange, storageUpload } from "../module/exportFunction";
 import { db } from "../Firebase";
-import { postProps } from "../module/interfaceModule";
 import { useNavigate } from "react-router-dom";
 import { useMyContext } from "../module/Mycontext";
 
@@ -71,8 +70,11 @@ function Upload() {
   };
 
   function overlap(params: string) {
-    const array = posts as postProps[];
-    return array.some((item) => item.id === params);
+    if (posts && posts.length > 0) {
+      return posts.some((item) => item.id === params);
+    } else {
+      return false;
+    }
   }
   const overlapCallback = useCallback(overlap, [posts]);
 
@@ -108,6 +110,8 @@ function Upload() {
           type="text"
           className="form-control titlearea"
           id="title"
+          autoComplete="off"
+          autoFocus={false}
           placeholder="제목을 입력하세요."
           maxLength={120}
           onChange={(e: ChangeEvent<HTMLInputElement>) =>
@@ -119,6 +123,7 @@ function Upload() {
             cacheMeasurements
             onHeightChange={(height) => {}}
             className="text"
+            autoComplete="off"
             placeholder="당신의 이야기를 적어보세요."
             onChange={(e: ChangeEvent<HTMLTextAreaElement>) =>
               setTextarea(e.target.value)

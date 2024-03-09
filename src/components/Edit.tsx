@@ -20,8 +20,6 @@ function Edit() {
     return loadPage.data;
   }, [loadPage]);
 
-  const detailRefetch = loadPage.refetch;
-
   const [title, setTitle] = useState("");
   const [text, setText] = useState("");
 
@@ -59,7 +57,6 @@ function Edit() {
 
           window.alert("수정이 완료 되었습니다.");
           const redirect = `/detail?id=${pageData.pageId}`;
-          detailRefetch();
           navigate(redirect, { state: pageData.pageId });
         });
     }
@@ -112,6 +109,8 @@ function Edit() {
               type="text"
               className="form-control titlearea"
               id="title"
+              autoFocus={false}
+              autoComplete="off"
               defaultValue={title}
               onChange={(e: ChangeEvent<HTMLInputElement>) =>
                 setTitle(e.target.value)
@@ -122,6 +121,7 @@ function Edit() {
               <TextareaAutosize
                 onHeightChange={(height) => {}}
                 className="text"
+                autoComplete="off"
                 defaultValue={text}
                 onChange={(e: ChangeEvent<HTMLTextAreaElement>) =>
                   setText(e.target.value)

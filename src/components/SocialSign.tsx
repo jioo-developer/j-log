@@ -24,10 +24,13 @@ function SocialSign() {
           "회원 탈퇴에 사용 될 비밀번호를 입력해주세요."
         );
         if (password) {
-          db.collection("nickname")
+          const nickDB = db.collection("nickname");
+          nickDB
+            .doc(result.user.displayName as string)
+            .set({ nickname: result.user.displayName });
+          nickDB
             .doc(`${result.user.uid}-G`)
             .set({
-              nickname: result.user.displayName,
               id: result.user.uid,
               password: password,
             })
