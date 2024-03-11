@@ -26,11 +26,21 @@ function Detail() {
 
   const time = new Date();
 
-  function setCookie(name: string, value: string, expiredays: number) {
-    time.setDate(time.getDate() + expiredays);
-    document.cookie = `${name}=${escape(
+  function setCookie(name: string, value: string) {
+    const time = new Date();
+    const result = new Date(
+      time.getFullYear(),
+      time.getMonth(),
+      time.getDate(),
+      23,
+      59,
+      59
+    );
+    result.setMilliseconds(999);
+    result.setHours(result.getHours() + 9);
+    document.cookie = `${name}=${encodeURIComponent(
       value
-    )}; expires=${time.toUTCString()};`;
+    )}; expires=${result.toUTCString()};`;
   }
 
   function favoriteHandler() {
@@ -44,7 +54,7 @@ function Detail() {
           })
           .then(() => {
             refetch();
-            setCookie(`${data.uid}-Cookie`, "done", 1);
+            setCookie(`${data.uid}-Cookie`, "done");
           });
       }
     }
