@@ -24,8 +24,6 @@ function Detail() {
   const replyData = reply.data;
   const replyRefetch = reply.refetch;
 
-  const time = new Date();
-
   function setCookie(name: string, value: string) {
     const time = new Date();
     const result = new Date(
