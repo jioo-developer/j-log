@@ -120,7 +120,7 @@ function Auth() {
   return (
     <div className="Auth_wrap">
       <div className="title_area">
-        <Link to="/">
+        <Link to="/sign">
           <img src="./img/backbtn.svg" className="close" alt="" />
         </Link>
         <p>회원가입</p>
