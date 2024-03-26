@@ -4,6 +4,9 @@
 
 개인 사이드 프로젝트
 <br />
+<br />
+🖥️ using project : https://j-log.netlify.app
+<br />
 
 ## 📃 using lang
 
