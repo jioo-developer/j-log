@@ -27,3 +27,8 @@ TypeScript,React,React-dom,react-query,firebase,ContextAPI,SCSS
 - 로그인/회원가입/SNS로그인/비밀번호 찾기
 - 홈에 게시물들 노출/게시글 작성/댓글작성/게시글 좋아요/게시글 수정&삭제
 - 프로필변경/닉네임변경/회원탈퇴
+
+### 📌 주목할만한 코드
+
+- exportFunction.ts
+- exportQueryFunction.ts
