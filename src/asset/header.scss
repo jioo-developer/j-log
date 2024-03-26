@@ -65,6 +65,9 @@ header {
   background: #fff;
   box-shadow: 0 4px 16px 0 $hoverRgb;
   z-index: 1000;
+  @media all and (max-width: 960px) {
+    right: 10px;
+  }
 }
 
 .sub_menu li {
