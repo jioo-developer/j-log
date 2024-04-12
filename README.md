@@ -32,8 +32,23 @@ TypeScript,React,React-dom,react-query,firebase,ContextAPI,SCSS
 - 게시글 수정&삭제/이미지추가&수정&삭제
 - 프로필변경/닉네임변경/회원탈퇴
 
-### 📌 주목할만한 파일
+### 🧑🏻‍💻 트러블 슈팅
 
-- exportFunction.ts
-- exportQueryFunction.ts
-- edit.tsx
+#### 문제발견
+
+구글로그인으로 로그인을 하면 구글계정으로 부터 모든 정보를 불러와서 로그인 하게 되는데, 이렇게 로그인을 하면 회원 탈퇴 할 시
+한번 더 확인 하기 위한 비밀번호를 입력 할 구간이 없다.
+
+#### 문제인식
+
+회원탈퇴시 입력되어야 할 비밀번호를 따로 어딘가에 저장 해주어야 한다.
+
+#### 문제 판단
+
+DB에 uid를 title로 구글 로그인 을 할 때만 password를 입력하게 해주어야 한다.
+
+#### 해결법
+
+DB에서 uid-G가 있는지 확인 후 없다면 새로 password를 입력하고 있다면 그냥 넘어가게 코드를 짬
+
+<img src="/public/img/error1.jpg">
