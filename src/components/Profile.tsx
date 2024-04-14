@@ -26,96 +26,82 @@ function Profile() {
     if (data) {
       const password = window.prompt("비밀번호를 입력해주세요.");
       const check = await db.collection("nickname").doc(`${data.uid}-G`).get();
-      const soSialPW = check.data();
+      const socialPW = check.data();
 
-      if (soSialPW) {
-        if (password === soSialPW.password) {
-          deleteHandler(password, "sosial");
+      if (password) {
+        if (socialPW) {
+          //socialPw 이 있으면
+          if (password === socialPW.password) {
+            deleteHandler(password, "sosial");
+          } else {
+            window.alert("첫 가입시 입력하신 비밀번호랑 다릅니다.");
+          }
         } else {
-          window.alert("첫 가입시 입력하신 비밀번호랑 다릅니다.");
-        }
-      } else {
-        if (password) {
+          //socialPw 이 없으면
           deleteHandler(password, "origin");
         }
       }
     }
   }
 
-  async function deleteHandler(password: string | null, type: string) {
-    if (data) {
-      const userDelete = authService.currentUser;
-
-      if (userDelete && password) {
-        if (type === "origin") {
-          const credential =
-            await firebaseInstance.auth.EmailAuthProvider.credential(
-              data.email,
-              password
-            );
-          if (credential) {
-            userDelete
-              .reauthenticateWithCredential(credential)
-              .then(() => {
-                userDelete.delete().then(() => dbDelete(userDelete, type));
-              })
-              .catch((error) => {
-                window.alert("암호가 잘못되었습니다.");
-              });
-          } else {
-            window.alert("회원 탈퇴가 완료되지 않았습니다. 문의하십시오.");
-          }
-        } else {
-          const googleProvider = new GoogleAuthProvider();
-          reauthenticateWithPopup(userDelete, googleProvider)
+  async function deleteHandler(password: string, type: string) {
+    const userDelete = authService.currentUser;
+    if (data && userDelete) {
+      if (type === "origin") {
+        const credential =
+          await firebaseInstance.auth.EmailAuthProvider.credential(
+            data.email,
+            password
+          );
+        // 회원탈퇴 credential
+        if (credential) {
+          userDelete
+            .reauthenticateWithCredential(credential)
             .then(() => {
               userDelete.delete().then(() => dbDelete(userDelete, type));
             })
-            .catch(() => window.alert("회원 정보가 없습니다."));
+            .catch((error) => {
+              window.alert("암호가 잘못되었습니다.");
+            });
+        } else {
+          window.alert("회원 탈퇴가 완료되지 않았습니다. 문의하십시오.");
         }
+        // type social ↓
+      } else {
+        const googleProvider = new GoogleAuthProvider();
+        reauthenticateWithPopup(userDelete, googleProvider)
+          .then(() => {
+            userDelete.delete().then(() => dbDelete(userDelete, type));
+          })
+          .catch(() => window.alert("회원 정보가 없습니다."));
       }
+      // type social ↑
     }
   }
 
   async function dbDelete(user: firebase.User, type: string) {
-    if (data) {
-      const ref = storageService.ref();
-      const imageRef = ref.child(`${user.uid}`);
+    const ref = storageService.ref();
+    const imageRef = ref.child(`${user.uid}`);
 
-      const deletePromises = [
-        db
-          .collection("delete")
-          .doc(`${data.uid}`)
-          .set({ 상태: "탈퇴", nickname: user.displayName }),
-        db.collection("nickname").doc(`${user.displayName}`).delete(),
-        imageRef.delete(),
-      ];
+    const deletePromises = [
+      db
+        .collection("delete")
+        .doc(`${data.uid}`)
+        .set({ 상태: "탈퇴", nickname: user.displayName }),
+      db.collection("nickname").doc(`${user.displayName}`).delete(),
+      imageRef.delete(),
+    ];
 
-      if (type === "social") {
-        deletePromises.push(
-          db.collection("nickname").doc(`${data.uid}-G`).delete()
-        );
-      }
-      return Promise.all(deletePromises).then(() => {
-        window.alert("회원탈퇴 되었습니다.");
-        navigate("/sign");
-      });
+    if (type === "social") {
+      deletePromises.push(
+        db.collection("nickname").doc(`${data.uid}-G`).delete()
+      );
     }
+    return Promise.all(deletePromises).then(() => {
+      window.alert("회원탈퇴 되었습니다.");
+      navigate("/sign");
+    });
   }
-
-  async function changeHanlder(e: ChangeEvent) {
-    const changeResult: any = await onFileChange(e);
-    if (Array.isArray(changeResult)) {
-      storageUpload(
-        changeResult[0] as string[],
-        changeResult[1] as File[],
-        "profile"
-      ).then(() => refetch());
-      //프로필 이미지 변경을 담당하는 외부 함수
-    }
-  }
-
-  //프로필 이미지 변경 전체 함수 ↑
 
   async function NickNameChange() {
     if (loadNick.data && loadNick.data.length > 0 && data) {

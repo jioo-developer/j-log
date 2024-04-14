@@ -17,6 +17,7 @@ export const MyContextProvider = ({ children }: { children: ReactNode }) => {
 
   const location = useLocation();
   const navigate = useNavigate();
+
   return (
     <MyContext.Provider
       value={{ data, posts, refetch, postRefetch, navigate, location, Loading }}

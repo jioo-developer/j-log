@@ -6,12 +6,14 @@ import { useMyContext } from "../module/Mycontext";
 function Header() {
   const [menuToggle, setToggle] = useState(false);
   const { navigate, refetch, data, postRefetch } = useMyContext();
+
   function logout() {
     authService.signOut().then(() => {
       navigate("/sign");
       refetch();
     });
   }
+
   return (
     <header>
       {data ? (

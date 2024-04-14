@@ -27,11 +27,7 @@ function Reply({ replyData, replyRefetch, URLID, data }: replyProps) {
 
   function replyUpdate(index: number, type?: string) {
     if (replyData) {
-      if (!type) {
-        setCommentChange(true);
-        setcomment(replyData[index].comment);
-        setTarget(replyData[index].id);
-      } else {
+      if (type) {
         db.collection("post")
           .doc(URLID)
           .collection("reply")
@@ -41,6 +37,10 @@ function Reply({ replyData, replyRefetch, URLID, data }: replyProps) {
             setCommentChange(false);
             replyRefetch();
           });
+      } else {
+        setCommentChange(true);
+        setcomment(replyData[index].comment);
+        setTarget(replyData[index].id);
       }
     }
   }
@@ -86,7 +86,7 @@ function Reply({ replyData, replyRefetch, URLID, data }: replyProps) {
 
   return data ? (
     <>
-      {replyData
+      {replyData && replyData.length > 0
         ? replyData.map(function (item, idx) {
             return (
               <>
