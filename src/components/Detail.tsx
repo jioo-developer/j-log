@@ -7,6 +7,7 @@ import { db, storageService } from "../Firebase";
 import useLoadDetail from "../query/loadDetail";
 import useReply from "../query/loadReply";
 import { useMyContext } from "../module/Mycontext";
+import { setCookie } from "../module/exportFunction";
 
 function Detail() {
   const { location, data, navigate, postRefetch } = useMyContext();
@@ -23,23 +24,6 @@ function Detail() {
   const reply = useReply(URLID);
   const replyData = reply.data;
   const replyRefetch = reply.refetch;
-
-  function setCookie(name: string, value: string) {
-    const time = new Date();
-    const result = new Date(
-      time.getFullYear(),
-      time.getMonth(),
-      time.getDate(),
-      23,
-      59,
-      59
-    );
-    result.setMilliseconds(999);
-    result.setHours(result.getHours() + 9);
-    document.cookie = `${name}=${encodeURIComponent(
-      value
-    )}; expires=${result.toUTCString()};`;
-  }
 
   function favoriteHandler() {
     const cookieCheck = document.cookie;
@@ -69,7 +53,7 @@ function Detail() {
           imagesRef.delete();
         });
       }
-      if (replyData) {
+      if (replyData && replyData.length > 0) {
         replyData.map((item) =>
           locate.collection("reply").doc(item.id).delete()
         );
@@ -100,10 +84,8 @@ function Detail() {
   }, []);
 
   useEffect(() => {
-    setTimeout(() => {
-      setInit(true);
-      lazyloading();
-    }, 700);
+    setInit(true);
+    lazyloading();
   }, []);
 
   if (loadPage.isLoading) {
