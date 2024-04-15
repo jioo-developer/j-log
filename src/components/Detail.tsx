@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import "../asset/detail.scss";
 import { Link } from "react-router-dom";
 import Reply from "./Reply";
@@ -16,7 +16,7 @@ function Detail() {
     return location.state.pageId ? location.state.pageId : location.state;
   }, [location]);
 
-  const [imageInit, setInit] = useState(false);
+  const [imgLoadArr, setLoadArr] = useState<number[]>([]);
   const loadPage = useLoadDetail(URLID);
   const pageData: FirebaseData | undefined = loadPage.data;
   const refetch = loadPage.refetch;
@@ -65,28 +65,13 @@ function Detail() {
     }
   }
 
-  const lazyloading = useCallback(() => {
-    const imgTarget = Array.from(
-      document.querySelectorAll(".att")
-    ) as HTMLImageElement[];
-    const el = document.querySelector(".grid") as HTMLElement;
-    if (el) {
-      el.style.display = "grid";
-      el.style.gap = "0 10px";
-      if (imgTarget.length > 2) {
-        el.style.gridTemplateColumns = `repeat(${imgTarget.length},1fr)`;
-      } else if (imgTarget.length === 2) {
-        el.style.gridTemplateColumns = `repeat(${3},1fr)`;
-      } else if (imgTarget.length === 1) {
-        return false;
-      }
+  const lazyloading = (index: number) => {
+    if (imgLoadArr.length === 0) {
+      setLoadArr([index]);
+    } else {
+      setLoadArr((prev) => [...prev, index]);
     }
-  }, []);
-
-  useEffect(() => {
-    setInit(true);
-    lazyloading();
-  }, []);
+  };
 
   if (loadPage.isLoading) {
     return <div className="App" />;
@@ -120,17 +105,28 @@ function Detail() {
         </section>
         <section className="content_wrap">
           <pre className="text">{pageData.text}</pre>
-          {imageInit ? (
-            <div className="grid">
-              {pageData.url && pageData.url.length > 0
-                ? pageData.url.map((value, index) => {
-                    return (
-                      <img src={value} className="att" alt="" key={index} />
-                    );
-                  })
-                : null}
-            </div>
-          ) : null}
+          <div className="grid">
+            {pageData.url && pageData.url.length > 0
+              ? pageData.url.map((value, index) => {
+                  return (
+                    <img
+                      src={value}
+                      className="att"
+                      alt=""
+                      key={index}
+                      style={
+                        pageData.url.length === imgLoadArr.length
+                          ? { opacity: 1 }
+                          : { opacity: 0 }
+                      }
+                      onLoad={() => {
+                        lazyloading(index);
+                      }}
+                    />
+                  );
+                })
+              : null}
+          </div>
           <div className="comment">
             <div className="favorite_wrap">
               <p className="com_title">게시글에 대한 댓글을 달아주세요.</p>
