@@ -1,5 +1,5 @@
 import { FormEvent, useCallback, useEffect, useState } from "react";
-import "../asset/upload.scss";
+import "../../asset/upload.scss";
 import { useMyContext } from "../../module/Mycontext";
 import EditorComponent from "./EditorComponent";
 import { storageUpload } from "../../module/exportFunction";

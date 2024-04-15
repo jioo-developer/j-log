@@ -1,12 +1,12 @@
 import { FormEvent, useEffect, useMemo } from "react";
-import "../asset/upload.scss";
+import "../../asset/upload.scss";
 import useLoadDetail from "../../query/loadDetail";
 import { useMyContext } from "../../module/Mycontext";
 import EditorComponent from "./EditorComponent";
 import { useEditorContext } from "./EditorContext";
 import { storageUpload } from "../../module/exportFunction";
 
-function Edit() {
+const Edit = () => {
   const { location } = useMyContext();
   const {
     setTitle,
@@ -73,14 +73,14 @@ function Edit() {
     } else {
       window.alert("제목과 내용을 다 입력하셨는지 확인해주세요");
     }
-
-    return (
-      <>
-        {pageData ? (
-          <EditorComponent post={post} pageData={pageData} type={"edit"} />
-        ) : null}
-      </>
-    );
   }
-}
+
+  return (
+    <>
+      {pageData ? (
+        <EditorComponent post={post} pageData={pageData} type={"edit"} />
+      ) : null}
+    </>
+  );
+};
 export default Edit;

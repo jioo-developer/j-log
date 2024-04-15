@@ -14,11 +14,11 @@ type propsType = {
 
 const EditorComponent = ({ post, pageData, type, refetch }: propsType) => {
   const {
+    title,
     setTitle,
+    text,
     setText,
     preview,
-    title,
-    text,
     previewDelete,
     changeHanlder,
   } = useEditorContext();
@@ -34,9 +34,9 @@ const EditorComponent = ({ post, pageData, type, refetch }: propsType) => {
           autoComplete="off"
           defaultValue={title}
           maxLength={120}
-          onChange={(e: ChangeEvent<HTMLInputElement>) =>
-            setTitle(e.target.value)
-          }
+          onChange={(e: ChangeEvent<HTMLInputElement>) => {
+            setTitle(e.target.value);
+          }}
         />
         <div className="textarea">
           <ReactTextareaAutosize
@@ -45,9 +45,9 @@ const EditorComponent = ({ post, pageData, type, refetch }: propsType) => {
             className="text"
             autoComplete="off"
             defaultValue={text}
-            onChange={(e: ChangeEvent<HTMLTextAreaElement>) =>
-              setText(e.target.value)
-            }
+            onChange={(e: ChangeEvent<HTMLTextAreaElement>) => {
+              setText(e.target.value);
+            }}
           />
           <figure>
             {preview.length > 0
@@ -56,7 +56,9 @@ const EditorComponent = ({ post, pageData, type, refetch }: propsType) => {
                     <button
                       type="button"
                       className="preview_delete"
-                      onClick={() => previewDelete(index)}
+                      onClick={() => {
+                        previewDelete(index);
+                      }}
                     >
                       <img src="./img/close.png" alt="" />
                     </button>
@@ -72,7 +74,9 @@ const EditorComponent = ({ post, pageData, type, refetch }: propsType) => {
           multiple
           className="file-form"
           id="image"
-          onChange={(e: ChangeEvent) => changeHanlder(e, type, refetch)}
+          onChange={(e: ChangeEvent) => {
+            changeHanlder(e, type, refetch);
+          }}
         />
         <label htmlFor="image" className="Attachment image-att">
           이미지를 담아주세요

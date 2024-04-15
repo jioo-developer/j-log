@@ -8,12 +8,19 @@ import Profile from "./components/Profile";
 import Edit from "./components/editor/Edit";
 import Header from "./components/Header";
 import { useMyContext } from "./module/Mycontext";
+import { EditorProvider } from "./components/editor/EditorContext";
 
 function App() {
   const { location, Loading } = useMyContext();
   if (Loading) {
     return <div className="App" />;
   }
+
+  const contextRoute = [
+    { path: "/profile", element: <Profile /> },
+    { path: "/upload", element: <Upload /> },
+    { path: "/edit", element: <Edit /> },
+  ];
 
   return (
     <div className="App">
@@ -25,9 +32,13 @@ function App() {
       <Routes>
         <Route path="/" element={<Home />}></Route>
         <Route path="/detail" element={<Detail />}></Route>
-        <Route path="/profile" element={<Profile />}></Route>
-        <Route path="/upload" element={<Upload />}></Route>
-        <Route path="/edit" element={<Edit />}></Route>
+        {contextRoute.map((route, index) => (
+          <Route
+            key={index}
+            path={route.path}
+            element={<EditorProvider>{route.element}</EditorProvider>}
+          />
+        ))}
         <Route path="/sign" element={<Sign />}></Route>
         <Route path="/Auth" element={<Auth />}></Route>
       </Routes>

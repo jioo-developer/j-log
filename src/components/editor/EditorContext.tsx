@@ -19,7 +19,7 @@ type EditorContextProps = {
   setImage: React.Dispatch<React.SetStateAction<string[]>>;
   file: File[];
   setFile: React.Dispatch<React.SetStateAction<File[]>>;
-  changeHanlder: (e: ChangeEvent, type: string, refresh: any) => void;
+  changeHanlder: (e: ChangeEvent, type: string, refetch: any) => void;
   previewDelete: (value: number) => void;
   firebaseUpload: (
     data: any,
@@ -58,7 +58,7 @@ export const EditorProvider = ({ children }: { children: ReactNode }) => {
     setFile(filter2);
   }
 
-  async function changeHanlder(e: ChangeEvent, type: string, refetch?: any) {
+  const changeHanlder = async (e: ChangeEvent, type: string, refetch?: any) => {
     const changeResult: any = await onFileChange(e);
     if (Array.isArray(changeResult)) {
       if (type === "profile") {
@@ -77,7 +77,7 @@ export const EditorProvider = ({ children }: { children: ReactNode }) => {
       }
       setFile(changeResult[1] as File[]); //new file
     }
-  }
+  };
 
   async function firebaseUpload(
     data: postProps,
@@ -109,6 +109,7 @@ export const EditorProvider = ({ children }: { children: ReactNode }) => {
         });
     }
   }
+
   return (
     <EditorContext.Provider
       value={{

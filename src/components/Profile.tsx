@@ -16,7 +16,6 @@ function Profile() {
   const navigate = useNavigate();
   const { data, refetch } = useMyContext();
   const { changeHanlder } = useEditorContext();
-
   useEffect(() => {
     if (data) {
       setTitle(data.displayName);
@@ -137,9 +136,9 @@ function Profile() {
               type="file"
               accept="image/*"
               id="img_check"
-              onChange={(e: ChangeEvent) =>
-                changeHanlder(e, "profile", refetch)
-              }
+              onChange={(e: ChangeEvent) => {
+                changeHanlder(e, "profile", refetch);
+              }}
             />
             <figure className="profileImg">
               <img src={data.photoURL} width="130px" height="135px" alt="" />
