@@ -14,7 +14,7 @@ export type postProps = {
   timestamp: { second: number; nanoseconds: number };
   title: string;
   fileName: string | string[];
-  url: [] | string[];
+  url: string[];
   favorite: number;
   text: string;
   writer: string;

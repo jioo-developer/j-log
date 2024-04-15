@@ -1,13 +1,23 @@
-import { FormEvent, useEffect, useMemo, useState } from "react";
+import { FormEvent, useEffect, useMemo } from "react";
 import "../asset/upload.scss";
-import { db } from "../../Firebase";
 import useLoadDetail from "../../query/loadDetail";
-import { storageUpload } from "../../module/exportFunction";
 import { useMyContext } from "../../module/Mycontext";
 import EditorComponent from "./EditorComponent";
+import { useEditorContext } from "./EditorContext";
+import { storageUpload } from "../../module/exportFunction";
 
 function Edit() {
-  const { navigate, location } = useMyContext();
+  const { location } = useMyContext();
+  const {
+    setTitle,
+    setText,
+    setImage,
+    preview,
+    file,
+    title,
+    text,
+    firebaseUpload,
+  } = useEditorContext();
 
   const URLID: string = useMemo(() => {
     return location.state.pageId ? location.state.pageId : location.state;
@@ -19,11 +29,6 @@ function Edit() {
     return loadPage.data;
   }, [loadPage]);
 
-  const [title, setTitle] = useState("");
-  const [text, setText] = useState("");
-  const [preview, setImage] = useState<any[]>([]);
-  const [file, setFile] = useState<File[]>([]);
-
   useEffect(() => {
     if (pageData) {
       setTitle(pageData.title);
@@ -31,22 +36,6 @@ function Edit() {
       setImage(pageData.url);
     }
   }, []);
-
-  async function post(e: FormEvent<Element>) {
-    e.preventDefault();
-
-    if (pageData && title !== "" && text !== "") {
-      const resultState = {
-        ...pageData,
-        title: title,
-        text: text,
-        url: preview.length > 0 ? await imagePostHandler() : [],
-      };
-      firebaseUplaod(resultState);
-    } else {
-      window.alert("제목과 내용을 다 입력하셨는지 확인해주세요");
-    }
-  }
 
   async function imagePostHandler() {
     if (pageData) {
@@ -70,23 +59,28 @@ function Edit() {
     }
   }
 
-  return (
-    <>
-      {pageData ? (
-        <EditorComponent
-          title={title}
-          setTitle={setTitle}
-          text={text}
-          setText={setText}
-          preview={preview}
-          setImage={setImage}
-          file={file}
-          setFile={setFile}
-          pageData={pageData}
-        />
-      ) : null}
-    </>
-  );
-}
+  async function post(e: FormEvent<Element>) {
+    e.preventDefault();
 
+    if (pageData && title !== "" && text !== "") {
+      const resultState = {
+        ...pageData,
+        title: title,
+        text: text,
+        url: preview.length > 0 ? await imagePostHandler() : [],
+      };
+      firebaseUpload(resultState, "edit", pageData.pageId, pageData);
+    } else {
+      window.alert("제목과 내용을 다 입력하셨는지 확인해주세요");
+    }
+
+    return (
+      <>
+        {pageData ? (
+          <EditorComponent post={post} pageData={pageData} type={"edit"} />
+        ) : null}
+      </>
+    );
+  }
+}
 export default Edit;

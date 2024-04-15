@@ -1,49 +1,26 @@
 import { FormEvent, useCallback, useEffect, useState } from "react";
 import "../asset/upload.scss";
-import { serverTimestamp } from "firebase/firestore";
-import { storageUpload } from "../../module/exportFunction";
-import { db } from "../../Firebase";
-import { useNavigate } from "react-router-dom";
 import { useMyContext } from "../../module/Mycontext";
 import EditorComponent from "./EditorComponent";
+import { storageUpload } from "../../module/exportFunction";
+import { useEditorContext } from "./EditorContext";
+import { serverTimestamp } from "firebase/firestore";
 
 function Upload() {
-  const { data, posts, postRefetch } = useMyContext();
-  const [title, setTitle] = useState("");
-  const [text, setText] = useState("");
+  const { data, posts, refetch } = useMyContext();
   const [pageId, setPageId] = useState("");
-  const [preview, setImage] = useState<string[]>([]);
-  const [file, setFile] = useState<File[]>([]);
-  const navigate = useNavigate();
-  const time = new Date();
 
-  const timeData = {
-    year: time.getFullYear(),
-    month: time.getMonth() + 1,
-    day: time.getDate(),
-  };
+  const { preview, file, title, text, firebaseUpload } = useEditorContext();
 
-  async function post(e: FormEvent<Element>) {
-    e.preventDefault();
-    if (data && title !== "" && text !== "") {
-      const content = {
-        title: title,
-        text: text,
-        user: data.displayName,
-        writer: data.uid,
-        date: `${timeData.year}년 ${timeData.month}월 ${timeData.day}일`,
-        url: preview.length > 0 ? await storageUpload(preview, file) : [],
-        favorite: 0,
-        pageId: pageId,
-        profile: data.photoURL,
-        timeStamp: serverTimestamp(),
-        fileName: file.length > 0 ? file.map((value: File) => value.name) : "",
-      };
-      firebaseUplaod(content);
+  useEffect(() => {
+    let randomStr: string = generateRandomString(20);
+    if (overlapCallback(randomStr)) {
+      randomStr = generateRandomString(20);
+      setPageId(randomStr);
     } else {
-      window.alert("제목과 내용을 다 입력하셨는지 확인해주세요");
+      setPageId(randomStr);
     }
-  }
+  }, []);
 
   const generateRandomString = (num: number) => {
     const words = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
@@ -64,28 +41,34 @@ function Upload() {
     [posts]
   );
 
-  useEffect(() => {
-    let randomStr: string = generateRandomString(20);
-    if (overlapCallback(randomStr)) {
-      randomStr = generateRandomString(20);
-      setPageId(randomStr);
+  async function post(e: FormEvent<Element>) {
+    e.preventDefault();
+    const timeData = {
+      year: new Date().getFullYear(),
+      month: new Date().getMonth() + 1,
+      day: new Date().getDate(),
+    };
+    if (data && title !== "" && text !== "") {
+      const content = {
+        title: title,
+        text: text,
+        user: data.displayName,
+        writer: data.uid,
+        date: `${timeData.year}년 ${timeData.month}월 ${timeData.day}일`,
+        url: preview.length > 0 ? await storageUpload(preview, file) : [],
+        favorite: 0,
+        pageId: pageId,
+        profile: data.photoURL,
+        timeStamp: serverTimestamp(),
+        fileName: file.length > 0 ? file.map((value: File) => value.name) : "",
+      };
+      firebaseUpload(content, "upload", pageId);
     } else {
-      setPageId(randomStr);
+      window.alert("제목과 내용을 다 입력하셨는지 확인해주세요");
     }
-  }, []);
+  }
 
-  return (
-    <EditorComponent
-      title={title}
-      setTitle={setTitle}
-      text={text}
-      setText={setText}
-      preview={preview}
-      setImage={setImage}
-      file={file}
-      setFile={setFile}
-    />
-  );
+  return <EditorComponent post={post} type={"upload"} refetch={refetch} />;
 }
 
 export default Upload;

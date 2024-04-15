@@ -4,10 +4,10 @@ import { authService, db, firebaseInstance, storageService } from "../Firebase";
 import "../asset/header.scss";
 import useLoadNickName from "../query/loadNickName";
 import firebase from "firebase/compat/app";
-import { onFileChange, storageUpload } from "../module/exportFunction";
 import { useNavigate } from "react-router-dom";
 import { GoogleAuthProvider, reauthenticateWithPopup } from "firebase/auth";
 import { useMyContext } from "../module/Mycontext";
+import { useEditorContext } from "./editor/EditorContext";
 
 function Profile() {
   const [NameEdit, setNameEdit] = useState(false);
@@ -15,6 +15,7 @@ function Profile() {
   const loadNick = useLoadNickName();
   const navigate = useNavigate();
   const { data, refetch } = useMyContext();
+  const { changeHanlder } = useEditorContext();
 
   useEffect(() => {
     if (data) {
@@ -86,7 +87,7 @@ function Profile() {
     const deletePromises = [
       db
         .collection("delete")
-        .doc(`${data.uid}`)
+        .doc(`${data?.uid}`)
         .set({ 상태: "탈퇴", nickname: user.displayName }),
       db.collection("nickname").doc(`${user.displayName}`).delete(),
       imageRef.delete(),
@@ -94,7 +95,7 @@ function Profile() {
 
     if (type === "social") {
       deletePromises.push(
-        db.collection("nickname").doc(`${data.uid}-G`).delete()
+        db.collection("nickname").doc(`${data?.uid}-G`).delete()
       );
     }
     return Promise.all(deletePromises).then(() => {
@@ -136,7 +137,9 @@ function Profile() {
               type="file"
               accept="image/*"
               id="img_check"
-              onChange={(e: ChangeEvent) => changeHanlder(e)}
+              onChange={(e: ChangeEvent) =>
+                changeHanlder(e, "profile", refetch)
+              }
             />
             <figure className="profileImg">
               <img src={data.photoURL} width="130px" height="135px" alt="" />

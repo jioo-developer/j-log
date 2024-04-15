@@ -1,64 +1,28 @@
 import React, { ChangeEvent, FormEvent } from "react";
 import { Link } from "react-router-dom";
 import ReactTextareaAutosize from "react-textarea-autosize";
+import { useEditorContext } from "./EditorContext";
 import { FirebaseData } from "../../module/interfaceModule";
-import { changeHanlder } from "../../module/exportFunction";
+import { useMyContext } from "../../module/Mycontext";
 
 type propsType = {
-  title: string;
-  setTitle: React.Dispatch<React.SetStateAction<string>>;
-  text: string;
-  setText: React.Dispatch<React.SetStateAction<string>>;
-  preview: any[];
-  setImage: React.Dispatch<React.SetStateAction<any[]>>;
-  file: File[];
-  setFile: React.Dispatch<React.SetStateAction<File[]>>;
-  pageData?: FirebaseData | undefined;
-  refresh?: any;
+  post: (e: FormEvent<Element>) => void;
+  pageData?: FirebaseData;
+  type: string;
+  refetch?: any;
 };
 
-const EditorComponent = ({
-  title,
-  setTitle,
-  text,
-  setText,
-  preview,
-  setImage,
-  file,
-  setFile,
-  pageData,
-  refresh,
-}: propsType) => {
-  function previewDelete(value: number) {
-    const filter1 = preview.filter((item, index) => index !== value);
-    const filter2 = file.filter((item, index) => index !== value);
-    setImage(filter1);
-    setFile(filter2);
-  }
-
-  async function firebaseUplaod() {
-    if (type === "upload") {
-      await db
-        .collection("post")
-        .doc(pageId)
-        .set(content)
-        .then(() => {
-          const redirect = `/detail?id=${pageId}`;
-          postRefetch();
-          navigate(redirect, { state: pageId });
-        });
-    } else {
-      await db
-        .collection("post")
-        .doc(pageData.pageId)
-        .update(resultState)
-        .then(() => {
-          window.alert("수정이 완료 되었습니다.");
-          const redirect = `/detail?id=${pageData.pageId}`;
-          navigate(redirect, { state: pageData.pageId });
-        });
-    }
-  }
+const EditorComponent = ({ post, pageData, type, refetch }: propsType) => {
+  const {
+    setTitle,
+    setText,
+    preview,
+    title,
+    text,
+    previewDelete,
+    changeHanlder,
+  } = useEditorContext();
+  const { navigate } = useMyContext();
   return (
     <div className="upload">
       <form onSubmit={(e: FormEvent<Element>) => post(e)}>
@@ -92,9 +56,7 @@ const EditorComponent = ({
                     <button
                       type="button"
                       className="preview_delete"
-                      onClick={() => {
-                        previewDelete(index);
-                      }}
+                      onClick={() => previewDelete(index)}
                     >
                       <img src="./img/close.png" alt="" />
                     </button>
@@ -110,9 +72,7 @@ const EditorComponent = ({
           multiple
           className="file-form"
           id="image"
-          onChange={(e: ChangeEvent) => {
-            changeHanlder(e, type, setFile, preview, setImage, refresh);
-          }}
+          onChange={(e: ChangeEvent) => changeHanlder(e, type, refetch)}
         />
         <label htmlFor="image" className="Attachment image-att">
           이미지를 담아주세요
@@ -127,7 +87,9 @@ const EditorComponent = ({
               <div className="exit">← &nbsp;나가기</div>
             </Link>
           ) : (
-            <div className="exit">← &nbsp;나가기</div>
+            <div className="exit" onClick={() => navigate("/")}>
+              ← &nbsp;나가기
+            </div>
           )}
           <div className="cancel_wrap">
             <button type="submit" className="post">
