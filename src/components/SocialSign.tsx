@@ -11,6 +11,20 @@ function SocialSign() {
     else setDisable(false);
   }, [data]);
 
+  function quitPassword(result: any, password: number) {
+    const nickDB = db.collection("nickname");
+    nickDB
+      .doc(result.user.displayName as string)
+      .set({ nickname: result.user.displayName });
+    nickDB
+      .doc(`${result.user.uid}-G`)
+      .set({
+        id: result.user.uid,
+        password: password,
+      })
+      .then(() => refetch());
+  }
+
   async function onGoogle() {
     const provider = await new firebaseInstance.auth.GoogleAuthProvider();
     //데이터 받기
@@ -25,18 +39,7 @@ function SocialSign() {
           "회원 탈퇴에 사용 될 비밀번호를 입력해주세요."
         );
         if (password) {
-          const nickDB = db.collection("nickname");
-          nickDB
-            .doc(result.user.displayName as string)
-            .set({ nickname: result.user.displayName });
-          nickDB
-            .doc(`${result.user.uid}-G`)
-            .set({
-              id: result.user.uid,
-              password: password,
-            })
-            .then(() => refetch());
-          navigate("/");
+          quitPassword(result, parseInt(password));
         } else {
           authService.signOut();
         }

@@ -5,7 +5,7 @@ export function loadPost() {
     const collectionRef = db.collection("post").orderBy("timeStamp", "asc");
     collectionRef.get().then((snapshot) => {
       if (snapshot.docs.length > 0) {
-        const postArray = snapshot.docs.map((doc: any) => {
+        const postArray = snapshot.docs.map((doc) => {
           return {
             ...doc.data(),
             id: doc.id,
@@ -23,7 +23,7 @@ export function loadPost() {
 
 export function loadUser() {
   return new Promise((resolve, reject) => {
-    const unsubscribe = authService.onAuthStateChanged(async (user: any) => {
+    const unsubscribe = authService.onAuthStateChanged(async (user) => {
       if (user) resolve(user);
       else reject({});
       unsubscribe();
@@ -70,9 +70,9 @@ export function loadDetail(pageId: string) {
 export function loadReplys(pageId: string) {
   return new Promise((resolve, reject) => {
     const collectionRef = db.collection("post").doc(pageId).collection("reply");
-    collectionRef.get().then((snapshot: any) => {
+    collectionRef.get().then((snapshot) => {
       if (snapshot.docs.length > 0) {
-        const postArray = snapshot.docs.map((doc: any) => ({
+        const postArray = snapshot.docs.map((doc) => ({
           ...doc.data(),
           id: doc.id,
         }));

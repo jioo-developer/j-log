@@ -29,7 +29,7 @@ export async function onFileChange(e: ChangeEvent) {
 }
 
 export async function storageUpload(
-  imageurl: any,
+  imageurl: string | string[],
   fileData: File[],
   type?: string
 ) {
@@ -53,4 +53,21 @@ export async function storageUpload(
   } else {
     return [];
   }
+}
+
+export function setCookie(name: string, value: string) {
+  const time = new Date();
+  const result = new Date(
+    time.getFullYear(),
+    time.getMonth(),
+    time.getDate(),
+    23,
+    59,
+    59
+  );
+  result.setMilliseconds(999);
+  result.setHours(result.getHours() + 9);
+  document.cookie = `${name}=${encodeURIComponent(
+    value
+  )}; expires=${result.toUTCString()};`;
 }

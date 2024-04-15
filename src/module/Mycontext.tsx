@@ -1,6 +1,6 @@
 import { useLocation, useNavigate } from "react-router-dom";
 import useLoadPost from "../query/loadPost";
-import useLoadUser from "../query/loadUser";
+import useLoadUser, { LoadUserHookResult } from "../query/loadUser";
 import { postProps } from "./interfaceModule";
 import { createContext } from "react";
 import { ReactNode, useContext } from "react";
@@ -17,6 +17,7 @@ export const MyContextProvider = ({ children }: { children: ReactNode }) => {
 
   const location = useLocation();
   const navigate = useNavigate();
+
   return (
     <MyContext.Provider
       value={{ data, posts, refetch, postRefetch, navigate, location, Loading }}
@@ -27,7 +28,7 @@ export const MyContextProvider = ({ children }: { children: ReactNode }) => {
 };
 
 interface MyContextProps {
-  data: any;
+  data: LoadUserHookResult | undefined;
   posts: postProps[] | undefined;
   refetch: any;
   postRefetch: any;
@@ -37,7 +38,7 @@ interface MyContextProps {
 }
 
 const MyContext = createContext<MyContextProps>({
-  data: {},
+  data: undefined,
   posts: [],
   refetch: () => {},
   postRefetch: () => {},

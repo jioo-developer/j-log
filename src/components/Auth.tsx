@@ -37,49 +37,51 @@ function Auth() {
         window.alert("이미 사용중인 닉네임 입니다.");
         setNickname("");
       } else {
-        authService
-          .createUserWithEmailAndPassword(email, password)
-          .then((result) => {
-            db.collection("nickname")
-              .doc(nickname)
-              .set({ nickname: nickname })
-              .then(() => {
-                const user = result.user as firebase.User;
-                user.updateProfile({
-                  displayName: nickname,
-                  photoURL: "./img/default.svg",
-                });
-              })
-              .then(() => {
-                refetch();
-                navigate("/");
-              })
-              .then(() => {
-                window.alert("회원가입을 환영합니다.");
-              });
-          })
-          .catch((error) => {
-            if (
-              error.message ===
-              "Firebase: The email address is badly formatted. (auth/invalid-email)."
-            ) {
-              window.alert("올바른 이메일 형식이 아닙니다.");
-            } else if (
-              error.message ===
-              "Password should be at least 6 characters (auth/weak-password)."
-            ) {
-              window.alert("비밀번호가 너무짧습니다.");
-            } else if (
-              error.message ===
-              "The email address is already in use by another account. (auth/email-already-in-use)."
-            ) {
-              window.alert("이미 사용중인 이메일입니다.");
-            } else {
-              window.alert(error.message);
-            }
-          });
+        firebaseSignLogic();
       }
     }
+  }
+
+  function firebaseSignLogic() {
+    authService
+      .createUserWithEmailAndPassword(email, password)
+      .then((result) => {
+        db.collection("nickname")
+          .doc(nickname)
+          .set({ nickname: nickname })
+          .then(() => {
+            const user = result.user as firebase.User;
+            user.updateProfile({
+              displayName: nickname,
+              photoURL: "./img/default.svg",
+            });
+          })
+          .then(() => {
+            refetch();
+            navigate("/");
+            window.alert("회원가입을 환영합니다.");
+          });
+      })
+      .catch((error) => {
+        if (
+          error.message ===
+          "Firebase: The email address is badly formatted. (auth/invalid-email)."
+        ) {
+          window.alert("올바른 이메일 형식이 아닙니다.");
+        } else if (
+          error.message ===
+          "Password should be at least 6 characters (auth/weak-password)."
+        ) {
+          window.alert("비밀번호가 너무짧습니다.");
+        } else if (
+          error.message ===
+          "The email address is already in use by another account. (auth/email-already-in-use)."
+        ) {
+          window.alert("이미 사용중인 이메일입니다.");
+        } else {
+          window.alert(error.message);
+        }
+      });
   }
 
   function checkHanlder(e: ChangeEvent<HTMLInputElement>) {
