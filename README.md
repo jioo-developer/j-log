@@ -34,7 +34,7 @@ TypeScript,React,React-dom,react-query,firebase,ContextAPI,SCSS
 
 ### 🧑🏻‍💻 트러블 슈팅
 
-#### 문제발견
+#### 문제발견 1
 
 구글로그인으로 로그인을 하면 구글계정으로 부터 모든 정보를 불러와서 로그인 하게 되는데, 이렇게 로그인을 하면 회원 탈퇴 할 시
 한번 더 확인 하기 위한 비밀번호를 입력 할 구간이 없다.
@@ -52,3 +52,19 @@ DB에 uid를 title로 구글 로그인 을 할 때만 password를 입력하게 �
 DB에서 uid-G가 있는지 확인 후 없다면 새로 password를 입력하고 있다면 그냥 넘어가게 코드를 짬
 
 <img src="/public/img/error1.jpg">
+
+<hr />
+
+#### 문제발견 2
+
+upload와 edit의 페이지의 사용되는 함수,컴포넌트 html이 같고 페이지에 관한 데이터만 다르기 때문에 이것들을 재사용 할 수 없을까 고민
+
+#### 문제 판단
+
+아래와 같이 트리구조를 짬
+
+<img src="/public/img/tree.jpg">
+
+#### 해결법
+
+파일을 업로드 했을 때 이미지를 노출해주는 걸 한 함수로 표현
