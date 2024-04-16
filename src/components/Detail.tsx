@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import "../asset/detail.scss";
 import { Link } from "react-router-dom";
 import Reply from "./Reply";

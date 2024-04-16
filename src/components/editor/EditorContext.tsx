@@ -22,7 +22,7 @@ type EditorContextProps = {
   changeHanlder: (e: ChangeEvent, type: string, refetch: any) => void;
   previewDelete: (value: number) => void;
   firebaseUpload: (
-    data: any,
+    data: postProps | any,
     type: string,
     pageId: string,
     pageData?: FirebaseData

@@ -1,6 +1,7 @@
 import { authService, db, firebaseInstance } from "../Firebase";
 import { useEffect, useState } from "react";
 import { useMyContext } from "../module/Mycontext";
+import { AuthCredential } from "firebase/auth";
 
 function SocialSign() {
   const [disabled, setDisable] = useState(false);
@@ -11,7 +12,7 @@ function SocialSign() {
     else setDisable(false);
   }, [data]);
 
-  function quitPassword(result: any, password: number) {
+  function quitPassword(result: AuthCredential | any, password: number) {
     const nickDB = db.collection("nickname");
     nickDB
       .doc(result.user.displayName as string)
